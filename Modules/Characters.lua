@@ -60,6 +60,10 @@ local function ListCharacters()
     ns:Print(L["CHARS_HEADER"])
     for i, fullName in ipairs(names) do
         local line = ("%d. %s"):format(i, ColorizeName(fullName))
+        local realm = ns.db.characters[fullName].realm
+        if realm then
+            line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. realm .. ")")
+        end
         if fullName == current then
             line = line .. " " .. L["CHARS_CURRENT"]
         end
@@ -110,12 +114,17 @@ function Characters:OnEnable()
     ns.db.characters[fullName] = {
         class = classFile,
         faction = UnitFactionGroup("player"),
+        -- Forever runs each ruleset (PvE, PvP, RP) as its own realm, e.g. "Classic Beta PvE";
+        -- characters can only trade and send mail within it.
+        realm = GetRealmName(),
     }
     nameSet = nil
 end
 
 -- Returns the known characters, sorted by name:
---   { fullName = "Tor Donnerstein", class = "WARRIOR", faction = "Alliance", isCurrent = bool }
+--   { fullName = "Tor Donnerstein", class = "WARRIOR", faction = "Alliance",
+--     realm = "Classic Beta PvE", isCurrent = bool }
+-- realm is nil for characters not logged in since it was added.
 function Characters:GetCharacters()
     local current = Names.GetPlayerName()
     local characters = {}
@@ -125,6 +134,7 @@ function Characters:GetCharacters()
             fullName = fullName,
             class = info and info.class,
             faction = info and info.faction,
+            realm = info and info.realm,
             isCurrent = fullName == current,
         }
     end

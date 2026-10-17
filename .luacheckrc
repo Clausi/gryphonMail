@@ -39,6 +39,7 @@ read_globals = {
     "CreateFrame",
     "GetGuildRosterInfo",
     "GetLocale",
+    "GetRealmName",
     "GetInboxHeaderInfo",
     "GetInboxInvoiceInfo",
     "GetInboxItem",
