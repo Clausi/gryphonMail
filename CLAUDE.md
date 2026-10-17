@@ -70,8 +70,6 @@ World of Warcraft: Forever addon that extends the default mailbox.
   On a release, move the entries to a new version section and bump `## Version` in `GryphonMail.toc`.
 - Keep the structure section in `README.md` up to date when files are added or removed.
 - Do not commit or push unless asked.
-- The addon has not been released yet: do not write migration code for saved variables. Change the
-  data format directly; testers clear their data if needed. Revisit this rule after the first release.
 
 ## Git workflow
 
@@ -118,4 +116,4 @@ Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
   type and scope, e.g. `fix(mail-log): count each attachment only once`.
 - **body** (optional): explains what and why, not how; wrap at 72 characters.
 - **footer**: `BREAKING CHANGE: <description>` (or `!` after the type/scope) for changes that break
-  saved variables or slash commands after the first release; attribution trailers go here as well.
+  saved variables or slash commands; attribution trailers go here as well.
