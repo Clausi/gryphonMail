@@ -10,9 +10,12 @@ World of Warcraft: Forever addon that extends the default mailbox.
   (e.g. `Interface/AddOns/Blizzard_MailFrame/`). Read the actual Blizzard source before hooking or
   mirroring Blizzard behavior instead of relying on memory.
 - Character names on Forever are "First Surname" (separator from
-  `Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR`, a space) and there are no
-  realms. `UnitName(unit)` returns first name and **surname**, not name and realm. Always use
-  `ns.Names` (`Core/Names.lua`) to build and compare names; never use `Ambiguate` or realm APIs.
+  `Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR`, a space) and carry no
+  realm suffix. `UnitName(unit)` returns first name and **surname**, not name and realm. Always use
+  `ns.Names` (`Core/Names.lua`) to build and compare names; never use `Ambiguate`.
+- Each ruleset (PvE, PvP, RP) is its own realm, e.g. `GetRealmName()` = "Classic Beta PvE". Trading
+  and mail only work within the same ruleset and faction. A full name is unique across rulesets, so
+  characters are keyed by name; the ruleset is stored as `realm` per character.
 - Lua 5.1 (WoW flavor): no `goto`, `//`, bitwise operators, `require`, `io` or `os`.
 
 ## Mandatory checks
