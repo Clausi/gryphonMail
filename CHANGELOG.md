@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   faction and ruleset (PvE, PvP, RP) as recipient.
 - `/gryphonmail chars` shows the ruleset of each character.
 
+### Changed
+
+- Inbox filter presets are grouped and reordered: My Characters, Friends, Guild | Unread, Read |
+  Auction House, Gold, C.O.D.
+
 ## [0.3.0] - 2026-10-17
 
 ### Added

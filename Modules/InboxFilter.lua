@@ -99,9 +99,18 @@ local function IsAuctionMail(mail)
     return false
 end
 
--- Order defines the order in the dropdown.
+-- Order defines the order in the dropdown. startsGroup adds a divider above the preset:
+--   all mail | people (own characters, friends, guild) | read state | trade (auction house, gold, C.O.D.)
 local PRESETS = {
     { key = PRESET_ALL, label = "FILTER_ALL" },
+    {
+        key = "alts",
+        label = "FILTER_ALTS",
+        startsGroup = true,
+        matches = function(mail)
+            return Characters:IsOwnCharacter(mail.sender)
+        end,
+    },
     {
         key = "friends",
         label = "FILTER_FRIENDS",
@@ -119,17 +128,15 @@ local PRESETS = {
         end,
     },
     {
-        key = "alts",
-        label = "FILTER_ALTS",
-        matches = function(mail)
-            return Characters:IsOwnCharacter(mail.sender)
-        end,
+        key = "unread",
+        label = "FILTER_UNREAD",
+        startsGroup = true,
+        matches = function(mail) return not mail.wasRead end,
     },
-    { key = "auction", label = "FILTER_AUCTION", matches = IsAuctionMail },
-    { key = "cod", label = "FILTER_COD", matches = function(mail) return mail.cod > 0 end },
-    { key = "money", label = "FILTER_MONEY", matches = function(mail) return mail.money > 0 end },
-    { key = "unread", label = "FILTER_UNREAD", matches = function(mail) return not mail.wasRead end },
     { key = "read", label = "FILTER_READ", matches = function(mail) return mail.wasRead == true end },
+    { key = "auction", label = "FILTER_AUCTION", startsGroup = true, matches = IsAuctionMail },
+    { key = "money", label = "FILTER_MONEY", matches = function(mail) return mail.money > 0 end },
+    { key = "cod", label = "FILTER_COD", matches = function(mail) return mail.cod > 0 end },
 }
 
 local presetsByKey = {}
@@ -175,6 +182,9 @@ local function CreateDropdown()
     dropdown:SetupMenu(function(_, rootDescription)
         rootDescription:SetTag("MENU_GRYPHONMAIL_INBOX_FILTER")
         for _, preset in ipairs(PRESETS) do
+            if preset.startsGroup then
+                rootDescription:CreateDivider()
+            end
             rootDescription:CreateRadio(L[preset.label], IsSelected, SetPreset, preset.key)
         end
     end)

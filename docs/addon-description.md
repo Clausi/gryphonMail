@@ -13,13 +13,13 @@ GryphonMail extends the default mailbox instead of replacing it. Everything stay
 
 ### Predefined filters
 Show only the mail you care about with one click:
+- **My Characters** (mail from your alts)
 - **Friends**
 - **Guild**
-- **My Characters** (mail from your alts)
-- **Auction House**
-- **C.O.D.**
-- **Gold**
 - **Unread** / **Read**
+- **Auction House**
+- **Gold**
+- **C.O.D.**
 
 Filters work together with the search box, e.g. *Guild* + "ore".
 
