@@ -76,6 +76,8 @@ read_globals = {
     "MailFrameTab2",
     "OpenMailFrame",
     "SendMailFrame",
+    "SendMailNameEditBox",
+    "SendMailSubjectEditBox",
     -- ShouldSkipCurrentMail / ShouldSkipCurrentAttachment are replaced on purpose to restrict
     -- "Open All" to filtered mails and to avoid duplicate take requests (see InboxView.lua).
     OpenAllMail = {
@@ -98,6 +100,7 @@ read_globals = {
     "NORMAL_FONT_COLOR",
     "HIGHLIGHT_FONT_COLOR",
     "RED_FONT_COLOR",
+    "GRAY_FONT_COLOR",
     "GREEN_FONT_COLOR_CODE",
     "RED_FONT_COLOR_CODE",
     "FONT_COLOR_CODE_CLOSE",
