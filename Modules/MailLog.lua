@@ -20,9 +20,6 @@ local MAX_RETENTION_DAYS = 365
 
 -- Pending requests older than this are not matched anymore.
 local PENDING_TIMEOUT_SECONDS = 10
--- A mail is identified by sender, subject and expiry time (seconds); the expiry is derived from
--- daysLeft and may differ slightly between reads.
-local EXPIRY_TOLERANCE_SECONDS = 5
 -- Loot messages can arrive shortly after "Open All" has finished.
 local SUMMARY_DELAY_SECONDS = 1
 
@@ -70,21 +67,12 @@ local function Prune()
     end
 end
 
--- Identity of the mail at the inbox index, stable while indices shift.
+-- Mail identity (sender, subject, expiry) shared with InboxView, stable while indices shift.
 local function GetMailIdentity(index)
-    local packageIcon, stationeryIcon, sender, subject, _, _, daysLeft = GetInboxHeaderInfo(index)
-    return {
-        sender = SafeString(sender) or UNKNOWN,
-        subject = SafeString(subject) or "",
-        expiry = time() + (daysLeft or 0) * SECONDS_PER_DAY,
-        icon = packageIcon or stationeryIcon,
-    }
+    return InboxView:GetMailIdentity(index)
 end
 
-local function IsSameMail(a, b)
-    return a.sender == b.sender and a.subject == b.subject
-        and math.abs(a.expiry - b.expiry) <= EXPIRY_TOLERANCE_SECONDS
-end
+local IsSameMail = InboxView.IsSameMail
 
 local function GetEntryForMail(mail)
     for _, sessionMail in ipairs(sessionMails) do

@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Inbox filters "Unread" and "Read".
 
+### Fixed
+
+- "Open Filtered" keeps working on a mail that changes during the run, e.g. becomes read or has its
+  gold taken; previously the remaining attachments were skipped.
+
 ## [0.2.0] - 2026-10-17
 
 ### Added
