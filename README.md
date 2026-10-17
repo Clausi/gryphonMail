@@ -24,8 +24,10 @@ GryphonMail/
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
 │   ├── Util.lua           # Print/Debug helpers, defaults handling
+│   ├── Names.lua          # Forever character names ("First Surname"): build and compare
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
+    ├── Characters.lua     # Remembers the account's own characters (saved on login)
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     └── InboxSearch.lua    # Search box that filters the inbox by sender or subject
 ```
@@ -62,6 +64,8 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
 
 - `/gryphonmail` – help
 - `/gryphonmail version` – show version
+- `/gryphonmail chars` – list known own characters
+- `/gryphonmail chars remove <number|name>` – forget a character (e.g. deleted or renamed)
 - `/gryphonmail debug` – toggle debug output
 
 Modules add subcommands with `ns:RegisterCommand(name, handler, helpLines)`.

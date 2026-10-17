@@ -15,8 +15,10 @@ Locales\deDE.lua
 # Core
 Core\Init.lua
 Core\Util.lua
+Core\Names.lua
 
 # Modules
+Modules\Characters.lua
 Modules\InboxView.lua
 Modules\InboxSearch.lua
 

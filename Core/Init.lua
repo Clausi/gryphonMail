@@ -8,6 +8,8 @@ ns.modules = {}
 -- Default values for the saved variables. Missing keys are filled in on load.
 ns.defaults = {
     debug = false,
+    -- Own characters, keyed by full name ("Name Surname"). Filled by Modules/Characters.lua.
+    characters = {},
 }
 
 -- Registers a module. A module may implement:
