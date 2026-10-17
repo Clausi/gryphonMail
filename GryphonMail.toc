@@ -16,5 +16,9 @@ Locales\deDE.lua
 Core\Init.lua
 Core\Util.lua
 
+# Modules
+Modules\InboxView.lua
+Modules\InboxSearch.lua
+
 # Bootstrap (must be loaded last)
 Core\Main.lua

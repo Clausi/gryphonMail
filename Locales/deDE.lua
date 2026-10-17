@@ -7,6 +7,8 @@ end
 local L = ns.L
 
 L["ADDON_LOADED"] = "Version %s geladen. Tippe /gryphonmail für Hilfe."
+L["SEARCH_PLACEHOLDER"] = "Absender oder Betreff"
+L["OPEN_FILTERED"] = "Gefiltert öffnen"
 L["DEBUG_ON"] = "Debug-Ausgabe aktiviert."
 L["DEBUG_OFF"] = "Debug-Ausgabe deaktiviert."
 L["HELP_DEBUG"] = "/gryphonmail debug - schaltet die Debug-Ausgabe um"

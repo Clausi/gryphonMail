@@ -10,6 +10,8 @@ local L = setmetatable({}, {
 ns.L = L
 
 L["ADDON_LOADED"] = "Version %s loaded. Type /gryphonmail for help."
+L["SEARCH_PLACEHOLDER"] = "Sender or subject"
+L["OPEN_FILTERED"] = "Open Filtered"
 L["DEBUG_ON"] = "Debug output enabled."
 L["DEBUG_OFF"] = "Debug output disabled."
 L["HELP_DEBUG"] = "/gryphonmail debug - toggle debug output"

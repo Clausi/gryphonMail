@@ -14,4 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addon skeleton for WoW Forever (Interface 16001): namespace, module registry, event dispatcher,
   saved variables (`GryphonMailDB`) and `/gryphonmail` slash command.
 - Localization with English base locale and German translation.
+- Inbox search box that filters mails by sender or subject, including paging through the results.
+- "Open All" only opens the filtered mails while a filter is active; the button then reads "Open Filtered".
 - `/gryphonmail debug` toggles debug output in the chat.

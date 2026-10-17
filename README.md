@@ -21,10 +21,13 @@ GryphonMail/
 ├── Locales/
 │   ├── enUS.lua           # Base locale (fallback, all keys)
 │   └── deDE.lua           # German translation
-└── Core/
-    ├── Init.lua           # Namespace, module registry, event dispatcher
-    ├── Util.lua           # Print/Debug helpers, defaults handling
-    └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
+├── Core/
+│   ├── Init.lua           # Namespace, module registry, event dispatcher
+│   ├── Util.lua           # Print/Debug helpers, defaults handling
+│   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
+└── Modules/
+    ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
+    └── InboxSearch.lua    # Search box that filters the inbox by sender or subject
 ```
 
 ## Adding a module
