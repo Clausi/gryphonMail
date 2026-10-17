@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Inbox filters "Unread" and "Read".
+- The mail log records the C.O.D. amount paid for a mail ("C.O.D. paid" in the entry and its tooltip).
 
 ### Fixed
 
