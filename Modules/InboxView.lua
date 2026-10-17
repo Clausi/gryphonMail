@@ -5,9 +5,38 @@ local L = ns.L
 -- every active filter. Handles redrawing the inbox rows, paging and "Open All".
 local InboxView = ns:RegisterModule("InboxView")
 
+local SECONDS_PER_DAY = 24 * 60 * 60
+-- A mail is identified by sender, subject and expiry time (seconds); the expiry is derived from
+-- daysLeft and may differ slightly between reads.
+local EXPIRY_TOLERANCE_SECONDS = 5
+
 local filters = {}
 local readyCallbacks = {}
 local isReady = false
+
+local function SafeString(value)
+    if type(value) ~= "string" or (issecretvalue and issecretvalue(value)) then
+        return nil
+    end
+    return value
+end
+
+-- Identity of the mail at the inbox index, stable while indices shift (e.g. after a mail was
+-- deleted): { sender, subject, expiry, icon }.
+function InboxView:GetMailIdentity(index)
+    local packageIcon, stationeryIcon, sender, subject, _, _, daysLeft = GetInboxHeaderInfo(index)
+    return {
+        sender = SafeString(sender) or UNKNOWN,
+        subject = SafeString(subject) or "",
+        expiry = time() + (daysLeft or 0) * SECONDS_PER_DAY,
+        icon = packageIcon or stationeryIcon,
+    }
+end
+
+function InboxView.IsSameMail(a, b)
+    return a.sender == b.sender and a.subject == b.subject
+        and math.abs(a.expiry - b.expiry) <= EXPIRY_TOLERANCE_SECONDS
+end
 
 -- A filter is a table with:
 --   filter:IsActive()    -- true while the filter restricts the inbox
@@ -178,22 +207,59 @@ local function UpdateOpenAllText()
     end
 end
 
+-- State of the current "Open All" / "Open Filtered" run, nil while none is running:
+--   mails       mails that matched the filters when the run started (nil without active filter).
+--               Taking attachments changes a mail (e.g. it becomes read), so a mail must not drop
+--               out of the run halfway; the filters are evaluated once per run.
+local run
+
+local function CollectMatchingMails()
+    local mails = {}
+    for index = 1, GetInboxNumItems() do
+        if InboxView:MailMatches(index) then
+            mails[#mails + 1] = InboxView:GetMailIdentity(index)
+        end
+    end
+    return mails
+end
+
+local function IsRunMail(index)
+    local mail = InboxView:GetMailIdentity(index)
+    for _, runMail in ipairs(run.mails) do
+        if InboxView.IsSameMail(runMail, mail) then
+            return true
+        end
+    end
+    return false
+end
+
 -- Blizzard's "Open All" walks every mail and asks ShouldSkipCurrentMail() for each one.
--- With an active filter, non-matching mails are skipped as well; everything else (COD/GM mails,
--- bag space, delays, index shifts after deleted mails) stays Blizzard's logic.
+-- With an active filter, mails that did not match at the start of the run are skipped as well;
+-- everything else (COD/GM mails, bag space, delays, index shifts after deleted mails) stays
+-- Blizzard's logic.
 -- The method is replaced on this button only, because a post-hook cannot change the return value.
 -- The resulting taint is harmless here: the mail functions used by "Open All" are not protected.
 local function SetupOpenAll()
     local shouldSkipCurrentMail = OpenAllMail.ShouldSkipCurrentMail
     OpenAllMail.ShouldSkipCurrentMail = function(self)
-        if InboxView:IsFilterActive() and not InboxView:MailMatches(self.mailIndex) then
+        -- The first call of a run happens before anything was taken (StartOpening has no pre-hook),
+        -- so the run starts here.
+        if not run then
+            run = {
+                mails = InboxView:IsFilterActive() and CollectMatchingMails() or nil,
+            }
+        end
+        if run.mails and not IsRunMail(self.mailIndex) then
             return true
         end
         return shouldSkipCurrentMail(self)
     end
 
     -- StopOpening() resets the text to Blizzard's default.
-    hooksecurefunc(OpenAllMail, "StopOpening", UpdateOpenAllText)
+    hooksecurefunc(OpenAllMail, "StopOpening", function()
+        run = nil
+        UpdateOpenAllText()
+    end)
 end
 
 -- Call after a filter changed. Jumps back to the first page and redraws the inbox.
