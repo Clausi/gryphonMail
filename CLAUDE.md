@@ -79,7 +79,6 @@ World of Warcraft: Forever addon that extends the default mailbox.
 - Split work into meaningful commits; each commit must pass luacheck on its own.
 - Push with `git push -u origin <branch>`, then create the pull request with
   `gh pr create --base main` (title and description in English) and give the user the PR link.
-  `gh` is installed at `C:\Program Files\GitHub CLI\gh.exe`; use the full path if `gh` is not on `PATH`.
 - After the merge: `git checkout main`, `git pull`, and delete the merged branch.
 - The addon has not been released yet: do not write migration code for saved variables. Change the
   data format directly; testers clear their data if needed. Revisit this rule after the first release.
