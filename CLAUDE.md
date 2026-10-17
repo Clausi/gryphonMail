@@ -70,15 +70,52 @@ World of Warcraft: Forever addon that extends the default mailbox.
   On a release, move the entries to a new version section and bump `## Version` in `GryphonMail.toc`.
 - Keep the structure section in `README.md` up to date when files are added or removed.
 - Do not commit or push unless asked.
+- The addon has not been released yet: do not write migration code for saved variables. Change the
+  data format directly; testers clear their data if needed. Revisit this rule after the first release.
 
 ## Git workflow
 
 - `main` is protected: no direct commits or pushes, every change goes through a pull request.
 - Start each change on a new branch from an up-to-date `main`:
-  `git checkout main`, `git pull`, `git checkout -b feature/<short-name>` (`fix/<short-name>` for fixes).
+  `git checkout main`, `git pull`, `git checkout -b <type>/<short-name>`, using the commit types below
+  (e.g. `feat/inbox-filter`, `fix/log-double-count`, `docs/readme`).
 - Split work into meaningful commits; each commit must pass luacheck on its own.
 - Push with `git push -u origin <branch>`, then create the pull request with
-  `gh pr create --base main` (title and description in English) and give the user the PR link.
-- After the merge: `git checkout main`, `git pull`, and delete the merged branch.
-- The addon has not been released yet: do not write migration code for saved variables. Change the
-  data format directly; testers clear their data if needed. Revisit this rule after the first release.
+  `gh pr create --base main` and give the user the PR link. The PR title follows the commit message
+  format below; title and description are in English.
+- After the merge: `git checkout main`, `git pull`, and delete the local branch. GitHub deletes the
+  remote branch automatically. Pull requests are merged by rebase, so the commits get new hashes and
+  `git branch -d` does not recognize them as merged: check the PR state with `gh pr view` and use
+  `git branch -D`.
+
+## Commit messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```
+<type>(<scope>): <description>
+
+<body>
+
+<footer>
+```
+
+- **type** (required):
+  - `feat`: new user-visible feature
+  - `fix`: bug fix
+  - `docs`: documentation only (README, CHANGELOG, CLAUDE.md, comments)
+  - `refactor`: code change without behavior change
+  - `perf`: performance improvement
+  - `style`: formatting only
+  - `test`: tests
+  - `build`: TOC, packaging, deploy scripts
+  - `ci`: CI configuration
+  - `chore`: tooling and maintenance (e.g. `.luacheckrc`, `.gitignore`)
+  - `revert`: reverts a previous commit
+- **scope** (optional): the affected area in kebab-case, usually the module, e.g. `inbox-search`,
+  `inbox-filter`, `inbox-view`, `characters`, `mail-log`, `core`, `locales`, `toc`.
+- **description**: imperative, lowercase start, no trailing period, at most 72 characters including
+  type and scope, e.g. `fix(mail-log): count each attachment only once`.
+- **body** (optional): explains what and why, not how; wrap at 72 characters.
+- **footer**: `BREAKING CHANGE: <description>` (or `!` after the type/scope) for changes that break
+  saved variables or slash commands after the first release; attribution trailers go here as well.
