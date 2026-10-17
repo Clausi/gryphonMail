@@ -1,7 +1,8 @@
 local _, ns = ...
 local L = ns.L
 
--- Dropdown with predefined inbox filters (friends, guild, own characters, auction house, C.O.D., gold).
+-- Dropdown with predefined inbox filters (friends, guild, own characters, auction house, C.O.D., gold,
+-- unread, read).
 -- Combines with the search box: a mail must match both.
 local InboxFilter = ns:RegisterModule("InboxFilter")
 local InboxView = ns.modules.InboxView
@@ -127,6 +128,8 @@ local PRESETS = {
     { key = "auction", label = "FILTER_AUCTION", matches = IsAuctionMail },
     { key = "cod", label = "FILTER_COD", matches = function(mail) return mail.cod > 0 end },
     { key = "money", label = "FILTER_MONEY", matches = function(mail) return mail.money > 0 end },
+    { key = "unread", label = "FILTER_UNREAD", matches = function(mail) return not mail.wasRead end },
+    { key = "read", label = "FILTER_READ", matches = function(mail) return mail.wasRead == true end },
 }
 
 local presetsByKey = {}
