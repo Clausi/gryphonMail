@@ -115,7 +115,7 @@ function Characters:OnEnable()
 end
 
 -- Returns the known characters, sorted by name:
---   { fullName = "Tor Donnerstein", class = "WARRIOR", isCurrent = bool }
+--   { fullName = "Tor Donnerstein", class = "WARRIOR", faction = "Alliance", isCurrent = bool }
 function Characters:GetCharacters()
     local current = Names.GetPlayerName()
     local characters = {}
@@ -124,6 +124,7 @@ function Characters:GetCharacters()
         characters[#characters + 1] = {
             fullName = fullName,
             class = info and info.class,
+            faction = info and info.faction,
             isCurrent = fullName == current,
         }
     end

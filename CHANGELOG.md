@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Dropdown next to the "To" field of "Send Mail" to pick one of your own characters of the same
+  faction as recipient.
+
 ## [0.3.0] - 2026-10-17
 
 ### Added

@@ -26,6 +26,9 @@ Filters work together with the search box, e.g. *Guild* + "ore".
 ### Open only what you filtered
 While a search or filter is active, **Open All** becomes **Open Filtered** and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button.
 
+### Send to your alts
+A small dropdown next to the **To** field of *Send Mail* lists your own characters of the same faction. Pick one and the name is filled in.
+
 ### Mail log
 A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected:
 - Sender, subject, date, gold and items for each mail, including the C.O.D. amount you paid
