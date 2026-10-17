@@ -1,0 +1,20 @@
+## Interface: 16001
+## Title: GryphonMail
+## Notes: Extends the default mailbox with additional features.
+## Notes-deDE: Erweitert das Standard-Postfach um zusätzliche Funktionen.
+## Category: Mail
+## Author: cklausl
+## Version: 0.1.0
+## SavedVariables: GryphonMailDB
+## IconTexture: Interface\Icons\INV_Letter_15
+
+# Localization (enUS must be loaded first, it is the fallback)
+Locales\enUS.lua
+Locales\deDE.lua
+
+# Core
+Core\Init.lua
+Core\Util.lua
+
+# Bootstrap (must be loaded last)
+Core\Main.lua
