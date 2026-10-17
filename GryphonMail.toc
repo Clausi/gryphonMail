@@ -21,6 +21,7 @@ Core\Names.lua
 Modules\Characters.lua
 Modules\InboxView.lua
 Modules\InboxSearch.lua
+Modules\InboxFilter.lua
 
 # Bootstrap (must be loaded last)
 Core\Main.lua
