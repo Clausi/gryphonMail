@@ -6,6 +6,7 @@
 ## Author: cklausl
 ## Version: 0.1.0
 ## SavedVariables: GryphonMailDB
+## SavedVariablesPerCharacter: GryphonMailCharDB
 ## IconTexture: Interface\Icons\INV_Letter_15
 
 # Localization (enUS must be loaded first, it is the fallback)
@@ -22,6 +23,8 @@ Modules\Characters.lua
 Modules\InboxView.lua
 Modules\InboxSearch.lua
 Modules\InboxFilter.lua
+Modules\MailLog.lua
+Modules\MailLogFrame.lua
 
 # Bootstrap (must be loaded last)
 Core\Main.lua

@@ -30,7 +30,9 @@ GryphonMail/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     ├── InboxSearch.lua    # Search box (sender/subject) with own-character suggestions
-    └── InboxFilter.lua    # Dropdown with predefined filters (friends, guild, own characters, AH, C.O.D., gold)
+    ├── InboxFilter.lua    # Dropdown with predefined filters (friends, guild, own characters, AH, C.O.D., gold)
+    ├── MailLog.lua        # Records collected gold/items per character, "Open All" summary
+    └── MailLogFrame.lua   # Third mail frame tab "Log"
 ```
 
 ## Adding a module
@@ -67,6 +69,9 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
 - `/gryphonmail version` – show version
 - `/gryphonmail chars` – list known own characters
 - `/gryphonmail chars remove <number|name>` – forget a character (e.g. deleted or renamed)
+- `/gryphonmail log` – show log settings
+- `/gryphonmail log days <1-365>` – keep log entries for that many days (default 30)
+- `/gryphonmail log clear` – clear the log of the current character
 - `/gryphonmail debug` – toggle debug output
 
 Modules add subcommands with `ns:RegisterCommand(name, handler, helpLines)`.

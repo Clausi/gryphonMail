@@ -21,5 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Own characters are remembered on login (full name with surname), so mail from alts can be filtered.
 - Character names use Forever's first name + surname format throughout; there are no realm suffixes.
 - The search box suggests own characters while typing (Tab/arrow keys to select, Enter or click to accept).
+- New "Log" tab in the mail frame: lists collected mails (sender, subject, gold, items) per character,
+  stored in the character's own saved variables.
+  Entries are kept for 30 days by default, configurable with `/gryphonmail log days <n>`.
+- Chat summary after "Open All" / "Open Filtered" with the collected item quantity and the gold amount.
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.

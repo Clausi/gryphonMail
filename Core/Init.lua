@@ -6,10 +6,19 @@ ns.version = C_AddOns.GetAddOnMetadata(addonName, "Version")
 ns.modules = {}
 
 -- Default values for the saved variables. Missing keys are filled in on load.
+-- Account-wide (GryphonMailDB, ns.db): settings and data shared by all characters.
 ns.defaults = {
     debug = false,
     -- Own characters, keyed by full name ("Name Surname"). Filled by Modules/Characters.lua.
     characters = {},
+    -- Days a log entry is kept. Change with "/gryphonmail log days <n>".
+    logRetentionDays = 30,
+}
+
+-- Per character (GryphonMailCharDB, ns.charDb): data only the logged-in character needs.
+ns.charDefaults = {
+    -- Collected mails, oldest first. Filled by Modules/MailLog.lua.
+    log = {},
 }
 
 -- Registers a module. A module may implement:

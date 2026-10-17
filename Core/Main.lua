@@ -8,6 +8,8 @@ ns:RegisterEvent("ADDON_LOADED", function(_, loadedName)
 
     GryphonMailDB = ns.ApplyDefaults(GryphonMailDB or {}, ns.defaults)
     ns.db = GryphonMailDB
+    GryphonMailCharDB = ns.ApplyDefaults(GryphonMailCharDB or {}, ns.charDefaults)
+    ns.charDb = GryphonMailCharDB
 
     for _, module in ipairs(ns.modules) do
         if module.OnInitialize then
