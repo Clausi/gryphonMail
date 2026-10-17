@@ -4,7 +4,7 @@
 ## Notes-deDE: Erweitert das Standard-Postfach um zusätzliche Funktionen.
 ## Category: Mail
 ## Author: cklausl
-## Version: 0.2.0
+## Version: 0.3.0
 ## SavedVariables: GryphonMailDB
 ## SavedVariablesPerCharacter: GryphonMailCharDB
 ## IconTexture: Interface\Icons\INV_Letter_15
