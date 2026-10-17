@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - Unreleased
+## [0.2.0] - 2026-10-17
 
 ### Added
 
@@ -27,3 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Chat summary after "Open All" / "Open Filtered" with the collected item quantity and the gold amount.
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
+
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Clausi/gryphonMail/releases/tag/v0.2.0
