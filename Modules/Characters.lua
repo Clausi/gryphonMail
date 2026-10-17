@@ -123,19 +123,25 @@ end
 
 -- Returns the known characters, sorted by name:
 --   { fullName = "Tor Donnerstein", class = "WARRIOR", faction = "Alliance",
---     realm = "Classic Beta PvE", isCurrent = bool }
+--     realm = "Classic Beta PvE", isCurrent = bool, canMail = bool }
 -- realm is nil for characters not logged in since it was added.
+-- canMail: mail can go between this character and the logged-in one. Forever only delivers mail
+-- within the same faction and ruleset (each ruleset is its own realm), and not to oneself.
 function Characters:GetCharacters()
     local current = Names.GetPlayerName()
+    local faction = UnitFactionGroup("player")
+    local realm = GetRealmName()
     local characters = {}
     for _, fullName in ipairs(GetSortedNames()) do
         local info = ns.db.characters[fullName]
+        local isCurrent = fullName == current
         characters[#characters + 1] = {
             fullName = fullName,
             class = info and info.class,
             faction = info and info.faction,
             realm = info and info.realm,
-            isCurrent = fullName == current,
+            isCurrent = isCurrent,
+            canMail = not isCurrent and info ~= nil and info.faction == faction and info.realm == realm,
         }
     end
     return characters

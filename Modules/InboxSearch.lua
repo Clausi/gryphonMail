@@ -77,14 +77,14 @@ local function NameStartsWith(fullName, wanted)
     return false
 end
 
--- Own characters matching the text (case-insensitive), without the current character
--- (it cannot send mail to itself) and without exact matches.
+-- Own characters matching the text (case-insensitive), without exact matches. Only characters that
+-- can send mail to this one (same faction and ruleset, not the current character) are suggested.
 local function FindSuggestions(text)
     local wanted = text:lower()
     local results = {}
     for _, character in ipairs(Characters:GetCharacters()) do
         local name = character.fullName
-        if not character.isCurrent and name:lower() ~= wanted and NameStartsWith(name, wanted) then
+        if character.canMail and name:lower() ~= wanted and NameStartsWith(name, wanted) then
             results[#results + 1] = character
             if #results == MAX_SUGGESTIONS then
                 break
