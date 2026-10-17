@@ -211,6 +211,9 @@ end
 --   mails       mails that matched the filters when the run started (nil without active filter).
 --               Taking attachments changes a mail (e.g. it becomes read), so a mail must not drop
 --               out of the run halfway; the filters are evaluated once per run.
+--   requests    take requests of this run:
+--               { mail, slot (nil for money), failed, numItems, sameMails (counts at request time) }
+--   lastRequest the most recent request, marked as failed by MAIL_FAILED
 local run
 
 local function CollectMatchingMails()
@@ -233,12 +236,59 @@ local function IsRunMail(index)
     return false
 end
 
--- Blizzard's "Open All" walks every mail and asks ShouldSkipCurrentMail() for each one.
--- With an active filter, mails that did not match at the start of the run are skipped as well;
--- everything else (COD/GM mails, bag space, delays, index shifts after deleted mails) stays
--- Blizzard's logic.
--- The method is replaced on this button only, because a post-hook cannot change the return value.
--- The resulting taint is harmless here: the mail functions used by "Open All" are not protected.
+-- Number of mails in the inbox with the same identity (e.g. identical auction mails).
+local function CountSameMails(mail)
+    local count = 0
+    for index = 1, GetInboxNumItems() do
+        if InboxView.IsSameMail(InboxView:GetMailIdentity(index), mail) then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+-- True if this attachment (or with slot nil: the money) of the mail was already requested in this
+-- run and the request has not failed. If one of several identical mails was deleted meanwhile,
+-- the request belonged to that mail and no longer blocks the remaining one. The count is only
+-- needed when the inbox has shrunk since the request.
+local function WasRequested(index, slot)
+    local mail = InboxView:GetMailIdentity(index)
+    local numItems = GetInboxNumItems()
+    for _, request in ipairs(run.requests) do
+        if not request.failed and request.slot == slot and InboxView.IsSameMail(request.mail, mail)
+            and (numItems >= request.numItems or CountSameMails(mail) >= request.sameMails) then
+            return true
+        end
+    end
+    return false
+end
+
+local function AddRequest(index, slot)
+    if not run then
+        return
+    end
+    local mail = InboxView:GetMailIdentity(index)
+    local request = {
+        mail = mail,
+        slot = slot,
+        failed = false,
+        numItems = GetInboxNumItems(),
+        sameMails = CountSameMails(mail),
+    }
+    run.requests[#run.requests + 1] = request
+    run.lastRequest = request
+end
+
+-- Blizzard's "Open All" walks every mail and asks ShouldSkipCurrentMail() and, per attachment,
+-- ShouldSkipCurrentAttachment(). Both methods are replaced on this button only, because a post-hook
+-- cannot change the return value; everything else (COD/GM mails, bag space, delays, index shifts
+-- after deleted mails) stays Blizzard's logic. The resulting taint is harmless here: the mail
+-- functions used by "Open All" are not protected.
+--   ShouldSkipCurrentMail:       with an active filter, skip mails that did not match at the start
+--   ShouldSkipCurrentAttachment: skip attachments already requested in this run. Blizzard's loop
+--                                requests them again while the inbox data is not updated yet (also
+--                                after mail indices shift), which the server answers with "The item
+--                                was not found". A failed request (MAIL_FAILED) may be retried.
 local function SetupOpenAll()
     local shouldSkipCurrentMail = OpenAllMail.ShouldSkipCurrentMail
     OpenAllMail.ShouldSkipCurrentMail = function(self)
@@ -247,6 +297,7 @@ local function SetupOpenAll()
         if not run then
             run = {
                 mails = InboxView:IsFilterActive() and CollectMatchingMails() or nil,
+                requests = {},
             }
         end
         if run.mails and not IsRunMail(self.mailIndex) then
@@ -254,6 +305,35 @@ local function SetupOpenAll()
         end
         return shouldSkipCurrentMail(self)
     end
+
+    local shouldSkipCurrentAttachment = OpenAllMail.ShouldSkipCurrentAttachment
+    OpenAllMail.ShouldSkipCurrentAttachment = function(self)
+        if shouldSkipCurrentAttachment(self) then
+            return true
+        end
+        if not run then
+            return false
+        end
+        local index, slot = self.mailIndex, self.attachmentIndex
+        if HasInboxItem(index, slot) then
+            return WasRequested(index, slot)
+        end
+        -- Blizzard treats every slot as retrievable while the mail shows money; once the money was
+        -- requested, empty slots are skipped.
+        return WasRequested(index, nil)
+    end
+
+    hooksecurefunc("TakeInboxItem", function(index, slot)
+        AddRequest(index, slot)
+    end)
+    hooksecurefunc("TakeInboxMoney", function(index)
+        AddRequest(index, nil)
+    end)
+    ns:RegisterEvent("MAIL_FAILED", function()
+        if run and run.lastRequest then
+            run.lastRequest.failed = true
+        end
+    end)
 
     -- StopOpening() resets the text to Blizzard's default.
     hooksecurefunc(OpenAllMail, "StopOpening", function()

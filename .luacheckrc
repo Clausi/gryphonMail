@@ -76,8 +76,15 @@ read_globals = {
     "MailFrameTab2",
     "OpenMailFrame",
     "SendMailFrame",
-    -- ShouldSkipCurrentMail is replaced on purpose to restrict "Open All" to filtered mails.
-    OpenAllMail = { other_fields = true, fields = { ShouldSkipCurrentMail = { read_only = false } } },
+    -- ShouldSkipCurrentMail / ShouldSkipCurrentAttachment are replaced on purpose to restrict
+    -- "Open All" to filtered mails and to avoid duplicate take requests (see InboxView.lua).
+    OpenAllMail = {
+        other_fields = true,
+        fields = {
+            ShouldSkipCurrentMail = { read_only = false },
+            ShouldSkipCurrentAttachment = { read_only = false },
+        },
+    },
 
     -- Constants and global strings
     "INBOXITEMS_TO_DISPLAY",
