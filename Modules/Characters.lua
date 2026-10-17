@@ -6,8 +6,23 @@ local Names = ns.Names
 -- is recorded on login in the account-wide saved variables, keyed by full name ("Tor Donnerstein").
 local Characters = ns:RegisterModule("Characters")
 
--- Cached set of full names for IsOwnCharacter().
+-- The logged-in character, read once on login: { name, faction, realm }. Name and ruleset do not
+-- change during a session; the faction only when a Pandaren chooses one (refreshed then).
+local player
+-- Caches, rebuilt only when the stored characters change (login, faction choice, remove):
+--   nameSet       set of full names for IsOwnCharacter()
+--   characterList result of GetCharacters()
 local nameSet
+local characterList
+
+local function InvalidateCaches()
+    nameSet = nil
+    characterList = nil
+end
+
+local function GetPlayerName()
+    return player and player.name
+end
 
 -- Returns the stored full names, sorted. The order defines the numbers shown by "/gryphonmail chars".
 local function GetSortedNames()
@@ -56,7 +71,7 @@ local function ListCharacters()
         return
     end
 
-    local current = Names.GetPlayerName()
+    local current = GetPlayerName()
     ns:Print(L["CHARS_HEADER"])
     for i, fullName in ipairs(names) do
         local line = ("%d. %s"):format(i, ColorizeName(fullName))
@@ -82,15 +97,38 @@ local function RemoveCharacter(input)
         ns:Print(L["CHARS_NOT_FOUND"], input)
         return
     end
-    if fullName == Names.GetPlayerName() then
+    if fullName == GetPlayerName() then
         ns:Print(L["CHARS_REMOVE_CURRENT"])
         return
     end
 
     local coloredName = ColorizeName(fullName)
     ns.db.characters[fullName] = nil
-    nameSet = nil
+    InvalidateCaches()
     ns:Print(L["CHARS_REMOVED"], coloredName)
+end
+
+-- Reads the logged-in character and records it in the saved variables.
+local function RecordPlayer()
+    local fullName = Names.GetPlayerName()
+    if not fullName then
+        return
+    end
+
+    player = {
+        name = fullName,
+        faction = UnitFactionGroup("player"),
+        -- Forever runs each ruleset (PvE, PvP, RP) as its own realm, e.g. "Classic Beta PvE";
+        -- characters can only trade and send mail within it.
+        realm = GetRealmName(),
+    }
+    local _, classFile = UnitClass("player")
+    ns.db.characters[fullName] = {
+        class = classFile,
+        faction = player.faction,
+        realm = player.realm,
+    }
+    InvalidateCaches()
 end
 
 function Characters:OnInitialize()
@@ -102,49 +140,41 @@ function Characters:OnInitialize()
             ListCharacters()
         end
     end, { L["HELP_CHARS"], L["HELP_CHARS_REMOVE"] })
+
+    -- A Pandaren picks a faction during the session; mail targets change with it.
+    ns:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT", RecordPlayer)
 end
 
 function Characters:OnEnable()
-    local fullName = Names.GetPlayerName()
-    if not fullName then
-        return
-    end
-
-    local _, classFile = UnitClass("player")
-    ns.db.characters[fullName] = {
-        class = classFile,
-        faction = UnitFactionGroup("player"),
-        -- Forever runs each ruleset (PvE, PvP, RP) as its own realm, e.g. "Classic Beta PvE";
-        -- characters can only trade and send mail within it.
-        realm = GetRealmName(),
-    }
-    nameSet = nil
+    RecordPlayer()
 end
 
--- Returns the known characters, sorted by name:
+-- Returns the known characters, sorted by name. The list is cached and must not be modified:
 --   { fullName = "Tor Donnerstein", class = "WARRIOR", faction = "Alliance",
 --     realm = "Classic Beta PvE", isCurrent = bool, canMail = bool }
 -- realm is nil for characters not logged in since it was added.
 -- canMail: mail can go between this character and the logged-in one. Forever only delivers mail
 -- within the same faction and ruleset (each ruleset is its own realm), and not to oneself.
 function Characters:GetCharacters()
-    local current = Names.GetPlayerName()
-    local faction = UnitFactionGroup("player")
-    local realm = GetRealmName()
-    local characters = {}
+    if characterList then
+        return characterList
+    end
+
+    characterList = {}
     for _, fullName in ipairs(GetSortedNames()) do
         local info = ns.db.characters[fullName]
-        local isCurrent = fullName == current
-        characters[#characters + 1] = {
+        local isCurrent = player ~= nil and fullName == player.name
+        characterList[#characterList + 1] = {
             fullName = fullName,
-            class = info and info.class,
-            faction = info and info.faction,
-            realm = info and info.realm,
+            class = info.class,
+            faction = info.faction,
+            realm = info.realm,
             isCurrent = isCurrent,
-            canMail = not isCurrent and info ~= nil and info.faction == faction and info.realm == realm,
+            canMail = player ~= nil and not isCurrent
+                and info.faction == player.faction and info.realm == player.realm,
         }
     end
-    return characters
+    return characterList
 end
 
 -- Expects a name as returned by the mail API; a possible realm suffix is ignored.
