@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The search box only suggests own characters of the same faction and ruleset, since mail from other
+  characters cannot arrive.
 - Inbox filter presets are grouped and reordered: My Characters, Friends, Guild | Unread, Read |
   Auction House, Gold, C.O.D.
 

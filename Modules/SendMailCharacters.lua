@@ -24,13 +24,10 @@ local function GenerateMenu(_, rootDescription)
     rootDescription:SetTag("MENU_GRYPHONMAIL_SEND_TO_CHARACTER")
     rootDescription:CreateTitle(L["SEND_TO_CHARACTER"])
 
-    -- Forever only delivers mail within the own faction and ruleset (each ruleset is its own realm).
-    local faction = UnitFactionGroup("player")
-    local realm = GetRealmName()
     local count = 0
     for _, character in ipairs(Characters:GetCharacters()) do
-        -- The logged-in character cannot send mail to itself.
-        if not character.isCurrent and character.faction == faction and character.realm == realm then
+        -- Only characters of the same faction and ruleset can receive mail from this one.
+        if character.canMail then
             local color = character.class and C_ClassColor.GetClassColor(character.class)
             local text = color and color:WrapTextInColorCode(character.fullName) or character.fullName
             rootDescription:CreateButton(text, function()
