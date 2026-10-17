@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Inbox filters "Unread" and "Read".
+
 ## [0.2.0] - 2026-10-17
 
 ### Added

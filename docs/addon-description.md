@@ -19,6 +19,7 @@ Show only the mail you care about with one click:
 - **Auction House**
 - **C.O.D.**
 - **Gold**
+- **Unread** / **Read**
 
 Filters work together with the search box, e.g. *Guild* + "ore".
 
