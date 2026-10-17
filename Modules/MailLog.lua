@@ -10,6 +10,7 @@ local L = ns.L
 -- Requests are therefore only remembered as pending and logged once the result is visible:
 --   items: the "You receive item: ..." loot message (CHAT_MSG_LOOT) with the same item
 --   gold:  the increase of the player's money (PLAYER_MONEY)
+--   C.O.D.: the decrease of the player's money by exactly the C.O.D. amount (PLAYER_MONEY)
 -- Duplicate or failed requests produce no such result and are dropped.
 local MailLog = ns:RegisterModule("MailLog")
 local InboxView = ns.modules.InboxView
@@ -27,12 +28,12 @@ local SUMMARY_DELAY_SECONDS = 1
 local LOOT_SELF_FORMATS = { "LOOT_ITEM_PUSHED_SELF", "LOOT_ITEM_PUSHED_SELF_MULTIPLE" }
 
 -- Entries of the logged-in character, oldest first:
---   { time, sender, subject, icon, money, items = { { link, count } } }
+--   { time, sender, subject, icon, money, items = { { link, count } }, codPaid (optional) }
 local entries = {}
 -- Mails touched since the mailbox was opened: { mail, entry }. Used to group takes per mail.
 local sessionMails = {}
 -- Take requests waiting for their result:
---   { kind = "item" | "money", mail, slot, itemID, link, count, money, requestedAt }
+--   { kind = "item" | "money" | "cod", mail, slot, itemID, link, count, money, requestedAt }
 local pendingTakes = {}
 -- Totals of the current "Open All" / "Open Filtered" run (item quantities and copper), nil while none
 -- is running. Manual takes outside such a run are logged but not summarized.
@@ -116,14 +117,22 @@ local function RequestItem(index, attachmentIndex)
     local _, itemID, _, count = GetInboxItem(index, attachmentIndex)
     itemID = itemID or tonumber(link:match("item:(%d+)"))
     ns:Debug("TakeInboxItem(%d, %d): %s x%d requested", index, attachmentIndex, link, count or 1)
+    local mail = GetMailIdentity(index)
     AddPending({
         kind = "item",
-        mail = GetMailIdentity(index),
+        mail = mail,
         slot = attachmentIndex,
         itemID = itemID,
         link = link,
         count = count or 1,
     })
+
+    -- Taking an attachment of a C.O.D. mail pays its C.O.D. amount (once per mail).
+    local codAmount = select(6, GetInboxHeaderInfo(index))
+    if codAmount and codAmount > 0 then
+        ns:Debug("C.O.D. of %d copper requested", codAmount)
+        AddPending({ kind = "cod", mail = mail, money = codAmount })
+    end
 end
 
 -- Shift-click on a mail takes its money and all attachments at once.
@@ -208,15 +217,37 @@ local function OnLootMessage(_, text)
     end
 end
 
+local function CommitCod(pending)
+    local entry = GetEntryForMail(pending.mail)
+    entry.codPaid = (entry.codPaid or 0) + pending.money
+    ns:Debug("Paid %d copper C.O.D.", pending.money)
+    RemoveWithDuplicates(pending)
+    NotifyChanged()
+end
+
+-- A payment counts as C.O.D. only if the money dropped by exactly the requested amount.
+local function OnMoneySpent(amount)
+    for _, pending in ipairs(pendingTakes) do
+        if pending.kind == "cod" and pending.money == amount then
+            CommitCod(pending)
+            return
+        end
+    end
+end
+
 local function OnMoneyChanged()
     local money = GetMoney()
     local delta = money - lastMoney
     lastMoney = money
-    if delta <= 0 or #pendingTakes == 0 then
+    if delta == 0 or #pendingTakes == 0 then
         return
     end
 
     DropExpiredPending()
+    if delta < 0 then
+        OnMoneySpent(-delta)
+        return
+    end
     -- Prefer the request with exactly this amount, otherwise take requests in order while they fit.
     for _, pending in ipairs(pendingTakes) do
         if pending.kind == "money" and pending.money == delta then

@@ -34,6 +34,10 @@ local function FormatDetails(entry)
     if #entry.items > 0 then
         parts[#parts + 1] = MailLog:FormatItemCount(MailLog:GetItemQuantity(entry))
     end
+    if (entry.codPaid or 0) > 0 then
+        local codText = L["LOG_COD_PAID"]:format(GetMoneyString(entry.codPaid, true))
+        parts[#parts + 1] = RED_FONT_COLOR:WrapTextInColorCode(codText)
+    end
     return table.concat(parts, "  ")
 end
 
@@ -54,6 +58,11 @@ local function ShowEntryTooltip(row)
     end
     for _, item in ipairs(entry.items) do
         GameTooltip:AddLine(item.count > 1 and ("%s x%d"):format(item.link, item.count) or item.link)
+    end
+    if (entry.codPaid or 0) > 0 then
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine(L["LOG_COD_PAID_LABEL"], RED_FONT_COLOR:GetRGB())
+        GameTooltip_AddMoneyLine(GameTooltip, entry.codPaid)
     end
     GameTooltip:Show()
 end

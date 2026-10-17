@@ -28,7 +28,7 @@ While a search or filter is active, **Open All** becomes **Open Filtered** and o
 
 ### Mail log
 A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected:
-- Sender, subject, date, gold and items for each mail
+- Sender, subject, date, gold and items for each mail, including the C.O.D. amount you paid
 - Item details in the tooltip
 - Stored per character, kept for 30 days (configurable)
 - Only counts what actually arrived in your bags
