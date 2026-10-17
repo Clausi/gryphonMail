@@ -18,6 +18,8 @@ World of Warcraft\<forever client folder>\Interface\AddOns\GryphonMail
 ```
 GryphonMail/
 ├── GryphonMail.toc        # Addon manifest, defines load order
+├── docs/
+│   └── addon-description.md  # Description text for CurseForge / WoWInterface (not shipped)
 ├── Locales/
 │   ├── enUS.lua           # Base locale (fallback, all keys)
 │   └── deDE.lua           # German translation
