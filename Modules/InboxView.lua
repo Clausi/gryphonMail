@@ -363,22 +363,24 @@ function InboxView:Redraw()
     end
 end
 
--- Runs the callback once the Blizzard mail frame exists.
-function InboxView:OnReady(callback)
+-- Runs the callback once the Blizzard mail frame exists. label names it in the debug memory output.
+function InboxView:OnReady(callback, label)
     if isReady then
         callback()
     else
-        readyCallbacks[#readyCallbacks + 1] = callback
+        readyCallbacks[#readyCallbacks + 1] = { callback = callback, label = label or "?" }
     end
 end
 
 local function Setup()
     isReady = true
-    hooksecurefunc(InboxFrame, "Update", OnInboxUpdate)
-    SetupOpenAll()
+    ns:MeasureMemory("InboxView:Setup", function()
+        hooksecurefunc(InboxFrame, "Update", OnInboxUpdate)
+        SetupOpenAll()
+    end)
 
-    for i = 1, #readyCallbacks do
-        readyCallbacks[i]()
+    for _, ready in ipairs(readyCallbacks) do
+        ns:MeasureMemory(ready.label .. ":OnReady", ready.callback)
     end
     readyCallbacks = {}
 end

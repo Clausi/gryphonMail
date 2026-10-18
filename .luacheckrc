@@ -38,6 +38,8 @@ read_globals = {
     "C_Timer",
     "GetMoney",
     "GetTime",
+    "GetAddOnMemoryUsage",
+    "UpdateAddOnMemoryUsage",
     "CreateFrame",
     "GetGuildRosterInfo",
     "GetLocale",

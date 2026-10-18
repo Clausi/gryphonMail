@@ -272,5 +272,5 @@ function InboxSearch:OnInitialize()
     InboxView:RegisterFilter(searchFilter)
     InboxView:OnReady(function()
         InboxSearch.searchBox = CreateSearchBox()
-    end)
+    end, "InboxSearch")
 end

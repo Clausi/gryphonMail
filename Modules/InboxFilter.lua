@@ -208,7 +208,7 @@ function InboxFilter:OnInitialize()
     InboxView:RegisterFilter(presetFilter)
     InboxView:OnReady(function()
         InboxFilter.dropdown = CreateDropdown()
-    end)
+    end, "InboxFilter")
 
     -- Preset keys of the people presets equal the contact kinds.
     Contacts:OnUpdate(function(kind)

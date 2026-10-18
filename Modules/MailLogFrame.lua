@@ -242,7 +242,7 @@ local function Setup()
 end
 
 function MailLogFrame:OnInitialize()
-    InboxView:OnReady(Setup)
+    InboxView:OnReady(Setup, "MailLogFrame")
     MailLog:OnChange(function()
         MailLogFrame:Update()
     end)

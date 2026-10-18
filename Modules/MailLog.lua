@@ -379,7 +379,7 @@ function MailLog:OnInitialize()
         wipe(pendingTakes)
     end)
 
-    InboxView:OnReady(SetupOpenAllSummary)
+    InboxView:OnReady(SetupOpenAllSummary, "MailLog")
 end
 
 function MailLog:OnEnable()
