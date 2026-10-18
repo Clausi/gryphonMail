@@ -15,6 +15,7 @@ GryphonMail extends the default mailbox instead of replacing it. Everything stay
 Show only the mail you care about with one click:
 - **My Characters** (mail from your alts)
 - **Friends**
+- **Recent Allies** (characters from the *Recent Allies* tab of your friends list)
 - **Guild**
 - **Unread** / **Read**
 - **Auction House**
@@ -26,8 +27,12 @@ Filters work together with the search box, e.g. *Guild* + "ore".
 ### Open only what you filtered
 While a search or filter is active, **Open All** becomes **Open Filtered** and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button.
 
-### Send to your alts
-A small dropdown next to the **To** field of *Send Mail* lists your own characters of the same faction and ruleset (PvE, PvP, RP). Pick one and the name is filled in.
+### Pick a recipient
+A small dropdown next to the **To** field of *Send Mail* lists:
+- Your **own characters** of the same faction and ruleset (PvE, PvP, RP)
+- Your **guild members** and **recent allies** in submenus, class colored. Long lists are split into name ranges, e.g. *Abby - Fiona*.
+
+Pick one and the name is filled in.
 
 ### Mail log
 A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected:
