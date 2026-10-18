@@ -1,16 +1,27 @@
 # GryphonMail
 
-A World of Warcraft: Forever addon that extends the default mailbox.
+A World of Warcraft addon that extends the default mailbox.
 
-Target client: WoW Forever (`## Interface: 16001`). Forever uses the Mainline
-(retail) UI and API, so Mainline documentation applies, not Classic Era.
+## Supported clients
+
+| Client      | Interface | Status                    |
+| ----------- | --------- | ------------------------- |
+| Forever     | 16001     | Supported                 |
+| Classic Era | 11509     | In progress (see [#24][]) |
+| Anniversary | 20506     | In progress (see [#24][]) |
+| Retail      | 120105    | In progress (see [#24][]) |
+
+Forever uses the Mainline (retail) UI and API, while Classic Era and Anniversary use the Classic UI.
+Client differences are handled in `Core/Compat.lua`.
+
+[#24]: https://github.com/Clausi/gryphonMail/issues/24
 
 ## Installation
 
-Copy (or symlink) the `GryphonMail` folder into the Forever client's AddOns folder:
+Copy (or symlink) the `GryphonMail` folder into the client's AddOns folder:
 
 ```
-World of Warcraft\<forever client folder>\Interface\AddOns\GryphonMail
+World of Warcraft\<client folder>\Interface\AddOns\GryphonMail
 ```
 
 ## Structure
@@ -26,6 +37,7 @@ GryphonMail/
 │   └── deDE.lua           # German translation
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
+│   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, Retail) detected from the APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, defaults
 │   ├── Names.lua          # Forever character names ("First Surname"): build and compare
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
