@@ -25,7 +25,7 @@ GryphonMail/
 │   └── deDE.lua           # German translation
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
-│   ├── Util.lua           # Print/Debug helpers, defaults handling
+│   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, defaults
 │   ├── Names.lua          # Forever character names ("First Surname"): build and compare
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
