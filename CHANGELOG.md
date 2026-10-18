@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - The retention of the mail log moved from the header into the title, e.g. "Mail Log (30 days)".
+- The filter dropdowns of inbox and log only build their menu while it is open, which saves memory.
 
 ## [0.5.0] - 2026-10-18
 
