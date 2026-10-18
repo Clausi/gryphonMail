@@ -20,6 +20,43 @@ function Compat.HasInboxUpdateMethod()
     return InboxFrame ~= nil and InboxFrame.Update ~= nil
 end
 
+-- Runs callback(InboxFrame) after every inbox redraw by Blizzard.
+function Compat.HookInboxUpdate(callback)
+    if Compat.HasInboxUpdateMethod() then
+        hooksecurefunc(InboxFrame, "Update", callback)
+    else
+        hooksecurefunc("InboxFrame_Update", function()
+            callback(InboxFrame)
+        end)
+    end
+end
+
+-- Redraws the inbox with Blizzard's update function.
+function Compat.UpdateInbox()
+    if Compat.HasInboxUpdateMethod() then
+        InboxFrame:Update()
+    else
+        InboxFrame_Update()
+    end
+end
+
+-- Enables the inbox page buttons. Forever has them as InboxFrame.PrevPageButton / NextPageButton,
+-- plus gamepad page turn indicators. Retail and Classic have the globals InboxPrevPageButton /
+-- InboxNextPageButton.
+function Compat.SetInboxPageButtonsEnabled(hasPrev, hasNext)
+    if InboxFrame.PrevPageButton then
+        InboxFrame.PrevPageButton:SetEnabled(hasPrev)
+        InboxFrame.NextPageButton:SetEnabled(hasNext)
+        if InboxFrame.PageTurnIndicatorLeft then
+            InboxFrame.PageTurnIndicatorLeft:SetEnabled(hasPrev)
+            InboxFrame.PageTurnIndicatorRight:SetEnabled(hasNext)
+        end
+    else
+        InboxPrevPageButton:SetEnabled(hasPrev)
+        InboxNextPageButton:SetEnabled(hasNext)
+    end
+end
+
 -- "Open All" asks ShouldSkipCurrentMail() and ShouldSkipCurrentAttachment() on Forever and Retail,
 -- which lets the addon restrict it to filtered mails. Classic inlines that logic in
 -- AdvanceToNextItem(). Call once OpenAllMail exists.
