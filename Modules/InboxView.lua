@@ -177,6 +177,8 @@ local function OnInboxUpdate(inbox)
     local indices = GetFilteredIndices()
     local perPage = INBOXITEMS_TO_DISPLAY
     local numPages = math.max(1, math.ceil(#indices / perPage))
+    -- Written to Blizzard's field on purpose: the filtered view can have fewer pages than the
+    -- inbox, and the page buttons and InboxFrame:Update() keep using this page number.
     if inbox.pageNum > numPages then
         inbox.pageNum = numPages
     end
@@ -347,6 +349,8 @@ function InboxView:Refresh()
     if not isReady then
         return
     end
+    -- Written to Blizzard's field on purpose: InboxFrame:Update() and the page buttons read it,
+    -- and the current page may be out of range or empty for the new filter.
     InboxFrame.pageNum = 1
     InboxFrame:Update()
     UpdateOpenAllText()
