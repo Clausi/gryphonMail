@@ -436,7 +436,7 @@ local function PrintSummary(totals)
         parts[#parts + 1] = GetMoneyString(totals.money, true)
     end
     if #parts > 0 then
-        ns:Print(L["SUMMARY_COLLECTED"], table.concat(parts, L["SUMMARY_AND"]))
+        ns:Notify(L["SUMMARY_COLLECTED"], table.concat(parts, L["SUMMARY_AND"]))
     end
 end
 

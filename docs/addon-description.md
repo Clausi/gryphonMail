@@ -58,6 +58,7 @@ After *Open All* / *Open Filtered* you get a short summary, e.g.
 | `/gryphonmail log` | Show log settings |
 | `/gryphonmail log days <1-365>` | Keep log entries for that many days |
 | `/gryphonmail log clear` | Clear the log of the current character |
+| `/gryphonmail chat on\|off` | Turn the automatic chat messages (login, summary, hints) of this character on or off |
 
 ## Good to know
 - Made for **World of Warcraft: Forever** (Interface 16001).

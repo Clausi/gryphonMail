@@ -48,9 +48,9 @@ end
 -- Explains in the chat why the filter shows no mail when there are no recent allies to match.
 local function ReportEmptyRecentAllies()
     if not Contacts:IsRecentAlliesReady() then
-        ns:Print(L["RECENT_ALLIES_NOT_LOADED"])
+        ns:Notify(L["RECENT_ALLIES_NOT_LOADED"])
     elseif #Contacts:GetList(Contacts.RECENT_ALLIES) == 0 then
-        ns:Print(L["RECENT_ALLIES_EMPTY"])
+        ns:Notify(L["RECENT_ALLIES_EMPTY"])
     end
 end
 

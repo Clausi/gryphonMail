@@ -10,6 +10,14 @@ function ns:Print(message, ...)
     DEFAULT_CHAT_FRAME:AddMessage(PREFIX .. tostring(message))
 end
 
+-- Prints a message the addon shows on its own (not as the answer to a command). The user can turn
+-- these off with "/gryphonmail chat off".
+function ns:Notify(message, ...)
+    if self.charDb and self.charDb.chatMessages then
+        self:Print(message, ...)
+    end
+end
+
 -- Prints only when debug mode is enabled in the saved variables.
 function ns:Debug(message, ...)
     if self.db and self.db.debug then
