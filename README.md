@@ -18,6 +18,7 @@ World of Warcraft\<forever client folder>\Interface\AddOns\GryphonMail
 ```
 GryphonMail/
 ├── GryphonMail.toc        # Addon manifest, defines load order
+├── LICENSE                # MIT license (not shipped)
 ├── docs/
 │   └── addon-description.md  # Description text for CurseForge / WoWInterface (not shipped)
 ├── Locales/
@@ -82,3 +83,7 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
 - `/gryphonmail debug` – toggle debug output (after a `/reload`, also the memory each module keeps)
 
 Modules add subcommands with `ns:RegisterCommand(name, handler, helpLines)`.
+
+## License
+
+[MIT](LICENSE)
