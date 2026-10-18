@@ -17,6 +17,33 @@ function ns:Debug(message, ...)
     end
 end
 
+-- Memory the addon keeps (in KB) after a full garbage collection. Slow (collects garbage and scans
+-- every addon), so it is only used in debug mode.
+local function GetRetainedMemory()
+    collectgarbage("collect")
+    UpdateAddOnMemoryUsage()
+    return GetAddOnMemoryUsage(ns.name)
+end
+
+-- Calls fn(...). In debug mode, also prints how much memory it retained afterwards.
+function ns:MeasureMemory(label, fn, ...)
+    if not (self.db and self.db.debug) then
+        fn(...)
+        return
+    end
+    local before = GetRetainedMemory()
+    fn(...)
+    local after = GetRetainedMemory()
+    self:Debug("Memory %s: %+.1f KB (total %.1f KB)", label, after - before, after)
+end
+
+-- In debug mode, prints the memory the addon currently retains.
+function ns:DebugMemory(label)
+    if self.db and self.db.debug then
+        self:Debug("Memory %s: %.1f KB", label, GetRetainedMemory())
+    end
+end
+
 -- Recursively copies missing default values into the target table.
 function ns.ApplyDefaults(target, defaults)
     for key, value in pairs(defaults) do

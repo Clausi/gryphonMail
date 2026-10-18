@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   list. A chat message explains when that list is empty or not loaded yet.
 - The recipient dropdown of "Send Mail" has submenus "Guild" and "Recent Allies" next to your own
   characters. Lists with more than 20 entries are split into submenus by name range.
+- Debug mode (`/gryphonmail debug`) prints how much memory the loaded files and each module keep
+  after loading.
 
 ### Fixed
 

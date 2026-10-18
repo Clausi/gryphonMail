@@ -11,9 +11,11 @@ ns:RegisterEvent("ADDON_LOADED", function(_, loadedName)
     GryphonMailCharDB = ns.ApplyDefaults(GryphonMailCharDB or {}, ns.charDefaults)
     ns.charDb = GryphonMailCharDB
 
+    -- Debug mode breaks the memory down: loaded files and saved variables, then each module.
+    ns:DebugMemory("after loading files")
     for _, module in ipairs(ns.modules) do
         if module.OnInitialize then
-            module:OnInitialize()
+            ns:MeasureMemory(module.name .. ":OnInitialize", module.OnInitialize, module)
         end
     end
 end)
@@ -21,7 +23,7 @@ end)
 ns:RegisterEvent("PLAYER_LOGIN", function()
     for _, module in ipairs(ns.modules) do
         if module.OnEnable then
-            module:OnEnable()
+            ns:MeasureMemory(module.name .. ":OnEnable", module.OnEnable, module)
         end
     end
 
