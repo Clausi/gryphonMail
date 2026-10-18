@@ -91,10 +91,12 @@ local function GetFilteredIndices()
 end
 
 -- Renders one inbox row for the given mail index.
--- Mirrors InboxMixin:Update() from Blizzard_MailFrame, only with a remapped index.
+-- Mirrors Blizzard's inbox update (InboxMixin:Update() on Forever, InboxFrame_Update() on Retail
+-- and Classic), only with a remapped index. The rows are the same on all clients.
 local function RenderSlot(inbox, slot, index)
+    -- firstItem is an item link on Forever and Retail and an item ID on Classic; both work below.
     local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead,
-        _, _, _, isGM, firstItemQuantity, firstItemLink = GetInboxHeaderInfo(index)
+        _, _, _, isGM, firstItemQuantity, firstItem = GetInboxHeaderInfo(index)
 
     local icon = (packageIcon and not isGM) and packageIcon or stationeryIcon
     sender = sender or UNKNOWN
@@ -107,10 +109,11 @@ local function RenderSlot(inbox, slot, index)
     button.itemCount = itemCount
     SetItemButtonCount(button, firstItemQuantity)
     if firstItemQuantity then
-        SetItemButtonQuality(button, select(3, C_Item.GetItemInfo(firstItemLink)), firstItemLink)
+        SetItemButtonQuality(button, select(3, C_Item.GetItemInfo(firstItem)), firstItem)
     else
         button.IconBorder:Hide()
         button.IconOverlay:Hide()
+        -- Only Forever and Retail have the overlay.
         if button.ProfessionQualityOverlay then
             button.ProfessionQualityOverlay:Hide()
         end
@@ -168,7 +171,7 @@ local function ClearSlot(slot)
     _G[prefix .. "ExpireTime"]:Hide()
 end
 
--- Runs after Blizzard's InboxFrame:Update() and redraws the rows when a filter is active.
+-- Runs after Blizzard's inbox update and redraws the rows when a filter is active.
 -- Blizzard's page buttons keep working because they only change inbox.pageNum.
 local function OnInboxUpdate(inbox)
     if not InboxView:IsFilterActive() then
@@ -179,7 +182,7 @@ local function OnInboxUpdate(inbox)
     local perPage = INBOXITEMS_TO_DISPLAY
     local numPages = math.max(1, math.ceil(#indices / perPage))
     -- Written to Blizzard's field on purpose: the filtered view can have fewer pages than the
-    -- inbox, and the page buttons and InboxFrame:Update() keep using this page number.
+    -- inbox, and the page buttons and Blizzard's inbox update keep using this page number.
     if inbox.pageNum > numPages then
         inbox.pageNum = numPages
     end
@@ -194,12 +197,7 @@ local function OnInboxUpdate(inbox)
         end
     end
 
-    local hasPrev = inbox.pageNum > 1
-    local hasNext = inbox.pageNum < numPages
-    inbox.PrevPageButton:SetEnabled(hasPrev)
-    inbox.PageTurnIndicatorLeft:SetEnabled(hasPrev)
-    inbox.NextPageButton:SetEnabled(hasNext)
-    inbox.PageTurnIndicatorRight:SetEnabled(hasNext)
+    ns.Compat.SetInboxPageButtonsEnabled(inbox.pageNum > 1, inbox.pageNum < numPages)
 end
 
 -- Shows whether "Open All" currently opens all mails or only the filtered ones.
@@ -350,17 +348,17 @@ function InboxView:Refresh()
     if not isReady then
         return
     end
-    -- Written to Blizzard's field on purpose: InboxFrame:Update() and the page buttons read it,
+    -- Written to Blizzard's field on purpose: Blizzard's inbox update and the page buttons read it,
     -- and the current page may be out of range or empty for the new filter.
     InboxFrame.pageNum = 1
-    InboxFrame:Update()
+    ns.Compat.UpdateInbox()
     UpdateOpenAllText()
 end
 
 -- Call when the data behind a filter changed (e.g. guild roster). Keeps the current page.
 function InboxView:Redraw()
     if isReady and InboxFrame:IsVisible() then
-        InboxFrame:Update()
+        ns.Compat.UpdateInbox()
     end
 end
 
@@ -376,7 +374,7 @@ end
 local function Setup()
     isReady = true
     ns:MeasureMemory("InboxView:Setup", function()
-        hooksecurefunc(InboxFrame, "Update", OnInboxUpdate)
+        ns.Compat.HookInboxUpdate(OnInboxUpdate)
         SetupOpenAll()
     end)
 
@@ -392,8 +390,10 @@ function InboxView:OnInitialize()
         return
     end
 
+    -- The mail frame is the load-on-demand addon Blizzard_MailFrame on Forever and Retail, and part
+    -- of Blizzard_UIPanels_Game on Classic, which is usually loaded before this addon.
     ns:RegisterEvent("ADDON_LOADED", function(_, loadedName)
-        if loadedName == "Blizzard_MailFrame" and not isReady then
+        if (loadedName == "Blizzard_MailFrame" or loadedName == "Blizzard_UIPanels_Game") and not isReady then
             Setup()
         end
     end)

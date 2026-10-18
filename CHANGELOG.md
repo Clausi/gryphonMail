@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The TOC also declares the WoW Classic Era (11509), Anniversary (20506) and Retail (120105)
   interfaces, so these clients no longer mark the addon as out of date. Support for them is not
   complete yet.
+- Inbox search and filter work in Classic Era, Anniversary and Retail.
 
 ## [0.6.0] - 2026-10-18
 

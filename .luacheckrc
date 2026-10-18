@@ -82,6 +82,9 @@ read_globals = {
     "DEFAULT_CHAT_FRAME",
     -- pageNum is written on purpose to reset or clamp paging when a filter changes (see InboxView.lua).
     InboxFrame = { other_fields = true, fields = { pageNum = { read_only = false } } },
+    "InboxFrame_Update",
+    "InboxNextPageButton",
+    "InboxPrevPageButton",
     "GameTooltip",
     "MailFrame",
     "MailFrameInset",
