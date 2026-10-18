@@ -2,11 +2,13 @@ local _, ns = ...
 local L = ns.L
 
 -- Search box and preset dropdown shared by the inbox and the mail log. Both work on mail objects:
---   { name, subject, money, cod, wasRead, sent, index }
+--   { name, subject, money, cod, wasRead, sent, deleted, returned, index }
 --   name     the other character: sender of received mail, recipient of sent mail
 --   cod      C.O.D. amount (to pay, paid or requested)
 --   wasRead  inbox only
 --   sent     log only: true for sent mail
+--   deleted  log only: true for deleted mail
+--   returned log only: true for returned mail
 --   index    inbox only: inbox index, for the auction house invoice
 -- Each created search box or dropdown is a filter with IsActive() and Matches(mail).
 local MailFilters = ns:RegisterModule("MailFilters")
@@ -138,8 +140,13 @@ local PRESETS = {
     },
     unread = { label = "FILTER_UNREAD", matches = function(mail) return not mail.wasRead end },
     read = { label = "FILTER_READ", matches = function(mail) return mail.wasRead == true end },
-    received = { label = "FILTER_RECEIVED", matches = function(mail) return not mail.sent end },
+    received = {
+        label = "FILTER_RECEIVED",
+        matches = function(mail) return not mail.sent and not mail.deleted and not mail.returned end,
+    },
     sent = { label = "FILTER_SENT", matches = function(mail) return mail.sent == true end },
+    returned = { label = "FILTER_RETURNED", matches = function(mail) return mail.returned == true end },
+    deleted = { label = "FILTER_DELETED", matches = function(mail) return mail.deleted == true end },
     auction = { label = "FILTER_AUCTION", matches = IsAuctionMail },
     money = { label = "FILTER_MONEY", matches = function(mail) return mail.money > 0 end },
     cod = { label = "FILTER_COD", matches = function(mail) return mail.cod > 0 end },

@@ -35,8 +35,8 @@ GryphonMail/
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     ├── InboxSearch.lua    # Inbox search box (sender/subject)
     ├── InboxFilter.lua    # Inbox filter dropdown (own characters, friends, recent allies, guild, unread, read, AH, gold, C.O.D.)
-    ├── MailLog.lua        # Records collected and sent mail per character, "Open All" summary
-    ├── MailLogFrame.lua   # Third mail frame tab "Log" with search box and filters (as inbox, but from/to)
+    ├── MailLog.lua        # Records collected, sent, returned and deleted mail per character, "Open All" summary
+    ├── MailLogFrame.lua   # Third mail frame tab "Log" with search box and filters (as inbox, but from/to/returned/deleted)
     └── SendMailRecipients.lua # Recipient dropdown next to the "To" field of "Send Mail"
 ```
 
