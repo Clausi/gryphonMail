@@ -27,7 +27,7 @@ ns:RegisterEvent("PLAYER_LOGIN", function()
         end
     end
 
-    ns:Print(L["ADDON_LOADED"], ns.version or "?")
+    ns:Notify(L["ADDON_LOADED"], ns.version or "?")
 end)
 
 -- Slash commands
@@ -39,6 +39,20 @@ ns:RegisterCommand("debug", function()
     ns.db.debug = not ns.db.debug
     ns:Print(ns.db.debug and L["DEBUG_ON"] or L["DEBUG_OFF"])
 end, { L["HELP_DEBUG"] })
+
+-- "/gryphonmail chat on|off" sets the automatic chat messages, without argument shows the setting.
+ns:RegisterCommand("chat", function(args)
+    local value = args:lower()
+    if value == "on" then
+        ns.charDb.chatMessages = true
+    elseif value == "off" then
+        ns.charDb.chatMessages = false
+    elseif value ~= "" then
+        ns:Print(L["HELP_CHAT"])
+        return
+    end
+    ns:Print(ns.charDb.chatMessages and L["CHAT_ON"] or L["CHAT_OFF"])
+end, { L["HELP_CHAT"] })
 
 local function PrintHelp()
     ns:Print(L["HELP_HEADER"])

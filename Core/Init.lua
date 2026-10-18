@@ -15,10 +15,12 @@ ns.defaults = {
     logRetentionDays = 30,
 }
 
--- Per character (GryphonMailCharDB, ns.charDb): data only the logged-in character needs.
+-- Per character (GryphonMailCharDB, ns.charDb): data and settings only the logged-in character needs.
 ns.charDefaults = {
     -- Collected mails, oldest first. Filled by Modules/MailLog.lua.
     log = {},
+    -- Automatic chat messages (login, "Open All" summary, hints). Change with "/gryphonmail chat on|off".
+    chatMessages = true,
 }
 
 -- Registers a module. A module may implement:

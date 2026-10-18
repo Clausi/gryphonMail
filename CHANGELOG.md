@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `/gryphonmail chat on|off` turns the automatic chat messages of the current character on or off:
+  the login message, the summary after "Open All" and the recent allies hints. Answers to commands
+  are always shown.
+
 ## [0.6.0] - 2026-10-18
 
 ### Added
