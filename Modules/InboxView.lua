@@ -200,10 +200,14 @@ local function OnInboxUpdate(inbox)
     ns.Compat.SetInboxPageButtonsEnabled(inbox.pageNum > 1, inbox.pageNum < numPages)
 end
 
+-- True once "Open All" is restricted to the filtered mails (see SetupOpenAll). Not possible on
+-- Classic, where the button keeps Blizzard's text and opens all mails.
+local canOpenFiltered = false
+
 -- Shows whether "Open All" currently opens all mails or only the filtered ones.
 -- While opening, the button is disabled and shows Blizzard's progress text, which is left alone.
 local function UpdateOpenAllText()
-    if OpenAllMail:IsEnabled() then
+    if canOpenFiltered and OpenAllMail:IsEnabled() then
         OpenAllMail:SetText(InboxView:IsFilterActive() and L["OPEN_FILTERED"] or OPEN_ALL_MAIL_BUTTON)
     end
 end
@@ -290,7 +294,14 @@ end
 --                                requests them again while the inbox data is not updated yet (also
 --                                after mail indices shift), which the server answers with "The item
 --                                was not found". A failed request (MAIL_FAILED) may be retried.
+-- Classic has neither method, the skip logic is inlined in AdvanceToNextItem(). Replacing that
+-- would mirror much more of Blizzard's code, so "Open All" stays unchanged there.
 local function SetupOpenAll()
+    if not ns.Compat.HasOpenAllSkipHooks() then
+        return
+    end
+    canOpenFiltered = true
+
     local shouldSkipCurrentMail = OpenAllMail.ShouldSkipCurrentMail
     OpenAllMail.ShouldSkipCurrentMail = function(self)
         -- The first call of a run happens before anything was taken (StartOpening has no pre-hook),

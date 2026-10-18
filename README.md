@@ -14,6 +14,11 @@ A World of Warcraft addon that extends the default mailbox.
 Forever uses the Mainline (retail) UI and API, while Classic Era and Anniversary use the Classic UI.
 Client differences are handled in `Core/Compat.lua`.
 
+Known differences:
+
+- Classic Era and Anniversary: "Open All" always opens all mail, also while a search or filter is
+  active. Blizzard's button there offers no way to skip single mails.
+
 [#24]: https://github.com/Clausi/gryphonMail/issues/24
 
 ## Installation
