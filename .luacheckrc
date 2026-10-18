@@ -30,6 +30,7 @@ read_globals = {
     "C_AddOns",
     "Constants",
     "C_ClassColor",
+    "C_CreatureInfo",
     "C_FriendList",
     "C_GuildInfo",
     "C_Item",

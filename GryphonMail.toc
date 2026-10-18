@@ -20,6 +20,7 @@ Core\Names.lua
 
 # Modules
 Modules\Characters.lua
+Modules\Contacts.lua
 Modules\InboxView.lua
 Modules\InboxSearch.lua
 Modules\InboxFilter.lua

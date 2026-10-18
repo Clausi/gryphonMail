@@ -7,6 +7,7 @@ local L = ns.L
 local InboxFilter = ns:RegisterModule("InboxFilter")
 local InboxView = ns.modules.InboxView
 local Characters = ns.modules.Characters
+local Contacts = ns.modules.Contacts
 
 local DROPDOWN_WIDTH = 84
 local DROPDOWN_OFFSET_X = 64
@@ -14,75 +15,13 @@ local DROPDOWN_OFFSET_Y = -37
 
 local PRESET_ALL = "all"
 
--- Full names ("Tor Donnerstein") without realm suffix; secret values are never matched.
-local NormalizeName = ns.Names.Normalize
-
--- Name sets are cached and rebuilt after FRIENDLIST_UPDATE / RECENT_ALLIES_CACHE_UPDATE /
--- GUILD_ROSTER_UPDATE.
-local friendNames
-local recentAllyNames
-local guildNames
-
-local function GetFriendNames()
-    if not friendNames then
-        friendNames = {}
-        for i = 1, C_FriendList.GetNumFriends() do
-            local info = C_FriendList.GetFriendInfoByIndex(i)
-            local name = info and NormalizeName(info.name)
-            if name then
-                friendNames[name] = true
-            end
-        end
-    end
-    return friendNames
-end
-
--- Recent allies: the realmless "Recent Allies" tab of the friends frame (C_RecentAllies).
-local function IsRecentAlliesEnabled()
-    return C_RecentAllies ~= nil and C_RecentAllies.IsSystemEnabled() == true
-end
-
-local function GetRecentAllyNames()
-    if recentAllyNames then
-        return recentAllyNames
-    end
-    if not (IsRecentAlliesEnabled() and C_RecentAllies.IsRecentAllyDataReady()) then
-        -- Not loaded yet: do not cache the empty set, RECENT_ALLIES_CACHE_UPDATE follows.
-        return {}
-    end
-    recentAllyNames = {}
-    for _, ally in ipairs(C_RecentAllies.GetRecentAllies() or {}) do
-        local data = ally.characterData
-        local name = data and (NormalizeName(data.fullName) or NormalizeName(data.name))
-        if name then
-            recentAllyNames[name] = true
-        end
-    end
-    return recentAllyNames
-end
-
 -- Explains in the chat why the filter shows no mail when there are no recent allies to match.
 local function ReportEmptyRecentAllies()
-    if not C_RecentAllies.IsRecentAllyDataReady() then
+    if not Contacts:IsRecentAlliesReady() then
         ns:Print(L["RECENT_ALLIES_NOT_LOADED"])
-    elseif next(GetRecentAllyNames()) == nil then
+    elseif #Contacts:GetList(Contacts.RECENT_ALLIES) == 0 then
         ns:Print(L["RECENT_ALLIES_EMPTY"])
     end
-end
-
-local function GetGuildNames()
-    if not guildNames then
-        guildNames = {}
-        if IsInGuild() then
-            for i = 1, GetNumGuildMembers() do
-                local name = NormalizeName((GetGuildRosterInfo(i)))
-                if name then
-                    guildNames[name] = true
-                end
-            end
-        end
-    end
-    return guildNames
 end
 
 -- Auction house mails are recognized by Blizzard's localized subject formats, e.g. "Auction won: %s".
@@ -149,29 +88,28 @@ local PRESETS = {
         end,
     },
     {
-        key = "friends",
+        key = Contacts.FRIENDS,
         label = "FILTER_FRIENDS",
         matches = function(mail)
-            local name = NormalizeName(mail.sender)
-            return name ~= nil and GetFriendNames()[name] == true
+            return Contacts:Contains(Contacts.FRIENDS, mail.sender)
         end,
     },
     {
-        key = "recentAllies",
+        key = Contacts.RECENT_ALLIES,
         label = "FILTER_RECENT_ALLIES",
-        isAvailable = IsRecentAlliesEnabled,
+        isAvailable = function()
+            return Contacts:IsRecentAlliesEnabled()
+        end,
         onSelect = ReportEmptyRecentAllies,
         matches = function(mail)
-            local name = NormalizeName(mail.sender)
-            return name ~= nil and GetRecentAllyNames()[name] == true
+            return Contacts:Contains(Contacts.RECENT_ALLIES, mail.sender)
         end,
     },
     {
-        key = "guild",
+        key = Contacts.GUILD,
         label = "FILTER_GUILD",
         matches = function(mail)
-            local name = NormalizeName(mail.sender)
-            return name ~= nil and GetGuildNames()[name] == true
+            return Contacts:Contains(Contacts.GUILD, mail.sender)
         end,
     },
     {
@@ -272,33 +210,9 @@ function InboxFilter:OnInitialize()
         InboxFilter.dropdown = CreateDropdown()
     end)
 
-    -- Ask the server for fresh friend and guild data when the mailbox opens. Recent allies cannot be
-    -- requested: C_RecentAllies.TryRequestRecentAlliesData is protected (ADDON_ACTION_FORBIDDEN).
-    -- Their data arrives with RECENT_ALLIES_CACHE_UPDATE once the client has loaded it.
-    ns:RegisterEvent("MAIL_SHOW", function()
-        C_FriendList.ShowFriends()
-        if IsInGuild() then
-            C_GuildInfo.GuildRoster()
-        end
-    end)
-
-    ns:RegisterEvent("FRIENDLIST_UPDATE", function()
-        friendNames = nil
-        if IsPresetActive("friends") then
-            InboxView:Redraw()
-        end
-    end)
-
-    ns:RegisterEvent("RECENT_ALLIES_CACHE_UPDATE", function()
-        recentAllyNames = nil
-        if IsPresetActive("recentAllies") then
-            InboxView:Redraw()
-        end
-    end)
-
-    ns:RegisterEvent("GUILD_ROSTER_UPDATE", function()
-        guildNames = nil
-        if IsPresetActive("guild") then
+    -- Preset keys of the people presets equal the contact kinds.
+    Contacts:OnUpdate(function(kind)
+        if IsPresetActive(kind) then
             InboxView:Redraw()
         end
     end)
