@@ -53,6 +53,7 @@ read_globals = {
     "SetSendMailShowing",
     -- UI helpers
     "ButtonFrameTemplate_HideButtonBar",
+    "DropdownButtonMixin",
     "GameTooltip_AddMoneyLine",
     "GameTooltip_Hide",
     "PanelTemplates_DeselectTab",
