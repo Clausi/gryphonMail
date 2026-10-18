@@ -1,4 +1,4 @@
-## Interface: 16001
+## Interface: 11509, 16001, 20506, 120105
 ## Title: GryphonMail
 ## Notes: Extends the default mailbox with additional features.
 ## Notes-deDE: Erweitert das Standard-Postfach um zusätzliche Funktionen.
@@ -8,6 +8,10 @@
 ## SavedVariables: GryphonMailDB
 ## SavedVariablesPerCharacter: GryphonMailCharDB
 ## IconTexture: Interface\Icons\INV_Letter_15
+## X-Category: Mail
+## X-License: MIT
+## X-Website: https://github.com/Clausi/gryphonMail
+## X-Curse-Project-ID: 1750287
 
 # Localization (enUS must be loaded first, it is the fallback)
 Locales\enUS.lua
