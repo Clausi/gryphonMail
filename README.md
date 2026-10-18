@@ -30,6 +30,7 @@ GryphonMail/
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
+    ├── Contacts.lua       # Cached friends, guild members and recent allies
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     ├── InboxSearch.lua    # Search box (sender/subject) with own-character suggestions
     ├── InboxFilter.lua    # Dropdown with predefined filters (friends, recent allies, guild, own characters, AH, C.O.D., gold, unread, read)
