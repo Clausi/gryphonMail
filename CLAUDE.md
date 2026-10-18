@@ -62,7 +62,8 @@ World of Warcraft: Forever addon that extends the default mailbox.
 
 - Prefer `hooksecurefunc` and `HookScript` over replacing Blizzard functions, methods or scripts,
   to avoid taint.
-- Keep writes to Blizzard frames minimal and document why (see `InboxFrame.pageNum` in `InboxSearch.lua`).
+- Keep writes to Blizzard frames minimal and document why, in the code and in `.luacheckrc` (see
+  `InboxFrame.pageNum` and the replaced `OpenAllMail` methods in `InboxView.lua`).
 - Values returned by the API may be secret values on Forever. Guard string or number operations on
   them with `issecretvalue`.
 
