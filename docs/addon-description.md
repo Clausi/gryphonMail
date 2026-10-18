@@ -35,7 +35,7 @@ A small dropdown next to the **To** field of *Send Mail* lists:
 Pick one and the name is filled in.
 
 ### Mail log
-A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected and sent:
+A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected, sent, returned and deleted:
 - Sender, subject, date, gold and items for each mail, including the C.O.D. amount you paid
 - **Sent mail** with recipient, gold, items and the C.O.D. amount you asked for
 - **Deleted** and **returned mail**, including the gold and items it still contained
