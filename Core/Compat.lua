@@ -57,6 +57,23 @@ function Compat.SetInboxPageButtonsEnabled(hasPrev, hasNext)
     end
 end
 
+-- Template for an extra mail frame tab that looks like Blizzard's. The mail tabs inherit
+-- PanelTabButtonTemplate on Forever and Retail, and CharacterFrameTabButtonTemplate (named
+-- textures, no LeftActive) on Classic.
+function Compat.GetMailTabTemplate()
+    if MailFrameTab2.LeftActive then
+        return "PanelTabButtonTemplate"
+    end
+    return "CharacterFrameTabButtonTemplate"
+end
+
+-- Forever and Retail set the title with MailFrame:SetTitle() on every tab switch. Classic shows
+-- own title strings in InboxFrame (InboxTitleText) and SendMailFrame and leaves MailFrame's title
+-- empty.
+function Compat.HasMailFrameTitle()
+    return InboxTitleText == nil
+end
+
 -- "Open All" asks ShouldSkipCurrentMail() and ShouldSkipCurrentAttachment() on Forever and Retail,
 -- which lets the addon restrict it to filtered mails. Classic inlines that logic in
 -- AdvanceToNextItem(). Call once OpenAllMail exists.
