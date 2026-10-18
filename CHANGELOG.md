@@ -7,24 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-18
+
 ### Added
 
+- Support for WoW Classic Era (11509), Anniversary (20506) and Retail (120105) next to Forever, in
+  one package. Inbox search, filters, paging, the mail log and the recipient dropdown work on all
+  clients, and the search boxes, the filter dropdown and the log tab fit the mail frame of each
+  client. In Classic Era and Anniversary, "Open All" keeps its name and opens all mail, also with an
+  active filter: opening only the filtered mail is not possible there.
+- Outside Forever, characters are told apart by realm: characters with the same name on different
+  realms are listed separately, the filters compare names with realm, and only own characters of
+  the same faction on the same realm (Retail: also connected realms) are offered as recipients.
+  Characters on other realms are shown as "Name-Realm".
+- `/gryphonmail chars` also shows the faction of each character, next to its realm.
 - `/gryphonmail chat on|off` turns the automatic chat messages of the current character on or off:
   the login message, the summary after "Open All" and the recent allies hints. Answers to commands
   are always shown.
-- The TOC also declares the WoW Classic Era (11509), Anniversary (20506) and Retail (120105)
-  interfaces, so these clients no longer mark the addon as out of date. Support for them is not
-  complete yet.
-- Inbox search and filter work in Classic Era, Anniversary and Retail.
-- In Classic Era, Anniversary and Retail, the search boxes and the log fit into the mail frame, and
-  in Classic Era and Anniversary the log tab looks like the other mail tabs.
-- In Classic Era, Anniversary and Retail, characters are told apart by realm: characters with the
-  same name on different realms are listed separately, the filters compare names with realm, and
-  only own characters on the same realm (Retail: also connected realms) are offered as recipients.
-  Characters on other realms are shown as "Name-Realm".
-- `/gryphonmail chars` also shows the faction of each character, next to its realm.
-- In Classic Era and Anniversary, "Open All" keeps its name and opens all mail, also with an
-  active filter. Opening only the filtered mail is not possible there.
 
 ## [0.6.0] - 2026-10-18
 
@@ -108,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/Clausi/gryphonMail/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Clausi/gryphonMail/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/Clausi/gryphonMail/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Clausi/gryphonMail/compare/v0.3.0...v0.4.0
