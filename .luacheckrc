@@ -33,6 +33,7 @@ read_globals = {
     "C_FriendList",
     "C_GuildInfo",
     "C_Item",
+    "C_RecentAllies",
     "C_Timer",
     "GetMoney",
     "GetTime",

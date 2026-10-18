@@ -32,7 +32,7 @@ GryphonMail/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     ├── InboxSearch.lua    # Search box (sender/subject) with own-character suggestions
-    ├── InboxFilter.lua    # Dropdown with predefined filters (friends, guild, own characters, AH, C.O.D., gold, unread, read)
+    ├── InboxFilter.lua    # Dropdown with predefined filters (friends, recent allies, guild, own characters, AH, C.O.D., gold, unread, read)
     ├── MailLog.lua        # Records collected gold/items per character, "Open All" summary
     ├── MailLogFrame.lua   # Third mail frame tab "Log"
     └── SendMailCharacters.lua # Own-character dropdown next to the "To" field of "Send Mail"

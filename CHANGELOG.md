@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Inbox filter "Recent Allies": mail from characters in the "Recent Allies" tab of the friends
+  list. A chat message explains when that list is empty or not loaded yet.
+
 ## [0.4.0] - 2026-10-17
 
 ### Added

@@ -1,8 +1,8 @@
 local _, ns = ...
 local L = ns.L
 
--- Dropdown with predefined inbox filters (friends, guild, own characters, auction house, C.O.D., gold,
--- unread, read).
+-- Dropdown with predefined inbox filters (friends, recent allies, guild, own characters, auction house,
+-- C.O.D., gold, unread, read).
 -- Combines with the search box: a mail must match both.
 local InboxFilter = ns:RegisterModule("InboxFilter")
 local InboxView = ns.modules.InboxView
@@ -17,8 +17,10 @@ local PRESET_ALL = "all"
 -- Full names ("Tor Donnerstein") without realm suffix; secret values are never matched.
 local NormalizeName = ns.Names.Normalize
 
--- Name sets are cached and rebuilt after FRIENDLIST_UPDATE / GUILD_ROSTER_UPDATE.
+-- Name sets are cached and rebuilt after FRIENDLIST_UPDATE / RECENT_ALLIES_CACHE_UPDATE /
+-- GUILD_ROSTER_UPDATE.
 local friendNames
+local recentAllyNames
 local guildNames
 
 local function GetFriendNames()
@@ -33,6 +35,39 @@ local function GetFriendNames()
         end
     end
     return friendNames
+end
+
+-- Recent allies: the realmless "Recent Allies" tab of the friends frame (C_RecentAllies).
+local function IsRecentAlliesEnabled()
+    return C_RecentAllies ~= nil and C_RecentAllies.IsSystemEnabled() == true
+end
+
+local function GetRecentAllyNames()
+    if recentAllyNames then
+        return recentAllyNames
+    end
+    if not (IsRecentAlliesEnabled() and C_RecentAllies.IsRecentAllyDataReady()) then
+        -- Not loaded yet: do not cache the empty set, RECENT_ALLIES_CACHE_UPDATE follows.
+        return {}
+    end
+    recentAllyNames = {}
+    for _, ally in ipairs(C_RecentAllies.GetRecentAllies() or {}) do
+        local data = ally.characterData
+        local name = data and (NormalizeName(data.fullName) or NormalizeName(data.name))
+        if name then
+            recentAllyNames[name] = true
+        end
+    end
+    return recentAllyNames
+end
+
+-- Explains in the chat why the filter shows no mail when there are no recent allies to match.
+local function ReportEmptyRecentAllies()
+    if not C_RecentAllies.IsRecentAllyDataReady() then
+        ns:Print(L["RECENT_ALLIES_NOT_LOADED"])
+    elseif next(GetRecentAllyNames()) == nil then
+        ns:Print(L["RECENT_ALLIES_EMPTY"])
+    end
 end
 
 local function GetGuildNames()
@@ -99,8 +134,10 @@ local function IsAuctionMail(mail)
     return false
 end
 
--- Order defines the order in the dropdown. startsGroup adds a divider above the preset:
---   all mail | people (own characters, friends, guild) | read state | trade (auction house, gold, C.O.D.)
+-- Order defines the order in the dropdown. startsGroup adds a divider above the preset, isAvailable
+-- hides it while it returns false, onSelect runs when the user picks it:
+--   all mail | people (own characters, friends, recent allies, guild) | read state
+--   | trade (auction house, gold, C.O.D.)
 local PRESETS = {
     { key = PRESET_ALL, label = "FILTER_ALL" },
     {
@@ -117,6 +154,16 @@ local PRESETS = {
         matches = function(mail)
             local name = NormalizeName(mail.sender)
             return name ~= nil and GetFriendNames()[name] == true
+        end,
+    },
+    {
+        key = "recentAllies",
+        label = "FILTER_RECENT_ALLIES",
+        isAvailable = IsRecentAlliesEnabled,
+        onSelect = ReportEmptyRecentAllies,
+        matches = function(mail)
+            local name = NormalizeName(mail.sender)
+            return name ~= nil and GetRecentAllyNames()[name] == true
         end,
     },
     {
@@ -167,6 +214,14 @@ local function SetPreset(key)
     InboxView:Refresh()
 end
 
+local function SelectPreset(key)
+    SetPreset(key)
+    local onSelect = presetsByKey[key].onSelect
+    if onSelect then
+        onSelect()
+    end
+end
+
 local function IsSelected(key)
     return key == activeKey
 end
@@ -185,7 +240,9 @@ local function CreateDropdown()
             if preset.startsGroup then
                 rootDescription:CreateDivider()
             end
-            rootDescription:CreateRadio(L[preset.label], IsSelected, SetPreset, preset.key)
+            if not preset.isAvailable or preset.isAvailable() then
+                rootDescription:CreateRadio(L[preset.label], IsSelected, SelectPreset, preset.key)
+            end
         end
     end)
 
@@ -215,7 +272,9 @@ function InboxFilter:OnInitialize()
         InboxFilter.dropdown = CreateDropdown()
     end)
 
-    -- Ask the server for fresh friend and guild data when the mailbox opens.
+    -- Ask the server for fresh friend and guild data when the mailbox opens. Recent allies cannot be
+    -- requested: C_RecentAllies.TryRequestRecentAlliesData is protected (ADDON_ACTION_FORBIDDEN).
+    -- Their data arrives with RECENT_ALLIES_CACHE_UPDATE once the client has loaded it.
     ns:RegisterEvent("MAIL_SHOW", function()
         C_FriendList.ShowFriends()
         if IsInGuild() then
@@ -226,6 +285,13 @@ function InboxFilter:OnInitialize()
     ns:RegisterEvent("FRIENDLIST_UPDATE", function()
         friendNames = nil
         if IsPresetActive("friends") then
+            InboxView:Redraw()
+        end
+    end)
+
+    ns:RegisterEvent("RECENT_ALLIES_CACHE_UPDATE", function()
+        recentAllyNames = nil
+        if IsPresetActive("recentAllies") then
             InboxView:Redraw()
         end
     end)
