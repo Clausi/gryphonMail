@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The mail log also records sent mail: recipient, subject, gold, items and the requested C.O.D.
+  amount. Sent mail is shown as "To: <recipient>" in blue.
+
 ## [0.5.0] - 2026-10-18
 
 ### Added
