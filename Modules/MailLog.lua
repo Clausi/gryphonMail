@@ -345,10 +345,10 @@ end
 
 -- Deleted and returned mail: DeleteInboxItem() / ReturnInboxItem() are post-hooked while the mail is
 -- still in the inbox. Blizzard deletes from the delete button, its confirmation dialogs (mail with
--- items or gold) and when an opened mail whose text was copied is closed; mail from other players
--- that still has items or gold can only be returned. There is no event for either, so the mail is
--- logged once one mail with its identity has disappeared from the inbox (MAIL_INBOX_UPDATE); a failed
--- request runs into the timeout.
+-- items or gold) and when an opened mail whose text was copied is closed. Mail from other players
+-- that still has items or gold can only be returned, mail that came back to us (returned) can be
+-- deleted with its items. There is no event for either, so the mail is logged once one mail with its
+-- identity has disappeared from the inbox (MAIL_INBOX_UPDATE); a failed request runs into the timeout.
 --   kind: "deleted" or "returned", the flag set on the log entry
 local function RequestRemoval(index, kind)
     local mail = GetMailIdentity(index)
