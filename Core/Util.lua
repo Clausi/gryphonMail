@@ -44,6 +44,22 @@ function ns:DebugMemory(label)
     end
 end
 
+-- Sets up the menu of a DropdownButton that shows no selection text (fixed text or only an arrow),
+-- so it only needs the menu while it is open. A generated menu takes ~80 KB even with 12 entries:
+-- - SetupMenu builds the menu right away on a shown dropdown, so it runs while hidden. The menu is
+--   generated anyway on every open (DropdownButtonMixin:OpenMenu).
+-- - After closing, the generated description is released. Blizzard's code handles a nil description
+--   (it is nil until the first open as well). Only used on own frames, so the write causes no taint.
+function ns.SetupMenuOnDemand(dropdown, generator)
+    local wasShown = dropdown:IsShown()
+    dropdown:Hide()
+    dropdown:SetupMenu(generator)
+    dropdown:SetShown(wasShown)
+    dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
+        dropdown.menuDescription = nil
+    end, dropdown)
+end
+
 -- Recursively copies missing default values into the target table.
 function ns.ApplyDefaults(target, defaults)
     for key, value in pairs(defaults) do

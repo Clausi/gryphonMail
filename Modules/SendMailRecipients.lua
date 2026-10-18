@@ -135,19 +135,9 @@ local function CreateDropdown()
     local dropdown = CreateFrame("DropdownButton", "GryphonMailSendRecipientDropdown", SendMailFrame,
         "WowStyle1ArrowDropdownTemplate")
     dropdown:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", DROPDOWN_OFFSET_X, 0)
-
-    -- The menu (all characters, guild members and recent allies) can take hundreds of KB, but this
-    -- arrow dropdown shows no selection text, so it only needs the menu while it is open:
-    -- - SetupMenu builds the menu right away on a shown dropdown, so it runs while hidden. The menu is
-    --   generated anyway on every open (DropdownButtonMixin:OpenMenu).
-    -- - After closing, the generated description is released. Blizzard's code handles a nil
-    --   description (it is nil until the first open as well). Own frame, so the write causes no taint.
-    dropdown:Hide()
-    dropdown:SetupMenu(GenerateMenu)
-    dropdown:Show()
-    dropdown:RegisterCallback(DropdownButtonMixin.Event.OnMenuClose, function()
-        dropdown.menuDescription = nil
-    end, dropdown)
+    -- The menu (all characters, guild members and recent allies) can take hundreds of KB; this arrow
+    -- dropdown shows no selection text, so it is only built while open.
+    ns.SetupMenuOnDemand(dropdown, GenerateMenu)
 
     dropdown:HookScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

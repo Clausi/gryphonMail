@@ -196,7 +196,9 @@ function MailFilters:CreatePresetDropdown(parent, frameName, layout, onChange, o
         end
     end
 
-    dropdown:SetupMenu(function(_, rootDescription)
+    -- The filter template always shows "Filter" and its reset button uses the callbacks below, so the
+    -- menu is only built while open.
+    ns.SetupMenuOnDemand(dropdown, function(_, rootDescription)
         rootDescription:SetTag("MENU_GRYPHONMAIL_FILTER")
         for _, key in ipairs(layout) do
             local preset = PRESETS[key]
