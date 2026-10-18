@@ -76,6 +76,6 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
 - `/gryphonmail log` – show log settings
 - `/gryphonmail log days <1-365>` – keep log entries for that many days (default 30)
 - `/gryphonmail log clear` – clear the log of the current character
-- `/gryphonmail debug` – toggle debug output
+- `/gryphonmail debug` – toggle debug output (after a `/reload`, also the memory each module keeps)
 
 Modules add subcommands with `ns:RegisterCommand(name, handler, helpLines)`.
