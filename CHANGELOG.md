@@ -21,7 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - In Classic Era, Anniversary and Retail, characters are told apart by realm: characters with the
   same name on different realms are listed separately, the filters compare names with realm, and
   only own characters on the same realm (Retail: also connected realms) are offered as recipients.
-  Characters on other realms are shown as "Name-Realm".- In Classic Era and Anniversary, "Open All" keeps its name and opens all mail, also with an
+  Characters on other realms are shown as "Name-Realm".
+- `/gryphonmail chars` also shows the faction of each character, next to its realm.
+- In Classic Era and Anniversary, "Open All" keeps its name and opens all mail, also with an
   active filter. Opening only the filtered mail is not possible there.
 
 ## [0.6.0] - 2026-10-18

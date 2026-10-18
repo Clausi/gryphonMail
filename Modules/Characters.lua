@@ -16,6 +16,13 @@ local player
 local nameSet
 local characterList
 
+-- Localized faction names for UnitFactionGroup() values, shown by "/gryphonmail chars".
+local FACTION_LABELS = {
+    Alliance = L["FACTION_ALLIANCE"],
+    Horde = L["FACTION_HORDE"],
+    Neutral = L["FACTION_NEUTRAL"],
+}
+
 local function InvalidateCaches()
     nameSet = nil
     characterList = nil
@@ -78,9 +85,13 @@ local function ListCharacters()
     ns:Print(L["CHARS_HEADER"])
     for i, fullName in ipairs(names) do
         local line = ("%d. %s"):format(i, ColorizeName(fullName))
-        local realm = ns.db.characters[fullName].realm
-        if realm then
-            line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. realm .. ")")
+        local info = ns.db.characters[fullName]
+        -- "(realm, faction)", either part may be unknown for old entries.
+        local details = {}
+        details[#details + 1] = info.realm
+        details[#details + 1] = FACTION_LABELS[info.faction] or info.faction
+        if #details > 0 then
+            line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. table.concat(details, ", ") .. ")")
         end
         if fullName == current then
             line = line .. " " .. L["CHARS_CURRENT"]
