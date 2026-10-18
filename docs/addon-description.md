@@ -1,6 +1,6 @@
 # GryphonMail
 
-**A smarter mailbox for World of Warcraft: Forever.**
+**A smarter mailbox for World of Warcraft: Forever, Classic Era, Anniversary and Retail.**
 
 GryphonMail extends the default mailbox instead of replacing it. Everything stays where you know it, with a few tools that save you time on every visit.
 
@@ -25,12 +25,12 @@ Show only the mail you care about with one click:
 Filters work together with the search box, e.g. *Guild* + "ore".
 
 ### Open only what you filtered
-While a search or filter is active, **Open All** becomes **Open Filtered** and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button.
+While a search or filter is active, **Open All** becomes **Open Filtered** and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button. *(Forever and Retail; on Classic Era and Anniversary, Open All keeps opening all mail.)*
 
 ### Pick a recipient
 A small dropdown next to the **To** field of *Send Mail* lists:
-- Your **own characters** of the same faction and ruleset (PvE, PvP, RP)
-- Your **guild members** and **recent allies** in submenus, class colored. Long lists are split into name ranges, e.g. *Abby - Fiona*.
+- Your **own characters** of the same faction and realm (Forever: ruleset PvE, PvP, RP; Retail: also connected realms)
+- Your **guild members** and **recent allies** (where the game has them) in submenus, class colored. Long lists are split into name ranges, e.g. *Abby - Fiona*.
 
 Pick one and the name is filled in.
 
@@ -61,7 +61,8 @@ After *Open All* / *Open Filtered* you get a short summary, e.g.
 | `/gryphonmail chat on\|off` | Turn the automatic chat messages (login, summary, hints) of this character on or off |
 
 ## Good to know
-- Made for **World of Warcraft: Forever** (Interface 16001).
+- One download for **Forever**, **Classic Era**, **Anniversary** and **Retail**.
+- Outside Forever, characters on other realms are shown as *Name-Realm*.
 - Your characters are remembered when you log in with them once while the addon is active.
 - Languages: English, German.
 

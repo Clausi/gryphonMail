@@ -1,14 +1,21 @@
 # GryphonMail
 
-World of Warcraft: Forever addon that extends the default mailbox.
+World of Warcraft addon that extends the default mailbox.
 
-## Target client
+## Target clients
 
-- WoW Forever, `## Interface: 16001`. Forever uses the **Mainline (retail) UI and API**, not Classic Era.
-  Do not use Classic-only APIs or Classic UI assumptions.
-- Reference for Blizzard UI code: the `forever` branch of https://github.com/Gethe/wow-ui-source
-  (e.g. `Interface/AddOns/Blizzard_MailFrame/`). Read the actual Blizzard source before hooking or
-  mirroring Blizzard behavior instead of relying on memory.
+- One package for four clients, all listed in `## Interface:` (`11509, 16001, 20506, 120105`):
+  - **Forever** (16001) and **Retail** (120105) use the Mainline UI and API.
+  - **Classic Era** (11509) and **Anniversary** (20506) use the Classic UI (e.g. the mail frame is
+    part of `Blizzard_UIPanels_Game`, not the load-on-demand `Blizzard_MailFrame`).
+- Every client difference goes through `ns.Compat` (`Core/Compat.lua`). Detect APIs, methods or
+  frame fields that exist instead of comparing version numbers, and do not branch on clients
+  anywhere else.
+- Reference for Blizzard UI code: the `forever`, `live`, `classic_era` and `classic_anniversary`
+  branches of https://github.com/Gethe/wow-ui-source (mail frame: `Blizzard_MailFrame/` on Forever
+  and Retail, `Blizzard_UIPanels_Game/Classic/MailFrame.lua` on Classic). Read the actual Blizzard
+  source of every client before hooking or mirroring Blizzard behavior instead of relying on memory.
+- Verify interface numbers in-game with `/dump select(4, GetBuildInfo())`.
 - Always use `ns.Names` (`Core/Names.lua`) to build, compare and show names; never use `Ambiguate`.
   The rules differ per client (`ns.Compat.HasRealmNames()`):
   - **Forever:** names are "First Surname" (separator from
@@ -37,6 +44,7 @@ World of Warcraft: Forever addon that extends the default mailbox.
   WoW API global (add it to `read_globals`) or an intentional write to a Blizzard frame field.
   Never silence warnings globally or with inline `-- luacheck: ignore` without a reason in a comment.
 - Code cannot be tested in-game from here. After a change, tell the user what to verify in-game.
+- luacheck also runs in CI (`.github/workflows/luacheck.yml`) on pull requests and on `main`.
 
 ## Language
 
@@ -79,6 +87,8 @@ World of Warcraft: Forever addon that extends the default mailbox.
 - Record every user-visible change in `CHANGELOG.md` under `[Unreleased]`
   ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format: Added, Changed, Fixed, Removed).
   On a release, move the entries to a new version section and bump `## Version` in `GryphonMail.toc`.
+  After that is merged, a pushed tag `vX.Y.Z` on `main` builds and uploads the release (see
+  "Releasing" in `README.md`). Only tag when asked.
 - Keep the structure section in `README.md` up to date when files are added or removed.
 - Do not commit or push unless asked.
 
