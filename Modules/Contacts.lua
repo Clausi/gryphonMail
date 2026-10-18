@@ -9,7 +9,8 @@ Contacts.FRIENDS = "friends"
 Contacts.GUILD = "guild"
 Contacts.RECENT_ALLIES = "recentAllies"
 
--- Full names ("Tor Donnerstein") without realm suffix; secret values are never matched.
+-- Names in the form of Names.Normalize ("Tor Donnerstein" on Forever, "Tor-Gehennas" on other
+-- clients); secret values are never matched.
 local NormalizeName = ns.Names.Normalize
 
 -- Recent allies: the realmless "Recent Allies" tab of the friends frame (C_RecentAllies).

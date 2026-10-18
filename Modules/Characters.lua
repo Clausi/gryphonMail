@@ -3,7 +3,8 @@ local L = ns.L
 local Names = ns.Names
 
 -- Remembers the account's own characters. There is no API listing them, so every character
--- is recorded on login in the account-wide saved variables, keyed by full name ("Tor Donnerstein").
+-- is recorded on login in the account-wide saved variables, keyed by full name (Names.Normalize:
+-- "Tor Donnerstein" on Forever, "Tor-Gehennas" on other clients).
 local Characters = ns:RegisterModule("Characters")
 
 -- The logged-in character, read once on login: { name, faction, realm }. Name and ruleset do not
@@ -37,10 +38,12 @@ end
 local function ColorizeName(fullName)
     local info = ns.db.characters[fullName]
     local color = info and info.class and C_ClassColor.GetClassColor(info.class)
-    return color and color:WrapTextInColorCode(fullName) or fullName
+    local displayName = Names.ToDisplay(fullName)
+    return color and color:WrapTextInColorCode(displayName) or displayName
 end
 
--- Resolves a number from the list, a full name or a unique first name, case-insensitive.
+-- Resolves a number from the list, a full name (also "Name" for the own realm) or a unique first
+-- name, case-insensitive.
 local function FindCharacter(input)
     local names = GetSortedNames()
     local number = tonumber(input)
@@ -49,14 +52,14 @@ local function FindCharacter(input)
     end
 
     local wanted = input:lower()
+    local wantedFullName = (Names.Normalize(input) or input):lower()
     local firstNameMatch
     local firstNameMatches = 0
     for _, fullName in ipairs(names) do
-        local lowerName = fullName:lower()
-        if lowerName == wanted then
+        if fullName:lower() == wantedFullName then
             return fullName
         end
-        if lowerName:match("^%S+") == wanted then
+        if Names.GetFirstName(fullName):lower() == wanted then
             firstNameMatch = fullName
             firstNameMatches = firstNameMatches + 1
         end
@@ -150,34 +153,50 @@ function Characters:OnEnable()
 end
 
 -- Returns the known characters, sorted by name. The list is cached and must not be modified:
---   { fullName = "Tor Donnerstein", class = "WARRIOR", faction = "Alliance",
---     realm = "Classic Beta PvE", isCurrent = bool, canMail = bool }
--- realm is nil for characters not logged in since it was added.
--- canMail: mail can go between this character and the logged-in one. Forever only delivers mail
--- within the same faction and ruleset (each ruleset is its own realm), and not to oneself.
+--   { fullName = "Tor Donnerstein", displayName = "Tor Donnerstein", class = "WARRIOR",
+--     faction = "Alliance", realm = "Classic Beta PvE", isCurrent = bool, canMail = bool }
+-- fullName is the stored key (Names.Normalize), displayName the form to show and to enter as
+-- recipient (Names.ToDisplay). realm is nil for characters not logged in since it was added.
+-- canMail: mail can go between this character and the logged-in one. It is only delivered within
+-- the same faction, not to oneself, and on Forever within the same ruleset (each ruleset is its own
+-- realm). Other clients deliver it within the own realm and, on Retail, its connected realms.
 function Characters:GetCharacters()
     if characterList then
         return characterList
+    end
+
+    local mailRealms
+    if player and Names.GetRealm(player.name) then
+        mailRealms = { [Names.GetRealm(player.name)] = true }
+        for _, realm in ipairs(C_AutoComplete.GetAutoCompleteRealms()) do
+            mailRealms[realm] = true
+        end
     end
 
     characterList = {}
     for _, fullName in ipairs(GetSortedNames()) do
         local info = ns.db.characters[fullName]
         local isCurrent = player ~= nil and fullName == player.name
+        local sameRealm
+        if mailRealms then
+            sameRealm = mailRealms[Names.GetRealm(fullName) or ""] == true
+        else
+            sameRealm = player ~= nil and info.realm == player.realm
+        end
         characterList[#characterList + 1] = {
             fullName = fullName,
+            displayName = Names.ToDisplay(fullName),
             class = info.class,
             faction = info.faction,
             realm = info.realm,
             isCurrent = isCurrent,
-            canMail = player ~= nil and not isCurrent
-                and info.faction == player.faction and info.realm == player.realm,
+            canMail = player ~= nil and not isCurrent and info.faction == player.faction and sameRealm,
         }
     end
     return characterList
 end
 
--- Expects a name as returned by the mail API; a possible realm suffix is ignored.
+-- Expects a name as returned by the mail API, compared with Names.Normalize.
 function Characters:IsOwnCharacter(name)
     if not nameSet then
         nameSet = {}

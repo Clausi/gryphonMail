@@ -44,7 +44,7 @@ GryphonMail/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
 │   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, Retail) detected from the APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, defaults
-│   ├── Names.lua          # Forever character names ("First Surname"): build and compare
+│   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
