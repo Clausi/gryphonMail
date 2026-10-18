@@ -85,6 +85,7 @@ read_globals = {
     "InboxFrame_Update",
     "InboxNextPageButton",
     "InboxPrevPageButton",
+    "InboxTitleText",
     "GameTooltip",
     "MailFrame",
     "MailFrameInset",

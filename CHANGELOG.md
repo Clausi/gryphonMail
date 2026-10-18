@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   interfaces, so these clients no longer mark the addon as out of date. Support for them is not
   complete yet.
 - Inbox search and filter work in Classic Era, Anniversary and Retail.
+- In Classic Era, Anniversary and Retail, the search boxes and the log fit into the mail frame, and
+  in Classic Era and Anniversary the log tab looks like the other mail tabs.
 
 ## [0.6.0] - 2026-10-18
 

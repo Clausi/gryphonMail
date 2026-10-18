@@ -15,7 +15,7 @@ local MailFilters = ns:RegisterModule("MailFilters")
 local Characters = ns.modules.Characters
 local Contacts = ns.modules.Contacts
 
--- Both widgets sit in the top row of InboxFrame or a frame of the same size (the log).
+-- Both widgets sit in the top row of MailFrame, as children of InboxFrame or the log.
 local SEARCH_WIDTH = 160
 local SEARCH_HEIGHT = 20
 local SEARCH_OFFSET_X = -14
@@ -23,7 +23,9 @@ local SEARCH_OFFSET_Y = -36
 
 local DROPDOWN_WIDTH = 84
 local DROPDOWN_OFFSET_X = 64
-local DROPDOWN_OFFSET_Y = -37
+-- The dropdown is anchored at its vertical center, on the center line of the search box: the
+-- filter dropdown template is 18 high on Forever and Retail and 22 on Classic.
+local DROPDOWN_CENTER_Y = SEARCH_OFFSET_Y - SEARCH_HEIGHT / 2
 
 local MAX_SUGGESTIONS = 5
 local SUGGESTION_HEIGHT = 16
@@ -179,7 +181,7 @@ function PresetFilter:Reset()
     self:Set(MailFilters.PRESET_ALL)
 end
 
--- Creates the preset dropdown in the top left of parent.
+-- Creates the preset dropdown in the top left of MailFrame, as a child of parent.
 --   layout   preset keys and MailFilters.DIVIDER, in dropdown order
 --   onChange called after the user picked another preset
 --   onDataChange called when the data behind the active preset changed (e.g. guild roster)
@@ -190,7 +192,7 @@ function MailFilters:CreatePresetDropdown(parent, frameName, layout, onChange, o
     -- The template sizes itself to its text; use a fixed width so it fits next to the search box.
     dropdown.resizeToText = false
     dropdown:SetWidth(DROPDOWN_WIDTH)
-    dropdown:SetPoint("TOPLEFT", parent, "TOPLEFT", DROPDOWN_OFFSET_X, DROPDOWN_OFFSET_Y)
+    dropdown:SetPoint("LEFT", MailFrame, "TOPLEFT", DROPDOWN_OFFSET_X, DROPDOWN_CENTER_Y)
     filter.dropdown = dropdown
 
     local function IsSelected(key)
@@ -412,14 +414,16 @@ function SearchFilter:SetQuery(text)
     self.onChange()
 end
 
--- Creates the search box (name or subject) in the top right of parent. onChange runs after the
--- search text changed.
+-- Creates the search box (name or subject) in the top right of MailFrame, as a child of parent.
+-- InboxFrame fills MailFrame on Forever, but has a fixed size of 384 x 512 on Retail and Classic,
+-- wider than the visible frame, so the box is anchored to MailFrame. onChange runs after the search
+-- text changed.
 function MailFilters:CreateSearchBox(parent, frameName, onChange)
     local filter = setmetatable({ query = "", onChange = onChange }, SearchFilter)
 
     local searchBox = CreateFrame("EditBox", frameName, parent, "SearchBoxTemplate")
     searchBox:SetSize(SEARCH_WIDTH, SEARCH_HEIGHT)
-    searchBox:SetPoint("TOPRIGHT", parent, "TOPRIGHT", SEARCH_OFFSET_X, SEARCH_OFFSET_Y)
+    searchBox:SetPoint("TOPRIGHT", MailFrame, "TOPRIGHT", SEARCH_OFFSET_X, SEARCH_OFFSET_Y)
     searchBox:SetAutoFocus(false)
     searchBox.Instructions:SetText(L["SEARCH_PLACEHOLDER"])
     filter.searchBox = searchBox

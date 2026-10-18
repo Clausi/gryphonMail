@@ -14,6 +14,7 @@ local ROW_WIDTH = 305
 local ROW_HEIGHT = 45
 local ICON_SIZE = 37
 local LOG_TAB_OFFSET_X = 2
+local CLASSIC_LOG_TAB_OFFSET_X = -8
 -- Sender line of sent mail, light blue to tell it apart from received mail (gold).
 local SENT_COLOR = CreateColor(0.4, 0.78, 1)
 -- Sender line of returned mail, orange.
@@ -223,7 +224,9 @@ end
 
 local function CreateLogFrame()
     frame = CreateFrame("Frame", "GryphonMailLogFrame", MailFrame)
-    frame:SetAllPoints(InboxFrame)
+    -- Not InboxFrame: it fills MailFrame on Forever, but is 384 x 512 on Retail and Classic, larger
+    -- than the visible frame, which would push the page buttons out of it.
+    frame:SetAllPoints(MailFrame)
     frame:SetFrameLevel(InboxFrame:GetFrameLevel())
     frame:Hide()
 
@@ -293,16 +296,26 @@ end
 local function HideLog()
     frame:Hide()
     PanelTemplates_DeselectTab(tab)
+    -- On Classic, Blizzard's tab switch does not reset the log title (see Compat.HasMailFrameTitle).
+    if not ns.Compat.HasMailFrameTitle() then
+        MailFrame:SetTitle("")
+    end
 end
 
 local function CreateTab()
-    tab = CreateFrame("Button", "GryphonMailLogTab", MailFrame, "PanelTabButtonTemplate")
+    local template = ns.Compat.GetMailTabTemplate()
+    tab = CreateFrame("Button", "GryphonMailLogTab", MailFrame, template)
     tab:SetText(L["LOG_TAB"])
-    -- Blizzard anchors its tabs with x = -8, but the visible gap next to MailFrameTab2 ends up
-    -- smaller with that (measured on screenshots), so the log tab uses its own offset. The active
-    -- tab art starts ~2 units further right than the inactive one, so the gap differs slightly
-    -- between both states, the same as for Blizzard's tabs.
-    tab:SetPoint("LEFT", MailFrameTab2, "RIGHT", LOG_TAB_OFFSET_X, 0)
+    if template == "PanelTabButtonTemplate" then
+        -- Blizzard anchors its tabs with x = -8, but the visible gap next to MailFrameTab2 ends up
+        -- smaller with that (measured on screenshots), so the log tab uses its own offset. The active
+        -- tab art starts ~2 units further right than the inactive one, so the gap differs slightly
+        -- between both states, the same as for Blizzard's tabs.
+        tab:SetPoint("LEFT", MailFrameTab2, "RIGHT", LOG_TAB_OFFSET_X, 0)
+    else
+        -- Same template as Blizzard's mail tabs on Classic, so the same offset.
+        tab:SetPoint("LEFT", MailFrameTab2, "RIGHT", CLASSIC_LOG_TAB_OFFSET_X, 0)
+    end
     tab:SetScript("OnClick", ShowLog)
     PanelTemplates_DeselectTab(tab)
 end
