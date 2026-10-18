@@ -28,8 +28,15 @@ local SUMMARY_DELAY_SECONDS = 1
 local LOOT_SELF_FORMATS = { "LOOT_ITEM_PUSHED_SELF", "LOOT_ITEM_PUSHED_SELF_MULTIPLE" }
 
 -- Entries of the logged-in character, oldest first:
---   { time, sender, subject, icon, money, items = { { link, count } }, codPaid (optional) }
+--   received: { time, sender, subject, icon, money, items = { { link, count } }, codPaid (optional) }
+--   sent:     { time, sent = true, recipient, subject, icon, money, items, cod (optional) }
+--             money is the gold sent, cod the C.O.D. amount requested from the recipient.
 local entries = {}
+-- Mail passed to SendMail() and waiting for MAIL_SEND_SUCCESS: { recipient, subject, icon, money,
+-- cod, items }.
+local pendingSend
+-- Icon of sent mail without attachments (the addon icon, a letter).
+local SENT_MAIL_ICON = "Interface\\Icons\\INV_Letter_15"
 -- Mails touched since the mailbox was opened: { mail, entry }. Used to group takes per mail.
 local sessionMails = {}
 -- Take requests waiting for their result:
@@ -269,6 +276,55 @@ local function OnMoneyChanged()
     end
 end
 
+-- Sent mail: SendMail() is post-hooked while the attachments, gold and C.O.D. are still set on the
+-- send form; the mail is logged once the server confirms it (MAIL_SEND_SUCCESS).
+-- A mail that never gets an answer stays pending until the next send or a failure.
+local function OnSendMail(recipient, subject)
+    local items = {}
+    local icon
+    for slot = 1, ATTACHMENTS_MAX_SEND do
+        if HasSendMailItem(slot) then
+            local _, _, texture, count = GetSendMailItem(slot)
+            local link = GetSendMailItemLink(slot)
+            if link then
+                items[#items + 1] = { link = link, count = count or 1 }
+                icon = icon or texture
+            end
+        end
+    end
+
+    pendingSend = {
+        recipient = strtrim(SafeString(recipient) or ""),
+        subject = SafeString(subject) or "",
+        icon = icon or SENT_MAIL_ICON,
+        money = GetSendMailMoney() or 0,
+        cod = GetSendMailCOD() or 0,
+        items = items,
+    }
+    ns:Debug("SendMail to %s requested", pendingSend.recipient)
+end
+
+local function OnSendSuccess()
+    local mail = pendingSend
+    if not mail then
+        return
+    end
+    pendingSend = nil
+
+    entries[#entries + 1] = {
+        time = time(),
+        sent = true,
+        recipient = mail.recipient,
+        subject = mail.subject,
+        icon = mail.icon,
+        money = mail.money,
+        cod = mail.cod > 0 and mail.cod or nil,
+        items = mail.items,
+    }
+    ns:Debug("Sent mail to %s logged", mail.recipient)
+    NotifyChanged()
+end
+
 local function FormatItemCount(count)
     return count == 1 and L["ITEM_COUNT_ONE"] or L["ITEM_COUNT"]:format(count)
 end
@@ -368,9 +424,15 @@ function MailLog:OnInitialize()
     hooksecurefunc("TakeInboxMoney", RequestMoney)
     hooksecurefunc("TakeInboxItem", RequestItem)
     hooksecurefunc("AutoLootMailItem", RequestAutoLoot)
+    hooksecurefunc("SendMail", OnSendMail)
 
     ns:RegisterEvent("CHAT_MSG_LOOT", OnLootMessage)
     ns:RegisterEvent("PLAYER_MONEY", OnMoneyChanged)
+    ns:RegisterEvent("MAIL_SEND_SUCCESS", OnSendSuccess)
+    -- MAIL_FAILED also follows failed takes, which never happen while a mail is being sent.
+    ns:RegisterEvent("MAIL_FAILED", function()
+        pendingSend = nil
+    end)
     ns:RegisterEvent("MAIL_SHOW", function()
         lastMoney = GetMoney()
     end)

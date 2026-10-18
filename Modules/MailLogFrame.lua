@@ -11,6 +11,8 @@ local ROW_WIDTH = 305
 local ROW_HEIGHT = 45
 local ICON_SIZE = 37
 local LOG_TAB_OFFSET_X = 2
+-- Sender line of sent mail, light blue to tell it apart from received mail (gold).
+local SENT_COLOR = CreateColor(0.4, 0.78, 1)
 
 local frame
 local tab
@@ -38,7 +40,18 @@ local function FormatDetails(entry)
         local codText = L["LOG_COD_PAID"]:format(GetMoneyString(entry.codPaid, true))
         parts[#parts + 1] = RED_FONT_COLOR:WrapTextInColorCode(codText)
     end
+    if (entry.cod or 0) > 0 then
+        parts[#parts + 1] = L["LOG_COD_REQUESTED"]:format(GetMoneyString(entry.cod, true))
+    end
     return table.concat(parts, "  ")
+end
+
+-- Received mail shows the sender, sent mail "To: <recipient>" in a different color.
+local function GetCounterpart(entry)
+    if entry.sent then
+        return L["LOG_SENT_TO"]:format(entry.recipient), SENT_COLOR
+    end
+    return entry.sender, NORMAL_FONT_COLOR
 end
 
 local function ShowEntryTooltip(row)
@@ -47,7 +60,8 @@ local function ShowEntryTooltip(row)
         return
     end
     GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
-    GameTooltip:SetText(entry.sender)
+    local counterpart, color = GetCounterpart(entry)
+    GameTooltip:SetText(counterpart, color:GetRGB())
     GameTooltip:AddLine(entry.subject, 1, 1, 1, true)
     GameTooltip:AddLine(date(L["LOG_DATE_FORMAT"], entry.time), 0.75, 0.75, 0.75)
     if entry.money > 0 or #entry.items > 0 then
@@ -63,6 +77,11 @@ local function ShowEntryTooltip(row)
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(L["LOG_COD_PAID_LABEL"], RED_FONT_COLOR:GetRGB())
         GameTooltip_AddMoneyLine(GameTooltip, entry.codPaid)
+    end
+    if (entry.cod or 0) > 0 then
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine(L["LOG_COD_REQUESTED_LABEL"])
+        GameTooltip_AddMoneyLine(GameTooltip, entry.cod)
     end
     GameTooltip:Show()
 end
@@ -138,7 +157,9 @@ function MailLogFrame:Update()
         row.entry = entry
         if entry then
             row.Icon:SetTexture(entry.icon)
-            row.Sender:SetText(entry.sender)
+            local counterpart, color = GetCounterpart(entry)
+            row.Sender:SetText(counterpart)
+            row.Sender:SetTextColor(color:GetRGB())
             row.Subject:SetText(entry.subject)
             row.Details:SetText(FormatDetails(entry))
             row.Date:SetText(date(L["LOG_DATE_FORMAT"], entry.time))
