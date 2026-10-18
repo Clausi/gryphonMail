@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Inbox filter "Recent Allies": mail from characters in the "Recent Allies" tab of the friends
   list. A chat message explains when that list is empty or not loaded yet.
+- The recipient dropdown of "Send Mail" has submenus "Guild" and "Recent Allies" next to your own
+  characters. Lists with more than 20 entries are split into submenus by name range.
+
+### Fixed
+
+- The recipient dropdown of "Send Mail" only builds its menu while it is open, which saves memory.
 
 ## [0.4.0] - 2026-10-17
 

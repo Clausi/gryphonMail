@@ -26,7 +26,7 @@ Modules\InboxSearch.lua
 Modules\InboxFilter.lua
 Modules\MailLog.lua
 Modules\MailLogFrame.lua
-Modules\SendMailCharacters.lua
+Modules\SendMailRecipients.lua
 
 # Bootstrap (must be loaded last)
 Core\Main.lua
