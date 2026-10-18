@@ -56,9 +56,10 @@ end
 
 local function GetMail(index)
     local _, _, sender, subject, money, CODAmount, _, itemCount, wasRead, _, _, _, isGM = GetInboxHeaderInfo(index)
+    -- Mail object as described in MailFilters.lua.
     return {
         index = index,
-        sender = sender,
+        name = sender,
         subject = subject,
         money = money or 0,
         cod = CODAmount or 0,

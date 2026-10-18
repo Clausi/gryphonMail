@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The mail log also records sent mail: recipient, subject, gold, items and the requested C.O.D.
   amount. Sent mail is shown as "To: <recipient>" in blue.
+- The mail log has the same search box and filter dropdown as the inbox. Instead of "Unread" and
+  "Read", the filters "From" (received) and "To" (sent) are offered.
+
+### Changed
+
+- The retention of the mail log moved from the header into the title, e.g. "Mail Log (30 days)".
 
 ## [0.5.0] - 2026-10-18
 

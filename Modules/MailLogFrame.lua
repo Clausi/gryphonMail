@@ -1,10 +1,13 @@
 local _, ns = ...
 local L = ns.L
 
--- Third mail frame tab ("Log") listing collected mails, newest first, in pages like the inbox.
+-- Third mail frame tab ("Log") listing collected and sent mails, newest first, in pages like the
+-- inbox, with the same search box and filter dropdown.
 local MailLogFrame = ns:RegisterModule("MailLogFrame")
 local InboxView = ns.modules.InboxView
 local MailLog = ns.modules.MailLog
+local MailFilters = ns.modules.MailFilters
+local Contacts = ns.modules.Contacts
 
 local ROWS_PER_PAGE = 7
 local ROW_WIDTH = 305
@@ -14,18 +17,51 @@ local LOG_TAB_OFFSET_X = 2
 -- Sender line of sent mail, light blue to tell it apart from received mail (gold).
 local SENT_COLOR = CreateColor(0.4, 0.78, 1)
 
+local DIVIDER = MailFilters.DIVIDER
+
+-- Same presets as the inbox, with received / sent instead of the read state:
+-- all mail | people | direction | trade
+local FILTER_LAYOUT = {
+    MailFilters.PRESET_ALL, DIVIDER,
+    "alts", Contacts.FRIENDS, Contacts.RECENT_ALLIES, Contacts.GUILD, DIVIDER,
+    "received", "sent", DIVIDER,
+    "auction", "money", "cod",
+}
+
 local frame
 local tab
 local rows = {}
 local pageNum = 1
+-- Search box and preset dropdown (see MailFilters), created with the frame.
+local filters = {}
 
-local function GetNewestFirst()
-    local entries = MailLog:GetEntries()
-    local sorted = {}
-    for i = #entries, 1, -1 do
-        sorted[#sorted + 1] = entries[i]
+-- Reused mail object (see MailFilters.lua) for matching a log entry against the filters.
+local filterMail = {}
+
+local function MatchesFilters(entry)
+    filterMail.name = entry.sent and entry.recipient or entry.sender
+    filterMail.subject = entry.subject
+    filterMail.money = entry.money
+    filterMail.cod = (entry.sent and entry.cod or entry.codPaid) or 0
+    filterMail.sent = entry.sent == true
+    for _, filter in ipairs(filters) do
+        if filter:IsActive() and not filter:Matches(filterMail) then
+            return false
+        end
     end
-    return sorted
+    return true
+end
+
+-- Entries matching the filters, newest first.
+local function GetVisibleEntries()
+    local entries = MailLog:GetEntries()
+    local visible = {}
+    for i = #entries, 1, -1 do
+        if MatchesFilters(entries[i]) then
+            visible[#visible + 1] = entries[i]
+        end
+    end
+    return visible
 end
 
 local function FormatDetails(entry)
@@ -144,11 +180,13 @@ function MailLogFrame:Update()
         return
     end
 
-    local entries = GetNewestFirst()
+    local entries = GetVisibleEntries()
     local numPages = math.max(1, math.ceil(#entries / ROWS_PER_PAGE))
     pageNum = math.min(math.max(pageNum, 1), numPages)
 
-    frame.Header:SetFormattedText(L["LOG_HEADER"], MailLog:GetRetentionDays())
+    -- The search box and the filter take the place of a header, so the retention goes into the title.
+    MailFrame:SetTitle(L["LOG_TITLE"]:format(MailLog:GetRetentionDays()))
+    frame.Empty:SetText(#MailLog:GetEntries() == 0 and L["LOG_EMPTY"] or L["LOG_EMPTY_FILTERED"])
     frame.Empty:SetShown(#entries == 0)
 
     local offset = (pageNum - 1) * ROWS_PER_PAGE
@@ -180,12 +218,20 @@ local function CreateLogFrame()
     frame:SetFrameLevel(InboxFrame:GetFrameLevel())
     frame:Hide()
 
-    frame.Header = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    frame.Header:SetPoint("TOP", frame, "TOP", 20, -42)
+    -- Same position and behavior as in the inbox; a changed filter starts on the first page.
+    local function OnFilterChanged()
+        pageNum = 1
+        MailLogFrame:Update()
+    end
+    local function OnFilterDataChanged()
+        MailLogFrame:Update()
+    end
+    filters[1] = MailFilters:CreateSearchBox(frame, "GryphonMailLogSearchBox", OnFilterChanged)
+    filters[2] = MailFilters:CreatePresetDropdown(frame, "GryphonMailLogFilterDropdown", FILTER_LAYOUT,
+        OnFilterChanged, OnFilterDataChanged)
 
     frame.Empty = frame:CreateFontString(nil, "ARTWORK", "GameFontDisable")
     frame.Empty:SetPoint("CENTER", frame, "CENTER", 0, 20)
-    frame.Empty:SetText(L["LOG_EMPTY"])
 
     for i = 1, ROWS_PER_PAGE do
         rows[i] = CreateRow(i)
@@ -230,7 +276,6 @@ local function ShowLog()
 
     ButtonFrameTemplate_HideButtonBar(MailFrame)
     MailFrameInset:SetPoint("TOPLEFT", 4, -58)
-    MailFrame:SetTitle(L["LOG_TITLE"])
 
     frame:Show()
     PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN)
