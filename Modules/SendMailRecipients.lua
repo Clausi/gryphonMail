@@ -19,11 +19,11 @@ local DROPDOWN_OFFSET_X = 6
 -- Short submenus also keep Blizzard's pool of menu element frames small, which are never freed.
 local MAX_ENTRIES_PER_MENU = 20
 
--- Blizzard's reply also puts the sender's full name ("First Surname") into this field, so the full
--- name works as recipient. Programmatic SetText runs the field's OnTextChanged, which enables the
--- send button.
-local function SelectRecipient(fullName)
-    SendMailNameEditBox:SetText(fullName)
+-- Blizzard's reply also puts the sender's name into this field: the full name ("First Surname") on
+-- Forever, the name with realm for other realms on other clients (Names.ToDisplay). Programmatic
+-- SetText runs the field's OnTextChanged, which enables the send button.
+local function SelectRecipient(name)
+    SendMailNameEditBox:SetText(name)
     SendMailSubjectEditBox:SetFocus()
 end
 
@@ -32,9 +32,11 @@ local function ClassColored(name, class)
     return color and color:WrapTextInColorCode(name) or name
 end
 
+-- name: a normalized name (Names.Normalize); shown and entered in its display form.
 local function AddRecipient(description, name, class)
-    description:CreateButton(ClassColored(name, class), function()
-        SelectRecipient(name)
+    local displayName = ns.Names.ToDisplay(name)
+    description:CreateButton(ClassColored(displayName, class), function()
+        SelectRecipient(displayName)
     end)
 end
 
@@ -47,7 +49,7 @@ local function AddOwnCharacters(rootDescription)
 
     local count = 0
     for _, character in ipairs(Characters:GetCharacters()) do
-        -- Only characters of the same faction and ruleset can receive mail from this one.
+        -- Only characters of the same faction and realm (Forever: ruleset) can receive mail from this one.
         if character.canMail then
             AddRecipient(rootDescription, character.fullName, character.class)
             count = count + 1
@@ -59,9 +61,7 @@ local function AddOwnCharacters(rootDescription)
     end
 end
 
-local function FirstName(fullName)
-    return fullName:match("^%S+") or fullName
-end
+local FirstName = ns.Names.GetFirstName
 
 -- Adds contacts[first..last]. More than MAX_ENTRIES_PER_MENU become at most that many submenus
 -- named by their first and last first name ("Abby - Fiona"), nested further if needed.

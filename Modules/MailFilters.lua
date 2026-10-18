@@ -258,12 +258,13 @@ local function NameStartsWith(fullName, wanted)
 end
 
 -- Own characters matching the text (case-insensitive), without exact matches. Only characters that
--- can exchange mail with this one (same faction and ruleset, not the current character) are suggested.
+-- can exchange mail with this one (see Characters:GetCharacters) are suggested, by the name the
+-- mail API shows for them (short for the own realm).
 local function FindSuggestions(text)
     local wanted = text:lower()
     local results = {}
     for _, character in ipairs(Characters:GetCharacters()) do
-        local name = character.fullName
+        local name = character.displayName
         if character.canMail and name:lower() ~= wanted and NameStartsWith(name, wanted) then
             results[#results + 1] = character
             if #results == MAX_SUGGESTIONS then
@@ -369,7 +370,7 @@ function Suggestions:Update(text)
         local character = self.results[i]
         if character then
             local color = character.class and C_ClassColor.GetClassColor(character.class)
-            button:SetText(color and color:WrapTextInColorCode(character.fullName) or character.fullName)
+            button:SetText(color and color:WrapTextInColorCode(character.displayName) or character.displayName)
             button:Show()
         else
             button:Hide()
@@ -385,8 +386,8 @@ function Suggestions:Accept(index)
     self:Hide()
     if character then
         -- Programmatic SetText: OnTextChanged runs without userInput and applies the query.
-        self.searchBox:SetText(character.fullName)
-        self.searchBox:SetCursorPosition(#character.fullName)
+        self.searchBox:SetText(character.displayName)
+        self.searchBox:SetCursorPosition(#character.displayName)
     end
 end
 

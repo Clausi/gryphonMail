@@ -28,6 +28,7 @@ read_globals = {
 
     -- API
     "C_AddOns",
+    "C_AutoComplete",
     "Constants",
     "C_ClassColor",
     "CreateColor",
@@ -45,6 +46,7 @@ read_globals = {
     "GetGuildRosterInfo",
     "GetLocale",
     "GetRealmName",
+    "GetNormalizedRealmName",
     "GetInboxHeaderInfo",
     "GetInboxInvoiceInfo",
     "GetInboxItem",
