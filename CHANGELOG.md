@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Inbox search and filter work in Classic Era, Anniversary and Retail.
 - In Classic Era, Anniversary and Retail, the search boxes and the log fit into the mail frame, and
   in Classic Era and Anniversary the log tab looks like the other mail tabs.
+- In Classic Era and Anniversary, "Open All" keeps its name and opens all mail, also with an
+  active filter. Opening only the filtered mail is not possible there.
 
 ## [0.6.0] - 2026-10-18
 
