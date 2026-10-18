@@ -16,15 +16,17 @@ local ICON_SIZE = 37
 local LOG_TAB_OFFSET_X = 2
 -- Sender line of sent mail, light blue to tell it apart from received mail (gold).
 local SENT_COLOR = CreateColor(0.4, 0.78, 1)
+-- Sender line of returned mail, orange.
+local RETURNED_COLOR = CreateColor(1, 0.6, 0.2)
 
 local DIVIDER = MailFilters.DIVIDER
 
--- Same presets as the inbox, with received / sent instead of the read state:
--- all mail | people | direction | trade
+-- Same presets as the inbox, with received / sent / returned / deleted instead of the read state:
+-- all mail | people | kind of entry | trade
 local FILTER_LAYOUT = {
     MailFilters.PRESET_ALL, DIVIDER,
     "alts", Contacts.FRIENDS, Contacts.RECENT_ALLIES, Contacts.GUILD, DIVIDER,
-    "received", "sent", DIVIDER,
+    "received", "sent", "returned", "deleted", DIVIDER,
     "auction", "money", "cod",
 }
 
@@ -44,6 +46,8 @@ local function MatchesFilters(entry)
     filterMail.money = entry.money
     filterMail.cod = (entry.sent and entry.cod or entry.codPaid) or 0
     filterMail.sent = entry.sent == true
+    filterMail.deleted = entry.deleted == true
+    filterMail.returned = entry.returned == true
     for _, filter in ipairs(filters) do
         if filter:IsActive() and not filter:Matches(filterMail) then
             return false
@@ -82,10 +86,15 @@ local function FormatDetails(entry)
     return table.concat(parts, "  ")
 end
 
--- Received mail shows the sender, sent mail "To: <recipient>" in a different color.
+-- Received mail shows the sender, sent mail "To: <recipient>", deleted mail "Deleted: <sender>" and
+-- returned mail "Returned to: <sender>", each in its own color.
 local function GetCounterpart(entry)
     if entry.sent then
         return L["LOG_SENT_TO"]:format(entry.recipient), SENT_COLOR
+    elseif entry.deleted then
+        return L["LOG_DELETED_FROM"]:format(entry.sender), GRAY_FONT_COLOR
+    elseif entry.returned then
+        return L["LOG_RETURNED_TO"]:format(entry.sender), RETURNED_COLOR
     end
     return entry.sender, NORMAL_FONT_COLOR
 end

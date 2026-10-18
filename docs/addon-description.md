@@ -38,7 +38,8 @@ Pick one and the name is filled in.
 A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected and sent:
 - Sender, subject, date, gold and items for each mail, including the C.O.D. amount you paid
 - **Sent mail** with recipient, gold, items and the C.O.D. amount you asked for
-- The same **search box and filters** as the inbox, with **From** / **To** instead of Unread / Read
+- **Deleted** and **returned mail**, including the gold and items it still contained
+- The same **search box and filters** as the inbox, with **From** / **To** / **Returned** / **Deleted** instead of Unread / Read
 - Item details in the tooltip
 - Stored per character, kept for 30 days (configurable)
 - Only counts what actually arrived in your bags, and only mail that was actually sent

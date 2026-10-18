@@ -31,7 +31,14 @@ local LOOT_SELF_FORMATS = { "LOOT_ITEM_PUSHED_SELF", "LOOT_ITEM_PUSHED_SELF_MULT
 --   received: { time, sender, subject, icon, money, items = { { link, count } }, codPaid (optional) }
 --   sent:     { time, sent = true, recipient, subject, icon, money, items, cod (optional) }
 --             money is the gold sent, cod the C.O.D. amount requested from the recipient.
+--   deleted:  { time, deleted = true, sender, subject, icon, money, items }
+--             money and items are what the mail still contained, so they were lost.
+--   returned: { time, returned = true, sender, subject, icon, money, items }
+--             money and items went back to the sender with the mail.
 local entries = {}
+-- Mails passed to DeleteInboxItem() / ReturnInboxItem() and waiting to disappear from the inbox:
+--   { mail (identity), sameMails (count at request time), requestedAt, entry (prepared log entry) }
+local pendingRemovals = {}
 -- Mail passed to SendMail() and waiting for MAIL_SEND_SUCCESS: { recipient, subject, icon, money,
 -- cod, items }.
 local pendingSend
@@ -325,6 +332,84 @@ local function OnSendSuccess()
     NotifyChanged()
 end
 
+-- Number of mails in the inbox with the same identity (e.g. identical auction mails).
+local function CountSameMails(mail)
+    local count = 0
+    for index = 1, GetInboxNumItems() do
+        if IsSameMail(GetMailIdentity(index), mail) then
+            count = count + 1
+        end
+    end
+    return count
+end
+
+-- Deleted and returned mail: DeleteInboxItem() / ReturnInboxItem() are post-hooked while the mail is
+-- still in the inbox. Blizzard deletes from the delete button, its confirmation dialogs (mail with
+-- items or gold) and when an opened mail whose text was copied is closed; mail from other players
+-- that still has items or gold can only be returned. There is no event for either, so the mail is
+-- logged once one mail with its identity has disappeared from the inbox (MAIL_INBOX_UPDATE); a failed
+-- request runs into the timeout.
+--   kind: "deleted" or "returned", the flag set on the log entry
+local function RequestRemoval(index, kind)
+    local mail = GetMailIdentity(index)
+    local money = select(5, GetInboxHeaderInfo(index))
+    local items = {}
+    for slot = 1, ATTACHMENTS_MAX_RECEIVE do
+        local link = HasInboxItem(index, slot) and GetInboxItemLink(index, slot)
+        if link then
+            local count = select(4, GetInboxItem(index, slot))
+            items[#items + 1] = { link = link, count = count or 1 }
+        end
+    end
+
+    pendingRemovals[#pendingRemovals + 1] = {
+        mail = mail,
+        sameMails = CountSameMails(mail),
+        requestedAt = GetTime(),
+        entry = {
+            [kind] = true,
+            sender = mail.sender,
+            subject = mail.subject,
+            icon = mail.icon,
+            money = money or 0,
+            items = items,
+        },
+    }
+    ns:Debug("Mail %d requested as %s", index, kind)
+end
+
+local function OnDeleteMail(index)
+    RequestRemoval(index, "deleted")
+end
+
+local function OnReturnMail(index)
+    RequestRemoval(index, "returned")
+end
+
+-- Only does work while a delete or return is pending.
+local function OnInboxUpdate()
+    if #pendingRemovals == 0 then
+        return
+    end
+    local now = GetTime()
+    local changed = false
+    for i = #pendingRemovals, 1, -1 do
+        local pending = pendingRemovals[i]
+        if CountSameMails(pending.mail) < pending.sameMails then
+            pending.entry.time = time()
+            entries[#entries + 1] = pending.entry
+            table.remove(pendingRemovals, i)
+            changed = true
+            ns:Debug("Removed mail from %s logged", pending.entry.sender)
+        elseif now - pending.requestedAt > PENDING_TIMEOUT_SECONDS then
+            table.remove(pendingRemovals, i)
+        end
+    end
+    if changed then
+        NotifyChanged()
+    end
+end
+
 local function FormatItemCount(count)
     return count == 1 and L["ITEM_COUNT_ONE"] or L["ITEM_COUNT"]:format(count)
 end
@@ -393,6 +478,7 @@ local function HandleLogCommand(args)
         wipe(entries)
         wipe(sessionMails)
         wipe(pendingTakes)
+        wipe(pendingRemovals)
         NotifyChanged()
         ns:Print(L["LOG_CLEARED"])
     else
@@ -425,6 +511,8 @@ function MailLog:OnInitialize()
     hooksecurefunc("TakeInboxItem", RequestItem)
     hooksecurefunc("AutoLootMailItem", RequestAutoLoot)
     hooksecurefunc("SendMail", OnSendMail)
+    hooksecurefunc("DeleteInboxItem", OnDeleteMail)
+    hooksecurefunc("ReturnInboxItem", OnReturnMail)
 
     ns:RegisterEvent("CHAT_MSG_LOOT", OnLootMessage)
     ns:RegisterEvent("PLAYER_MONEY", OnMoneyChanged)
@@ -436,9 +524,11 @@ function MailLog:OnInitialize()
     ns:RegisterEvent("MAIL_SHOW", function()
         lastMoney = GetMoney()
     end)
+    ns:RegisterEvent("MAIL_INBOX_UPDATE", OnInboxUpdate)
     ns:RegisterEvent("MAIL_CLOSED", function()
         wipe(sessionMails)
         wipe(pendingTakes)
+        wipe(pendingRemovals)
     end)
 
     InboxView:OnReady(SetupOpenAllSummary, "MailLog")

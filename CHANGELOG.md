@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The mail log also records sent mail: recipient, subject, gold, items and the requested C.O.D.
   amount. Sent mail is shown as "To: <recipient>" in blue.
+- The mail log also records deleted and returned mail, including the gold and items it still
+  contained. Deleted mail is shown as "Deleted: <sender>" in gray, returned mail as "Returned to:
+  <sender>" in orange, each with its own filter.
 - The mail log has the same search box and filter dropdown as the inbox. Instead of "Unread" and
   "Read", the filters "From" (received) and "To" (sent) are offered.
 
