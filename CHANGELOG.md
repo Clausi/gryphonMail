@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail chat on|off` turns the automatic chat messages of the current character on or off:
   the login message, the summary after "Open All" and the recent allies hints. Answers to commands
   are always shown.
+- The TOC also declares the WoW Classic Era (11509), Anniversary (20506) and Retail (120105)
+  interfaces, so these clients no longer mark the addon as out of date. Support for them is not
+  complete yet.
 
 ## [0.6.0] - 2026-10-18
 
