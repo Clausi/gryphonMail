@@ -98,17 +98,23 @@ read_globals = {
     "SendMailNameEditBox",
     "SendMailSubjectEditBox",
     -- ShouldSkipCurrentMail / ShouldSkipCurrentAttachment are replaced on purpose to restrict
-    -- "Open All" to filtered mails and to avoid duplicate take requests (see InboxView.lua).
+    -- "Open All" to filtered mails and to avoid duplicate take requests. On Classic,
+    -- AdvanceToNextItem is wrapped and mailIndex / attachmentIndex are advanced past mails that
+    -- do not match the filters (see InboxView.lua).
     OpenAllMail = {
         other_fields = true,
         fields = {
             ShouldSkipCurrentMail = { read_only = false },
             ShouldSkipCurrentAttachment = { read_only = false },
+            AdvanceToNextItem = { read_only = false },
+            mailIndex = { read_only = false },
+            attachmentIndex = { read_only = false },
         },
     },
 
     -- Constants and global strings
     "INBOXITEMS_TO_DISPLAY",
+    "ATTACHMENTS_MAX",
     "ATTACHMENTS_MAX_RECEIVE",
     "ATTACHMENTS_MAX_SEND",
     "SOUNDKIT",

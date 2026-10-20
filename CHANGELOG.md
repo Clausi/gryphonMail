@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Classic Era and Anniversary: with an active search or filter, "Open All" becomes "Open Filtered"
+  and only opens the matching mail, as on Forever and Retail.
+
 ## [0.7.0] - 2026-10-18
 
 ### Added

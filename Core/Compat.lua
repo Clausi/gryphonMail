@@ -81,3 +81,9 @@ function Compat.HasOpenAllSkipHooks()
     return OpenAllMail ~= nil and OpenAllMail.ShouldSkipCurrentMail ~= nil
         and OpenAllMail.ShouldSkipCurrentAttachment ~= nil
 end
+
+-- "Open All" finds the next mail and attachment with AdvanceToNextItem() on all clients. On Classic
+-- it is the only method that can restrict the run to filtered mails. Call once OpenAllMail exists.
+function Compat.HasOpenAllAdvance()
+    return OpenAllMail ~= nil and OpenAllMail.AdvanceToNextItem ~= nil
+end
