@@ -200,8 +200,7 @@ local function OnInboxUpdate(inbox)
     ns.Compat.SetInboxPageButtonsEnabled(inbox.pageNum > 1, inbox.pageNum < numPages)
 end
 
--- True once "Open All" is restricted to the filtered mails (see SetupOpenAll). Not possible on
--- Classic, where the button keeps Blizzard's text and opens all mails.
+-- True once "Open All" is restricted to the filtered mails (see SetupOpenAll).
 local canOpenFiltered = false
 
 -- Shows whether "Open All" currently opens all mails or only the filtered ones.
@@ -229,6 +228,17 @@ local function CollectMatchingMails()
         end
     end
     return mails
+end
+
+-- Starts a run if none is running. Called from the first mail lookup of a run, before anything was
+-- taken (StartOpening has no pre-hook).
+local function StartRun()
+    if not run then
+        run = {
+            mails = InboxView:IsFilterActive() and CollectMatchingMails() or nil,
+            requests = {},
+        }
+    end
 end
 
 local function IsRunMail(index)
@@ -294,24 +304,10 @@ end
 --                                requests them again while the inbox data is not updated yet (also
 --                                after mail indices shift), which the server answers with "The item
 --                                was not found". A failed request (MAIL_FAILED) may be retried.
--- Classic has neither method, the skip logic is inlined in AdvanceToNextItem(). Replacing that
--- would mirror much more of Blizzard's code, so "Open All" stays unchanged there.
-local function SetupOpenAll()
-    if not ns.Compat.HasOpenAllSkipHooks() then
-        return
-    end
-    canOpenFiltered = true
-
+local function SetupSkipHooks()
     local shouldSkipCurrentMail = OpenAllMail.ShouldSkipCurrentMail
     OpenAllMail.ShouldSkipCurrentMail = function(self)
-        -- The first call of a run happens before anything was taken (StartOpening has no pre-hook),
-        -- so the run starts here.
-        if not run then
-            run = {
-                mails = InboxView:IsFilterActive() and CollectMatchingMails() or nil,
-                requests = {},
-            }
-        end
+        StartRun()
         if run.mails and not IsRunMail(self.mailIndex) then
             return true
         end
@@ -346,6 +342,42 @@ local function SetupOpenAll()
             run.lastRequest.failed = true
         end
     end)
+end
+
+-- Classic has neither skip method, its skip logic is inlined in AdvanceToNextItem(). That method is
+-- wrapped instead: Blizzard's version finds the next mail with something to take, the wrapper moves
+-- on past mails that did not match at the start of the run. Blizzard calls the method recursively
+-- through self for the next mail, so every step passes the wrapper. Attachments already requested
+-- are not skipped here: Blizzard's ProcessNextItem() takes the money of a mail regardless of the
+-- attachment index, so skipping single attachments would not prevent repeated requests.
+local function SetupAdvanceWrapper()
+    local advanceToNextItem = OpenAllMail.AdvanceToNextItem
+    OpenAllMail.AdvanceToNextItem = function(self)
+        StartRun()
+        while advanceToNextItem(self) do
+            if not run.mails or IsRunMail(self.mailIndex) then
+                return true
+            end
+            self.mailIndex = self.mailIndex + 1
+            self.attachmentIndex = ATTACHMENTS_MAX
+            if self.mailIndex > GetInboxNumItems() then
+                return false
+            end
+        end
+        return false
+    end
+end
+
+-- "Open Filtered" needs the skip methods (Forever, Retail) or AdvanceToNextItem() (Classic).
+local function SetupOpenAll()
+    if ns.Compat.HasOpenAllSkipHooks() then
+        SetupSkipHooks()
+    elseif ns.Compat.HasOpenAllAdvance() then
+        SetupAdvanceWrapper()
+    else
+        return
+    end
+    canOpenFiltered = true
 
     -- StopOpening() resets the text to Blizzard's default.
     hooksecurefunc(OpenAllMail, "StopOpening", function()

@@ -16,8 +16,6 @@ Anniversary the Classic UI. Client differences are handled in `Core/Compat.lua`.
 
 Known differences:
 
-- Classic Era and Anniversary: "Open All" always opens all mail, also while a search or filter is
-  active. Blizzard's button there offers no way to skip single mails.
 - Outside Forever, characters are told apart by realm: characters on other realms are shown as
   "Name-Realm", and own characters are only offered as recipients on the same realm (Retail: also
   on connected realms) and faction.
