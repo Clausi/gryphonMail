@@ -25,7 +25,7 @@ Show only the mail you care about with one click:
 Filters work together with the search box, e.g. *Guild* + "ore".
 
 ### Open only what you filtered
-While a search or filter is active, **Open All** becomes **Open Filtered** and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button. *(Forever and Retail; on Classic Era and Anniversary, Open All keeps opening all mail.)*
+While a search or filter is active, **Open All** becomes **Open Filtered** and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button.
 
 ### Pick a recipient
 A small dropdown next to the **To** field of *Send Mail* lists:
