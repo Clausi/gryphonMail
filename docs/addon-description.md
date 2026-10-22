@@ -7,7 +7,7 @@ GryphonMail extends the default mailbox instead of replacing it. Everything stay
 ## Features
 
 ### Search your inbox
-- Search box in the inbox that filters mail by **sender or subject** as you type
+- Search box in the inbox that filters mail by **sender, subject or attached item** as you type
 - Suggests your **own characters** while typing, matching first name or surname
 - Page through the results just like the normal inbox
 
@@ -53,7 +53,7 @@ After *Open All* / *Open Filtered* you get a short summary, e.g.
 | Command | Description |
 |---|---|
 | `/gryphonmail` | Show all commands |
-| `/gryphonmail chars` | List your known characters |
+| `/gryphonmail chars` | List your known characters, with a mailbox icon for those you can send mail to |
 | `/gryphonmail chars remove <number or name>` | Forget a character (deleted or renamed) |
 | `/gryphonmail log` | Show log settings |
 | `/gryphonmail log days <1-365>` | Keep log entries for that many days |
