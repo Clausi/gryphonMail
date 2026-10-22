@@ -2,14 +2,16 @@ local _, ns = ...
 local L = ns.L
 
 -- Search box and preset dropdown shared by the inbox and the mail log. Both work on mail objects:
---   { name, subject, money, cod, wasRead, sent, deleted, returned, index }
+--   { name, subject, money, cod, wasRead, itemCount, items, sent, deleted, returned, index }
 --   name     the other character: sender of received mail, recipient of sent mail
 --   cod      C.O.D. amount (to pay, paid or requested)
 --   wasRead  inbox only
+--   itemCount inbox only: number of attachments, read with GetInboxItem only when searched
+--   items    log only: the logged attachments { { link, count } }
 --   sent     log only: true for sent mail
 --   deleted  log only: true for deleted mail
 --   returned log only: true for returned mail
---   index    inbox only: inbox index, for the auction house invoice
+--   index    inbox only: inbox index, for the auction house invoice and the attachments
 -- Each created search box or dropdown is a filter with IsActive() and Matches(mail).
 local MailFilters = ns:RegisterModule("MailFilters")
 local Characters = ns.modules.Characters
@@ -42,9 +44,14 @@ local SUGGESTION_BACKDROP = {
 
 MailFilters.PRESET_ALL = "all"
 
--- Mail names and subjects could be secret values on Forever; those are never matched.
+-- Mail names, subjects and item names could be secret values on Forever; those are never matched.
 local function IsUsableString(text)
     return type(text) == "string" and not (issecretvalue and issecretvalue(text))
+end
+
+-- Item name from an item link "|cff...|Hitem:...|h[Name]|h|r".
+local function GetLinkName(link)
+    return IsUsableString(link) and link:match("|h%[(.-)%]|h") or nil
 end
 
 -- Explains in the chat why the filter shows no mail when there are no recent allies to match.
@@ -402,8 +409,26 @@ function SearchFilter:Contains(text)
     return IsUsableString(text) and text:lower():find(self.query, 1, true) ~= nil
 end
 
+-- Attachments are only read when name and subject do not match, the inbox ones on demand.
+function SearchFilter:ContainsItem(mail)
+    if mail.items then
+        for _, item in ipairs(mail.items) do
+            if self:Contains(GetLinkName(item.link)) then
+                return true
+            end
+        end
+    elseif mail.index and mail.itemCount and mail.itemCount > 0 then
+        for slot = 1, ATTACHMENTS_MAX_RECEIVE do
+            if HasInboxItem(mail.index, slot) and self:Contains((GetInboxItem(mail.index, slot))) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 function SearchFilter:Matches(mail)
-    return self:Contains(mail.name) or self:Contains(mail.subject)
+    return self:Contains(mail.name) or self:Contains(mail.subject) or self:ContainsItem(mail)
 end
 
 function SearchFilter:SetQuery(text)
@@ -415,7 +440,7 @@ function SearchFilter:SetQuery(text)
     self.onChange()
 end
 
--- Creates the search box (name or subject) in the top right of MailFrame, as a child of parent.
+-- Creates the search box (name, subject or attached item) in the top right of MailFrame, as a child of parent.
 -- InboxFrame fills MailFrame on Forever, but has a fixed size of 384 x 512 on Retail and Classic,
 -- wider than the visible frame, so the box is anchored to MailFrame. onChange runs after the search
 -- text changed.

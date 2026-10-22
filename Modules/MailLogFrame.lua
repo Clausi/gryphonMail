@@ -46,6 +46,7 @@ local function MatchesFilters(entry)
     filterMail.subject = entry.subject
     filterMail.money = entry.money
     filterMail.cod = (entry.sent and entry.cod or entry.codPaid) or 0
+    filterMail.items = entry.items
     filterMail.sent = entry.sent == true
     filterMail.deleted = entry.deleted == true
     filterMail.returned = entry.returned == true

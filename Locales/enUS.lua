@@ -10,7 +10,7 @@ local L = setmetatable({}, {
 ns.L = L
 
 L["ADDON_LOADED"] = "Version %s loaded. Type /gryphonmail for help."
-L["SEARCH_PLACEHOLDER"] = "Sender or subject"
+L["SEARCH_PLACEHOLDER"] = "Name, subject, item"
 L["OPEN_FILTERED"] = "Open Filtered"
 L["FILTER_ALL"] = "All Mail"
 L["FILTER_FRIENDS"] = "Friends"
