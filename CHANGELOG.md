@@ -7,12 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-22
+
 ### Added
 
 - The search box of the inbox and the log also finds mail by the name of an attached item.
-
-### Added
-
 - `/gryphonmail chars` marks the characters the current one can send mail to with a mailbox
   icon.
 
@@ -123,7 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Clausi/gryphonMail/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Clausi/gryphonMail/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/Clausi/gryphonMail/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/Clausi/gryphonMail/compare/v0.5.0...v0.6.0
