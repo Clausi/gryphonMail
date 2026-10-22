@@ -68,7 +68,7 @@ L["HELP_CHARS_REMOVE"] = "/gryphonmail chars remove <number||name> - forget a ch
 L["HELP_LOG"] = "/gryphonmail log - show log settings"
 L["HELP_LOG_DAYS"] = "/gryphonmail log days <1-365> - keep log entries for that many days"
 L["HELP_LOG_CLEAR"] = "/gryphonmail log clear - clear the log of this character"
-L["CHARS_HEADER"] = "Known characters:"
+L["CHARS_HEADER"] = "Known characters (%s = can receive mail from this character):"
 L["CHARS_EMPTY"] = "No characters known yet."
 L["CHARS_CURRENT"] = "(current)"
 L["CHARS_REMOVED"] = "Removed %s."

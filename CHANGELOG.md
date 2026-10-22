@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `/gryphonmail chars` marks the characters the current one can send mail to with a mailbox
+  icon.
+
 ## [0.8.0] - 2026-10-20
 
 ### Added
