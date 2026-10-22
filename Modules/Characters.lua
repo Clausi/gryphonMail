@@ -23,6 +23,9 @@ local FACTION_LABELS = {
     Neutral = L["FACTION_NEUTRAL"],
 }
 
+-- Minimap mailbox tracking icon at line height, marks mail targets in "/gryphonmail chars".
+local MAIL_TARGET_ICON = "|TInterface\\Minimap\\Tracking\\Mailbox:0|t"
+
 local function InvalidateCaches()
     nameSet = nil
     characterList = nil
@@ -75,25 +78,28 @@ local function FindCharacter(input)
 end
 
 local function ListCharacters()
-    local names = GetSortedNames()
-    if #names == 0 then
+    -- Same order as GetSortedNames(), so the numbers match "chars remove".
+    local characters = Characters:GetCharacters()
+    if #characters == 0 then
         ns:Print(L["CHARS_EMPTY"])
         return
     end
 
-    local current = GetPlayerName()
-    ns:Print(L["CHARS_HEADER"])
-    for i, fullName in ipairs(names) do
-        local line = ("%d. %s"):format(i, ColorizeName(fullName))
-        local info = ns.db.characters[fullName]
+    ns:Print(L["CHARS_HEADER"], MAIL_TARGET_ICON)
+    for i, character in ipairs(characters) do
+        local name = ColorizeName(character.fullName)
+        if character.canMail then
+            name = MAIL_TARGET_ICON .. " " .. name
+        end
+        local line = ("%d. %s"):format(i, name)
         -- "(realm, faction)", either part may be unknown for old entries.
         local details = {}
-        details[#details + 1] = info.realm
-        details[#details + 1] = FACTION_LABELS[info.faction] or info.faction
+        details[#details + 1] = character.realm
+        details[#details + 1] = FACTION_LABELS[character.faction] or character.faction
         if #details > 0 then
             line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. table.concat(details, ", ") .. ")")
         end
-        if fullName == current then
+        if character.isCurrent then
             line = line .. " " .. L["CHARS_CURRENT"]
         end
         ns:Print(line)
