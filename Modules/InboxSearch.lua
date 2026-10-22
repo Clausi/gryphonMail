@@ -1,6 +1,6 @@
 local _, ns = ...
 
--- Search box that filters the inbox by sender or subject (see MailFilters).
+-- Search box that filters the inbox by sender, subject or attached item (see MailFilters).
 local InboxSearch = ns:RegisterModule("InboxSearch")
 local InboxView = ns.modules.InboxView
 local MailFilters = ns.modules.MailFilters

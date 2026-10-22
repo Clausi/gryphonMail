@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The search box of the inbox and the log also finds mail by the name of an attached item.
+
+### Added
+
 - `/gryphonmail chars` marks the characters the current one can send mail to with a mailbox
   icon.
 
