@@ -51,7 +51,7 @@ World of Warcraft addon that extends the default mailbox.
 - Code, identifiers, comments, commit messages and docs are in **English**.
 - Never hardcode user-facing text. Every string goes through `L["KEY"]`:
   1. Add the key to `Locales/enUS.lua` (base locale, must contain every key).
-  2. Add the German translation to `Locales/deDE.lua`.
+  2. Add the German translation to `Locales/deDE.lua` and the French one to `Locales/frFR.lua`.
   Missing translations fall back to English.
 - `|` starts an escape sequence in WoW text (`|n` newline, `|c` color, ...). Write a literal pipe
   as `||` in user-facing strings.
