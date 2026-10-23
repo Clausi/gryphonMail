@@ -64,7 +64,7 @@ After *Open All* / *Open Filtered* you get a short summary, e.g.
 - One download for **Forever**, **Classic Era**, **Anniversary** and **Retail**.
 - Outside Forever, characters on other realms are shown as *Name-Realm*.
 - Your characters are remembered when you log in with them once while the addon is active.
-- Languages: English, German.
+- Languages: English, German, French.
 
 ## Feedback & source code
 
