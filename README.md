@@ -79,7 +79,8 @@ GryphonMail/
 │   └── addon-description.md  # Description text for CurseForge / Wago / WoWInterface (not shipped)
 ├── Locales/
 │   ├── enUS.lua           # Base locale (fallback, all keys)
-│   └── deDE.lua           # German translation
+│   ├── deDE.lua           # German translation
+│   └── frFR.lua           # French translation
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
 │   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, Retail) detected from the APIs
