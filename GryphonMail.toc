@@ -12,6 +12,7 @@
 ## X-License: MIT
 ## X-Website: https://github.com/Clausi/gryphonMail
 ## X-Curse-Project-ID: 1750287
+## X-Wago-ID: qGYBwgNg
 
 # Localization (enUS must be loaded first, it is the fallback)
 Locales\enUS.lua

@@ -1,6 +1,6 @@
 package-as: GryphonMail
 
-# Uploaded as the release notes on CurseForge and GitHub.
+# Uploaded as the release notes on CurseForge, Wago Addons and GitHub.
 manual-changelog:
   filename: CHANGELOG.md
   markup-type: markdown
