@@ -41,8 +41,8 @@ Known differences:
 
 ## Installation
 
-Install it from [CurseForge](https://www.curseforge.com/projects/1750287) or Wago Addons, or
-copy (or symlink) the `GryphonMail` folder into the client's AddOns folder:
+Install it from [CurseForge](https://www.curseforge.com/projects/1750287) or
+[Wago Addons](https://addons.wago.io/addons/gryphonmail), or copy (or symlink) the `GryphonMail` folder into the client's AddOns folder:
 
 ```
 World of Warcraft\<client folder>\Interface\AddOns\GryphonMail

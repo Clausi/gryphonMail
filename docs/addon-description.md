@@ -72,3 +72,5 @@ Found a bug or have an idea? Please open an issue on GitHub:
 **[github.com/Clausi/gryphonMail/issues](https://github.com/Clausi/gryphonMail/issues)**
 
 Source code and changelog: [github.com/Clausi/gryphonMail](https://github.com/Clausi/gryphonMail)
+
+Also available on [CurseForge](https://www.curseforge.com/projects/1750287) and [Wago Addons](https://addons.wago.io/addons/gryphonmail).
