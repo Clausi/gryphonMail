@@ -4,17 +4,19 @@ World of Warcraft addon that extends the default mailbox.
 
 ## Target clients
 
-- One package for four clients, all listed in `## Interface:` (`11509, 16001, 20506, 120105`):
+- One package for five clients, all listed in `## Interface:` (`11509, 16001, 20506, 50504, 120105`):
   - **Forever** (16001) and **Retail** (120105) use the Mainline UI and API.
-  - **Classic Era** (11509) and **Anniversary** (20506) use the Classic UI (e.g. the mail frame is
-    part of `Blizzard_UIPanels_Game`, not the load-on-demand `Blizzard_MailFrame`).
+  - **Classic Era** (11509), **Anniversary** (20506) and **MoP Classic** (50504; Blizzard calls it
+    "Classic", game folder `_classic_`) use the Classic UI (e.g. the mail frame is part of
+    `Blizzard_UIPanels_Game`, not the load-on-demand `Blizzard_MailFrame`).
 - Every client difference goes through `ns.Compat` (`Core/Compat.lua`). Detect APIs, methods or
   frame fields that exist instead of comparing version numbers, and do not branch on clients
   anywhere else.
-- Reference for Blizzard UI code: the `forever`, `live`, `classic_era` and `classic_anniversary`
-  branches of https://github.com/Gethe/wow-ui-source (mail frame: `Blizzard_MailFrame/` on Forever
-  and Retail, `Blizzard_UIPanels_Game/Classic/MailFrame.lua` on Classic). Read the actual Blizzard
-  source of every client before hooking or mirroring Blizzard behavior instead of relying on memory.
+- Reference for Blizzard UI code: the `forever`, `live`, `classic_era`, `classic_anniversary` and
+  `classic` (MoP Classic) branches of https://github.com/Gethe/wow-ui-source (mail frame:
+  `Blizzard_MailFrame/` on Forever and Retail, `Blizzard_UIPanels_Game/Classic/MailFrame.lua` on
+  Classic). Read the actual Blizzard source of every client before hooking or mirroring Blizzard
+  behavior instead of relying on memory.
 - Verify interface numbers in-game with `/dump select(4, GetBuildInfo())`.
 - Always use `ns.Names` (`Core/Names.lua`) to build, compare and show names; never use `Ambiguate`.
   The rules differ per client (`ns.Compat.HasRealmNames()`):
@@ -24,7 +26,7 @@ World of Warcraft addon that extends the default mailbox.
     ruleset (PvE, PvP, RP) is its own realm, e.g. `GetRealmName()` = "Classic Beta PvE". Trading and
     mail only work within the same ruleset and faction. A full name is unique across rulesets, so
     characters are keyed by name; the ruleset is stored as `realm` per character.
-  - **Classic Era, Anniversary, Retail:** names are "Name-Realm" with the realm from
+  - **Classic Era, Anniversary, MoP Classic, Retail:** names are "Name-Realm" with the realm from
     `GetNormalizedRealmName()` (no spaces). The APIs leave out the realm for the own realm (mail
     sender, friends), the guild roster always includes it. `Names.Normalize` fills in the own realm
     for comparing and as key of `ns.db.characters`; `Names.ToDisplay` gives the short name for the

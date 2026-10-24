@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- Differences between the supported clients (Forever, Classic Era, Anniversary, Retail), in one
--- place. Detects the APIs and methods a client has instead of comparing version numbers. Blizzard
--- UI reference: the forever, classic_era, classic_anniversary and live branches of
--- Gethe/wow-ui-source.
+-- Differences between the supported clients (Forever, Classic Era, Anniversary, MoP Classic,
+-- Retail), in one place. Detects the APIs and methods a client has instead of comparing version
+-- numbers. Blizzard UI reference: the forever, classic_era, classic_anniversary, classic (MoP
+-- Classic) and live branches of Gethe/wow-ui-source.
 local Compat = {}
 ns.Compat = Compat
 
