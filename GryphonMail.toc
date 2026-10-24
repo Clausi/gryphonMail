@@ -1,4 +1,4 @@
-## Interface: 11509, 16001, 20506, 120105
+## Interface: 11509, 16001, 20506, 50504, 120105
 ## Title: GryphonMail
 ## Notes: Extends the default mailbox with additional features.
 ## Notes-deDE: Erweitert das Standard-Postfach um zusätzliche Funktionen.
