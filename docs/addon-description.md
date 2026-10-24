@@ -1,6 +1,6 @@
 # GryphonMail
 
-**A smarter mailbox for World of Warcraft: Forever, Classic Era, Anniversary and Retail.**
+**A smarter mailbox for World of Warcraft: Forever, Classic Era, Anniversary, MoP Classic and Retail.**
 
 GryphonMail extends the default mailbox instead of replacing it. Everything stays where you know it, with a few tools that save you time on every visit.
 
@@ -15,7 +15,7 @@ GryphonMail extends the default mailbox instead of replacing it. Everything stay
 Show only the mail you care about with one click:
 - **My Characters** (mail from your alts)
 - **Friends**
-- **Recent Allies** (characters from the *Recent Allies* tab of your friends list)
+- **Recent Allies** (characters from the *Recent Allies* tab of your friends list, where the game has it)
 - **Guild**
 - **Unread** / **Read**
 - **Auction House**
@@ -61,7 +61,7 @@ After *Open All* / *Open Filtered* you get a short summary, e.g.
 | `/gryphonmail chat on\|off` | Turn the automatic chat messages (login, summary, hints) of this character on or off |
 
 ## Good to know
-- One download for **Forever**, **Classic Era**, **Anniversary** and **Retail**.
+- One download for **Forever**, **Classic Era**, **Anniversary**, **MoP Classic** and **Retail**.
 - Outside Forever, characters on other realms are shown as *Name-Realm*.
 - Your characters are remembered when you log in with them once while the addon is active.
 - Languages: English, German, French.

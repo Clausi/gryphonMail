@@ -25,10 +25,11 @@ The full description for CurseForge is in [docs/addon-description.md](docs/addon
 | Forever     | 16001     | Supported                              |
 | Anniversary | 20506     | Supported                              |
 | Classic Era | 11509     | Supported, less tested (see [#24][])   |
+| MoP Classic | 50504     | Supported, less tested                 |
 | Retail      | 120105    | Supported, less tested (see [#24][])   |
 
-One package works on all clients. Forever and Retail use the Mainline UI and API, Classic Era and
-Anniversary the Classic UI. Client differences are handled in `Core/Compat.lua`.
+One package works on all clients. Forever and Retail use the Mainline UI and API, Classic Era,
+Anniversary and MoP Classic the Classic UI. Client differences are handled in `Core/Compat.lua`.
 
 Known differences:
 
@@ -83,7 +84,7 @@ GryphonMail/
 │   └── frFR.lua           # French translation
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
-│   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, Retail) detected from the APIs
+│   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, MoP Classic, Retail) detected from the APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, defaults
 │   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
