@@ -30,7 +30,7 @@ While a search or filter is active, **Open All** becomes **Open Filtered** and o
 ### Pick a recipient
 A small dropdown next to the **To** field of *Send Mail* lists:
 - Your **own characters** of the same faction and realm (Forever: ruleset PvE, PvP, RP; Retail: also connected realms)
-- Your **guild members** and **recent allies** (where the game has them) in submenus, class colored. Long lists are split into name ranges, e.g. *Abby - Fiona*.
+- Your **friends**, **guild members** and **recent allies** (where the game has them) in submenus; guild members and recent allies are class colored. Long lists are split into name ranges, e.g. *Abby - Fiona*.
 
 Pick one and the name is filled in.
 

@@ -2,7 +2,7 @@ local _, ns = ...
 local L = ns.L
 
 -- Dropdown next to the "To" field of the "Send Mail" tab to pick a recipient: own characters, plus
--- submenus with guild members and recent allies.
+-- submenus with friends, guild members and recent allies.
 local SendMailRecipients = ns:RegisterModule("SendMailRecipients")
 local InboxView = ns.modules.InboxView
 local Characters = ns.modules.Characters
@@ -100,6 +100,13 @@ local function AddContacts(submenu, kind)
     return #contacts
 end
 
+local function AddFriends(rootDescription)
+    local submenu = rootDescription:CreateButton(L["FILTER_FRIENDS"])
+    if AddContacts(submenu, Contacts.FRIENDS) == 0 then
+        AddNote(submenu, L["SEND_TO_FRIENDS_EMPTY"])
+    end
+end
+
 local function AddGuild(rootDescription)
     local submenu = rootDescription:CreateButton(L["FILTER_GUILD"])
     if not IsInGuild() then
@@ -127,6 +134,7 @@ local function GenerateMenu(_, rootDescription)
     rootDescription:SetTag("MENU_GRYPHONMAIL_SEND_RECIPIENT")
     AddOwnCharacters(rootDescription)
     rootDescription:CreateDivider()
+    AddFriends(rootDescription)
     AddGuild(rootDescription)
     AddRecentAllies(rootDescription)
 end
@@ -135,7 +143,7 @@ local function CreateDropdown()
     local dropdown = CreateFrame("DropdownButton", "GryphonMailSendRecipientDropdown", SendMailFrame,
         "WowStyle1ArrowDropdownTemplate")
     dropdown:SetPoint("LEFT", SendMailNameEditBox, "RIGHT", DROPDOWN_OFFSET_X, 0)
-    -- The menu (all characters, guild members and recent allies) can take hundreds of KB; this arrow
+    -- The menu (all characters, friends, guild members and recent allies) can take hundreds of KB; this arrow
     -- dropdown shows no selection text, so it is only built while open.
     ns.SetupMenuOnDemand(dropdown, GenerateMenu)
 
