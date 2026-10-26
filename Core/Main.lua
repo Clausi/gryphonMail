@@ -8,7 +8,12 @@ ns:RegisterEvent("ADDON_LOADED", function(_, loadedName)
 
     GryphonMailDB = ns.ApplyDefaults(GryphonMailDB or {}, ns.defaults)
     ns.db = GryphonMailDB
-    GryphonMailCharDB = ns.ApplyDefaults(GryphonMailCharDB or {}, ns.charDefaults)
+    GryphonMailCharDB = GryphonMailCharDB or {}
+    -- Takes over the setting from its old name chatMessages, as long as that is still saved.
+    if GryphonMailCharDB.notifications == nil and GryphonMailCharDB.chatMessages ~= nil then
+        GryphonMailCharDB.notifications = GryphonMailCharDB.chatMessages
+    end
+    GryphonMailCharDB = ns.ApplyDefaults(GryphonMailCharDB, ns.charDefaults)
     ns.charDb = GryphonMailCharDB
 
     -- Debug mode breaks the memory down: loaded files and saved variables, then each module.
@@ -40,19 +45,19 @@ ns:RegisterCommand("debug", function()
     ns:Print(ns.db.debug and L["DEBUG_ON"] or L["DEBUG_OFF"])
 end, { L["HELP_DEBUG"] })
 
--- "/gryphonmail chat on|off" sets the automatic chat messages, without argument shows the setting.
-ns:RegisterCommand("chat", function(args)
+-- "/gryphonmail notify on|off" sets the automatic messages, without argument shows the setting.
+ns:RegisterCommand("notify", function(args)
     local value = args:lower()
     if value == "on" then
-        ns.charDb.chatMessages = true
+        ns:SetNotifications(true)
     elseif value == "off" then
-        ns.charDb.chatMessages = false
+        ns:SetNotifications(false)
     elseif value ~= "" then
-        ns:Print(L["HELP_CHAT"])
+        ns:Print(L["HELP_NOTIFY"])
         return
     end
-    ns:Print(ns.charDb.chatMessages and L["CHAT_ON"] or L["CHAT_OFF"])
-end, { L["HELP_CHAT"] })
+    ns:Print(ns.charDb.notifications and L["NOTIFY_ON"] or L["NOTIFY_OFF"])
+end, { L["HELP_NOTIFY"] })
 
 local function PrintHelp()
     ns:Print(L["HELP_HEADER"])

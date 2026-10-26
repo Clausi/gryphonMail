@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `/gryphonmail chat on|off` is now `/gryphonmail notify on|off`, as in GryphonChat. The setting
+  itself is kept.
+
 ## [0.11.0] - 2026-10-25
 
 ### Added
