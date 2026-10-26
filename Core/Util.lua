@@ -11,11 +11,18 @@ function ns:Print(message, ...)
 end
 
 -- Prints a message the addon shows on its own (not as the answer to a command). The user can turn
--- these off with "/gryphonmail chat off".
+-- these off with "/gryphonmail notify off".
 function ns:Notify(message, ...)
-    if self.charDb and self.charDb.chatMessages then
+    if self.charDb and self.charDb.notifications then
         self:Print(message, ...)
     end
+end
+
+-- Turns the automatic messages of the current character on or off. Also writes the old name
+-- chatMessages, so an older version keeps the setting (TODO: remove in a later release).
+function ns:SetNotifications(value)
+    self.charDb.notifications = value
+    self.charDb.chatMessages = value
 end
 
 -- Prints only when debug mode is enabled in the saved variables.

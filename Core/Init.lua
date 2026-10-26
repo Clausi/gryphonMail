@@ -19,7 +19,11 @@ ns.defaults = {
 ns.charDefaults = {
     -- Collected mails, oldest first. Filled by Modules/MailLog.lua.
     log = {},
-    -- Automatic chat messages (login, "Open All" summary, hints). Change with "/gryphonmail chat on|off".
+    -- Automatic messages (login, "Open All" summary, hints). Change with "/gryphonmail notify on|off"
+    -- (ns:SetNotifications).
+    notifications = true,
+    -- Old name of notifications, written in parallel so an older version keeps the setting.
+    -- TODO: remove in a later release.
     chatMessages = true,
 }
 
