@@ -18,6 +18,8 @@ local InboxView = ns.modules.InboxView
 local SECONDS_PER_DAY = 24 * 60 * 60
 local MIN_RETENTION_DAYS = 1
 local MAX_RETENTION_DAYS = 365
+MailLog.MIN_RETENTION_DAYS = MIN_RETENTION_DAYS
+MailLog.MAX_RETENTION_DAYS = MAX_RETENTION_DAYS
 
 -- Pending requests older than this are not matched anymore.
 local PENDING_TIMEOUT_SECONDS = 10
@@ -470,9 +472,7 @@ local function HandleLogCommand(args)
             ns:Print(L["LOG_DAYS_INVALID"], MIN_RETENTION_DAYS, MAX_RETENTION_DAYS)
             return
         end
-        ns.db.logRetentionDays = days
-        Prune()
-        NotifyChanged()
+        MailLog:SetRetentionDays(days)
         ns:Print(L["LOG_DAYS_SET"], days)
     elseif action == "clear" then
         wipe(entries)
@@ -493,6 +493,14 @@ end
 
 function MailLog:GetRetentionDays()
     return ns.db.logRetentionDays
+end
+
+-- Sets the days a log entry is kept (whole number between MIN_ and MAX_RETENTION_DAYS) and drops
+-- older entries right away.
+function MailLog:SetRetentionDays(days)
+    ns.db.logRetentionDays = days
+    Prune()
+    NotifyChanged()
 end
 
 -- Registers a callback that runs whenever the log changes.
