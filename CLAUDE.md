@@ -41,4 +41,4 @@ Documented writes to Blizzard frames: `InboxFrame.pageNum` and the replaced `Ope
 
 ## Commit scopes
 
-`inbox-search`, `inbox-filter`, `inbox-view`, `characters`, `mail-log`, `core`, `locales`, `toc`.
+`inbox-search`, `inbox-filter`, `inbox-view`, `characters`, `mail-log`, `options`, `core`, `locales`, `toc`.
