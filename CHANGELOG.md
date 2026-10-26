@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Options page in the game settings (Esc > Options > AddOns > GryphonMail) for the automatic
   messages and the days the mail log keeps, also opened with `/gryphonmail options`.
+- Friends submenu in the recipient dropdown of "Send Mail".
 
 ### Changed
 
