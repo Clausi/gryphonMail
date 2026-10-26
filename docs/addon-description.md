@@ -53,6 +53,7 @@ After *Open All* / *Open Filtered* you get a short summary, e.g.
 | Command | Description |
 |---|---|
 | `/gryphonmail` | Show all commands |
+| `/gryphonmail options` | Open the options page (also in Esc > Options > AddOns) |
 | `/gryphonmail chars` | List your known characters, with a mailbox icon for those you can send mail to |
 | `/gryphonmail chars remove <number or name>` | Forget a character (deleted or renamed) |
 | `/gryphonmail log` | Show log settings |

@@ -15,6 +15,8 @@ A World of Warcraft addon that extends the default mailbox.
 - **Mail log:** a "Log" tab with collected, sent, returned and deleted mail, including gold and
   items, with the same search and filters as the inbox. Stored per character.
 - **Chat summary:** after "Open All" / "Open Filtered", what was collected.
+- **Options:** automatic messages and the days the log keeps, on an own page in the game
+  options (Esc > Options > AddOns > GryphonMail).
 
 The full description for CurseForge is in [docs/addon-description.md](docs/addon-description.md).
 
@@ -97,7 +99,8 @@ GryphonMail/
     ├── InboxFilter.lua    # Inbox filter dropdown (own characters, friends, recent allies, guild, unread, read, AH, gold, C.O.D.)
     ├── MailLog.lua        # Records collected, sent, returned and deleted mail per character, "Open All" summary
     ├── MailLogFrame.lua   # Third mail frame tab "Log" with search box and filters (as inbox, but from/to/returned/deleted)
-    └── SendMailRecipients.lua # Recipient dropdown next to the "To" field of "Send Mail"
+    ├── SendMailRecipients.lua # Recipient dropdown next to the "To" field of "Send Mail"
+    └── Options.lua        # Options page in the game settings ("/gryphonmail options")
 ```
 
 ## Adding a module
@@ -132,6 +135,7 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
 
 - `/gryphonmail` – help
 - `/gryphonmail version` – show version
+- `/gryphonmail options` – open the options page
 - `/gryphonmail chars` – list known own characters, mail targets of the current one marked with a
   mailbox icon
 - `/gryphonmail chars remove <number|name>` – forget a character (e.g. deleted or renamed)

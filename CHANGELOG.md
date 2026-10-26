@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Options page in the game settings (Esc > Options > AddOns > GryphonMail) for the automatic
+  messages and the days the mail log keeps, also opened with `/gryphonmail options`.
+
 ### Changed
 
 - `/gryphonmail chat on|off` is now `/gryphonmail notify on|off`, as in GryphonChat. The setting
