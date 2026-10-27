@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Options page in the game settings (Esc > Options > AddOns > GryphonMail) for the automatic
   messages and the days the mail log keeps, also opened with `/gryphonmail options`.
 - Known characters can be removed on the options page, like with `/gryphonmail chars remove`.
+- Releases are also published on [WoWInterface](https://www.wowinterface.com/downloads/info27278).
 - Friends submenu in the recipient dropdown of "Send Mail".
 
 ### Changed

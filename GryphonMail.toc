@@ -14,6 +14,7 @@
 ## X-Website: https://github.com/Clausi/gryphonMail
 ## X-Curse-Project-ID: 1750287
 ## X-Wago-ID: qGYBwgNg
+## X-WoWI-ID: 27278
 
 # Localization (enUS must be loaded first, it is the fallback)
 Locales\enUS.lua
