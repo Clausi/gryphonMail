@@ -87,22 +87,11 @@ local function ListCharacters()
 
     ns:Print(L["CHARS_HEADER"], MAIL_TARGET_ICON)
     for i, character in ipairs(characters) do
-        local name = ColorizeName(character.fullName)
+        local line = Characters:FormatCharacter(character)
         if character.canMail then
-            name = MAIL_TARGET_ICON .. " " .. name
+            line = MAIL_TARGET_ICON .. " " .. line
         end
-        local line = ("%d. %s"):format(i, name)
-        -- "(realm, faction)", either part may be unknown for old entries.
-        local details = {}
-        details[#details + 1] = character.realm
-        details[#details + 1] = FACTION_LABELS[character.faction] or character.faction
-        if #details > 0 then
-            line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. table.concat(details, ", ") .. ")")
-        end
-        if character.isCurrent then
-            line = line .. " " .. L["CHARS_CURRENT"]
-        end
-        ns:Print(line)
+        ns:Print(("%d. %s"):format(i, line))
     end
 end
 
@@ -117,15 +106,7 @@ local function RemoveCharacter(input)
         ns:Print(L["CHARS_NOT_FOUND"], input)
         return
     end
-    if fullName == GetPlayerName() then
-        ns:Print(L["CHARS_REMOVE_CURRENT"])
-        return
-    end
-
-    local coloredName = ColorizeName(fullName)
-    ns.db.characters[fullName] = nil
-    InvalidateCaches()
-    ns:Print(L["CHARS_REMOVED"], coloredName)
+    Characters:Remove(fullName)
 end
 
 -- Reads the logged-in character and records it in the saved variables.
@@ -211,6 +192,40 @@ function Characters:GetCharacters()
         }
     end
     return characterList
+end
+
+-- Class-colored name, "(realm, faction)" in gray and "(current)", for an entry of GetCharacters().
+function Characters:FormatCharacter(character)
+    local line = ColorizeName(character.fullName)
+    -- "(realm, faction)", either part may be unknown for old entries.
+    local details = {}
+    details[#details + 1] = character.realm
+    details[#details + 1] = FACTION_LABELS[character.faction] or character.faction
+    if #details > 0 then
+        line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. table.concat(details, ", ") .. ")")
+    end
+    if character.isCurrent then
+        line = line .. " " .. L["CHARS_CURRENT"]
+    end
+    return line
+end
+
+-- Forgets a stored character (fullName as in GetCharacters()) and prints the result. The logged-in
+-- character cannot be removed. Returns true if it was removed.
+function Characters:Remove(fullName)
+    if fullName == GetPlayerName() then
+        ns:Print(L["CHARS_REMOVE_CURRENT"])
+        return false
+    end
+    if not ns.db.characters[fullName] then
+        return false
+    end
+
+    local coloredName = ColorizeName(fullName)
+    ns.db.characters[fullName] = nil
+    InvalidateCaches()
+    ns:Print(L["CHARS_REMOVED"], coloredName)
+    return true
 end
 
 -- Expects a name as returned by the mail API, compared with Names.Normalize.
