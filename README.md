@@ -45,8 +45,9 @@ Known differences:
 
 ## Installation
 
-Install it from [CurseForge](https://www.curseforge.com/projects/1750287) or
-[Wago Addons](https://addons.wago.io/addons/gryphonmail), or copy (or symlink) the `GryphonMail` folder into the client's AddOns folder:
+Install it from [CurseForge](https://www.curseforge.com/projects/1750287),
+[Wago Addons](https://addons.wago.io/addons/gryphonmail) or
+[WoWInterface](https://www.wowinterface.com/downloads/info27278), or copy (or symlink) the `GryphonMail` folder into the client's AddOns folder:
 
 ```
 World of Warcraft\<client folder>\Interface\AddOns\GryphonMail
@@ -65,9 +66,11 @@ World of Warcraft\<client folder>\Interface\AddOns\GryphonMail
 
 3. The `Release` workflow runs luacheck, builds the package with the
    [BigWigs packager](https://github.com/BigWigsMods/packager) and uploads it to CurseForge (project
-   ID from `X-Curse-Project-ID` in the TOC), Wago Addons (`X-Wago-ID`) and as a GitHub release.
-   Game versions come from `## Interface`. It needs the repository secrets `CF_API_KEY` (a
-   CurseForge API token) and `WAGO_API_TOKEN` (a Wago Addons API key).
+   ID from `X-Curse-Project-ID` in the TOC), Wago Addons (`X-Wago-ID`), WoWInterface
+   (`X-WoWI-ID`) and as a GitHub release. Game versions come from `## Interface`. It needs the
+   repository secrets `CF_API_KEY` (a CurseForge API token), `WAGO_API_TOKEN` (a Wago Addons API
+   key) and `WOWI_API_TOKEN` (a WoWInterface API token). WoWInterface does not know every client
+   (e.g. Forever); the packager warns and leaves those out.
 
 ## Structure
 
