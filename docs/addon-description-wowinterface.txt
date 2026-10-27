@@ -1,0 +1,91 @@
+[size="5"][b]GryphonMail[/b][/size]
+
+[b]A smarter mailbox for World of Warcraft: Forever, Classic Era, Anniversary, MoP Classic and Retail.[/b]
+
+GryphonMail extends the default mailbox instead of replacing it. Everything stays where you know it, with a few tools that save you time on every visit.
+
+[size="4"][b]Features[/b][/size]
+
+[size="3"][b]Search your inbox[/b][/size]
+[list]
+[*]Search box in the inbox that filters mail by [b]sender, subject or attached item[/b] as you type
+[*]Suggests your [b]own characters[/b] while typing, matching first name or surname
+[*]Page through the results just like the normal inbox
+[/list]
+
+[size="3"][b]Predefined filters[/b][/size]
+Show only the mail you care about with one click:
+[list]
+[*][b]My Characters[/b] (mail from your alts)
+[*][b]Friends[/b]
+[*][b]Recent Allies[/b] (characters from the [i]Recent Allies[/i] tab of your friends list, where the game has it)
+[*][b]Guild[/b]
+[*][b]Unread[/b] / [b]Read[/b]
+[*][b]Auction House[/b]
+[*][b]Gold[/b]
+[*][b]C.O.D.[/b]
+[/list]
+Filters work together with the search box, e.g. [i]Guild[/i] + "ore".
+
+[size="3"][b]Open only what you filtered[/b][/size]
+While a search or filter is active, [b]Open All[/b] becomes [b]Open Filtered[/b] and only collects the mail you see. C.O.D. and GM mail are still skipped, just like Blizzard's button.
+
+[size="3"][b]Pick a recipient[/b][/size]
+A small dropdown next to the [b]To[/b] field of [i]Send Mail[/i] lists:
+[list]
+[*]Your [b]own characters[/b] of the same faction and realm (Forever: ruleset PvE, PvP, RP; Retail: also connected realms)
+[*]Your [b]friends[/b], [b]guild members[/b] and [b]recent allies[/b] (where the game has them) in submenus; guild members and recent allies are class colored. Long lists are split into name ranges, e.g. [i]Abby - Fiona[/i].
+[/list]
+Pick one and the name is filled in.
+
+[size="3"][b]Mail log[/b][/size]
+A new [b]Log[/b] tab next to [i]Inbox[/i] and [i]Send Mail[/i] lists everything you collected, sent, returned and deleted:
+[list]
+[*]Sender, subject, date, gold and items for each mail, including the C.O.D. amount you paid
+[*][b]Sent mail[/b] with recipient, gold, items and the C.O.D. amount you asked for
+[*][b]Deleted[/b] and [b]returned mail[/b], including the gold and items it still contained
+[*]The same [b]search box and filters[/b] as the inbox, with [b]From[/b] / [b]To[/b] / [b]Returned[/b] / [b]Deleted[/b] instead of Unread / Read
+[*]Item details in the tooltip
+[*]Stored per character, kept for 30 days (configurable)
+[*]Only counts what actually arrived in your bags, and only mail that was actually sent
+[/list]
+
+[size="3"][b]Summary in chat[/b][/size]
+After [i]Open All[/i] / [i]Open Filtered[/i] you get a short summary, e.g.
+[code]GryphonMail: Collected 25 items and 12g 50s.[/code]
+
+[size="3"][b]Options[/b][/size]
+Its own page in the game options (Esc > Options > AddOns > GryphonMail, or [b]/gryphonmail options[/b]):
+[list]
+[*]Turn the [b]automatic messages[/b] (login, summary, hints) on or off, per character
+[*]How many [b]days the mail log[/b] keeps (1-365)
+[*][b]Remove known characters[/b], e.g. deleted or renamed ones
+[/list]
+
+[size="4"][b]Slash commands[/b][/size]
+[list]
+[*][b]/gryphonmail[/b] - Show all commands
+[*][b]/gryphonmail options[/b] - Open the options page (also in Esc > Options > AddOns)
+[*][b]/gryphonmail chars[/b] - List your known characters, with a mailbox icon for those you can send mail to
+[*][b]/gryphonmail chars remove <number or name>[/b] - Forget a character (deleted or renamed)
+[*][b]/gryphonmail log[/b] - Show log settings
+[*][b]/gryphonmail log days <1-365>[/b] - Keep log entries for that many days
+[*][b]/gryphonmail log clear[/b] - Clear the log of the current character
+[*][b]/gryphonmail notify on|off[/b] - Turn the automatic messages (login, summary, hints) of this character on or off
+[/list]
+
+[size="4"][b]Good to know[/b][/size]
+[list]
+[*]One download for [b]Forever[/b], [b]Classic Era[/b], [b]Anniversary[/b], [b]MoP Classic[/b] and [b]Retail[/b].
+[*]Outside Forever, characters on other realms are shown as [i]Name-Realm[/i].
+[*]Your characters are remembered when you log in with them once while the addon is active.
+[*]Languages: English, German, French.
+[/list]
+
+[size="4"][b]Feedback & source code[/b][/size]
+Found a bug or have an idea? Please open an issue on GitHub:
+[b][url="https://github.com/Clausi/gryphonMail/issues"]github.com/Clausi/gryphonMail/issues[/url][/b]
+
+Source code and changelog: [url="https://github.com/Clausi/gryphonMail"]github.com/Clausi/gryphonMail[/url]
+
+Also available on [url="https://www.curseforge.com/projects/1750287"]CurseForge[/url] and [url="https://addons.wago.io/addons/gryphonmail"]Wago Addons[/url].

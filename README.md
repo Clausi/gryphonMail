@@ -18,7 +18,8 @@ A World of Warcraft addon that extends the default mailbox.
 - **Options:** automatic messages, the days the log keeps and removing known characters, on an
   own page in the game options (Esc > Options > AddOns > GryphonMail).
 
-The full description for CurseForge is in [docs/addon-description.md](docs/addon-description.md).
+The full description for CurseForge and Wago is in [docs/addon-description.md](docs/addon-description.md),
+for WoWInterface (BBCode) in [docs/addon-description-wowinterface.txt](docs/addon-description-wowinterface.txt).
 
 ## Supported clients
 
@@ -79,7 +80,8 @@ GryphonMail/
 ├── GryphonMail.toc        # Addon manifest, defines load order
 ├── LICENSE                # MIT license
 ├── docs/
-│   └── addon-description.md  # Description text for CurseForge / Wago / WoWInterface (not shipped)
+│   ├── addon-description.md  # Description text for CurseForge / Wago, Markdown (not shipped)
+│   └── addon-description-wowinterface.txt  # Same text for WoWInterface, BBCode (not shipped)
 ├── Locales/
 │   ├── enUS.lua           # Base locale (fallback, all keys)
 │   ├── deDE.lua           # German translation

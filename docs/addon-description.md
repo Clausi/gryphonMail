@@ -48,6 +48,12 @@ A new **Log** tab next to *Inbox* and *Send Mail* lists everything you collected
 After *Open All* / *Open Filtered* you get a short summary, e.g.
 `GryphonMail: Collected 25 items and 12g 50s.`
 
+### Options
+Its own page in the game options (Esc > Options > AddOns > GryphonMail, or `/gryphonmail options`):
+- Turn the **automatic messages** (login, summary, hints) on or off, per character
+- How many **days the mail log** keeps (1-365)
+- **Remove known characters**, e.g. deleted or renamed ones
+
 ## Slash commands
 
 | Command | Description |
@@ -74,4 +80,4 @@ Found a bug or have an idea? Please open an issue on GitHub:
 
 Source code and changelog: [github.com/Clausi/gryphonMail](https://github.com/Clausi/gryphonMail)
 
-Also available on [CurseForge](https://www.curseforge.com/projects/1750287) and [Wago Addons](https://addons.wago.io/addons/gryphonmail).
+Also available on [CurseForge](https://www.curseforge.com/projects/1750287), [Wago Addons](https://addons.wago.io/addons/gryphonmail) and [WoWInterface](https://www.wowinterface.com/downloads/info27278).
