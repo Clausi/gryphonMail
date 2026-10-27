@@ -15,8 +15,8 @@ A World of Warcraft addon that extends the default mailbox.
 - **Mail log:** a "Log" tab with collected, sent, returned and deleted mail, including gold and
   items, with the same search and filters as the inbox. Stored per character.
 - **Chat summary:** after "Open All" / "Open Filtered", what was collected.
-- **Options:** automatic messages and the days the log keeps, on an own page in the game
-  options (Esc > Options > AddOns > GryphonMail).
+- **Options:** automatic messages, the days the log keeps and removing known characters, on an
+  own page in the game options (Esc > Options > AddOns > GryphonMail).
 
 The full description for CurseForge is in [docs/addon-description.md](docs/addon-description.md).
 
