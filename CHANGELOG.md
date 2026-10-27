@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-27
+
 ### Added
 
 - Options page in the game settings (Esc > Options > AddOns > GryphonMail) for the automatic
@@ -148,7 +150,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/Clausi/gryphonMail/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Clausi/gryphonMail/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/Clausi/gryphonMail/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/Clausi/gryphonMail/compare/v0.8.0...v0.9.0
