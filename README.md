@@ -145,7 +145,7 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
   mailbox icon
 - `/gryphonmail chars remove <number|name>` – forget a character (e.g. deleted or renamed)
 - `/gryphonmail log` – show log settings
-- `/gryphonmail log days <1-365>` – keep log entries for that many days (default 30)
+- `/gryphonmail log days <1-365>` – keep log entries of this character for that many days (default 30)
 - `/gryphonmail log clear` – clear the log of the current character
 - `/gryphonmail notify on|off` – automatic messages (login, summary after "Open All", hints) of the
   current character, default on

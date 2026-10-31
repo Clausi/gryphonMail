@@ -66,7 +66,7 @@ local function RegisterSettings()
 
     local MailLog = ns.modules.MailLog
     local logDays = RegisterProxySetting("LOG_DAYS", Settings.VarType.Number, L["OPTIONS_LOG_DAYS"],
-        ns.defaults.logRetentionDays,
+        ns.charDefaults.logRetentionDays,
         function()
             return MailLog:GetRetentionDays()
         end,

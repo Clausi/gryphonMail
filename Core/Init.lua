@@ -11,14 +11,14 @@ ns.defaults = {
     debug = false,
     -- Own characters, keyed by full name ("Name Surname"). Filled by Modules/Characters.lua.
     characters = {},
-    -- Days a log entry is kept. Change with "/gryphonmail log days <n>".
-    logRetentionDays = 30,
 }
 
 -- Per character (GryphonMailCharDB, ns.charDb): data and settings only the logged-in character needs.
 ns.charDefaults = {
     -- Collected mails, oldest first. Filled by Modules/MailLog.lua.
     log = {},
+    -- Days a log entry is kept. Change with "/gryphonmail log days <n>".
+    logRetentionDays = 30,
     -- Automatic messages (login, "Open All" summary, hints). Change with "/gryphonmail notify on|off"
     -- (ns:SetNotifications).
     notifications = true,
