@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The days the mail log keeps are set per character. Each character starts with the value that was
+  set for all characters before.
+
 ## [0.12.0] - 2026-10-27
 
 ### Added

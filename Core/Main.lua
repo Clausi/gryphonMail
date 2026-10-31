@@ -13,6 +13,10 @@ ns:RegisterEvent("ADDON_LOADED", function(_, loadedName)
     if GryphonMailCharDB.notifications == nil and GryphonMailCharDB.chatMessages ~= nil then
         GryphonMailCharDB.notifications = GryphonMailCharDB.chatMessages
     end
+    -- Takes over the log days that used to be account-wide, for characters without their own value.
+    if GryphonMailCharDB.logRetentionDays == nil then
+        GryphonMailCharDB.logRetentionDays = GryphonMailDB.logRetentionDays
+    end
     GryphonMailCharDB = ns.ApplyDefaults(GryphonMailCharDB, ns.charDefaults)
     ns.charDb = GryphonMailCharDB
 

@@ -68,7 +68,7 @@ L["OPTIONS_NOTIFICATIONS_TOOLTIP"] = "Messages que l'addon affiche de lui-même 
     .. "« Tout ouvrir » et les conseils. Les réponses aux commandes s'affichent toujours. Pour ce personnage."
 L["OPTIONS_LOG_DAYS"] = "Conserver le journal (jours)"
 L["OPTIONS_LOG_DAYS_TOOLTIP"] = "Les entrées plus anciennes du journal du courrier sont supprimées. "
-    .. "Pour tous les personnages."
+    .. "Pour ce personnage."
 L["OPTIONS_CHARACTERS_HEADER"] = "Personnages connus"
 L["OPTIONS_CHARACTER"] = "Personnage"
 L["OPTIONS_CHARACTER_TOOLTIP"] = "Vos personnages sont enregistrés à la connexion et proposés comme destinataires "

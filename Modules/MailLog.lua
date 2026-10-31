@@ -71,7 +71,7 @@ local function NotifyChanged()
 end
 
 local function Prune()
-    local cutoff = time() - ns.db.logRetentionDays * SECONDS_PER_DAY
+    local cutoff = time() - ns.charDb.logRetentionDays * SECONDS_PER_DAY
     local kept = {}
     for _, entry in ipairs(entries) do
         if entry.time >= cutoff then
@@ -482,7 +482,7 @@ local function HandleLogCommand(args)
         NotifyChanged()
         ns:Print(L["LOG_CLEARED"])
     else
-        ns:Print(L["LOG_INFO"], ns.db.logRetentionDays, #entries)
+        ns:Print(L["LOG_INFO"], ns.charDb.logRetentionDays, #entries)
     end
 end
 
@@ -492,13 +492,13 @@ function MailLog:GetEntries()
 end
 
 function MailLog:GetRetentionDays()
-    return ns.db.logRetentionDays
+    return ns.charDb.logRetentionDays
 end
 
 -- Sets the days a log entry is kept (whole number between MIN_ and MAX_RETENTION_DAYS) and drops
 -- older entries right away.
 function MailLog:SetRetentionDays(days)
-    ns.db.logRetentionDays = days
+    ns.charDb.logRetentionDays = days
     Prune()
     NotifyChanged()
 end
