@@ -46,7 +46,7 @@ A new [b]Log[/b] tab next to [i]Inbox[/i] and [i]Send Mail[/i] lists everything 
 [*][b]Deleted[/b] and [b]returned mail[/b], including the gold and items it still contained
 [*]The same [b]search box and filters[/b] as the inbox, with [b]From[/b] / [b]To[/b] / [b]Returned[/b] / [b]Deleted[/b] instead of Unread / Read
 [*]Item details in the tooltip
-[*]Stored per character, kept for 30 days (configurable)
+[*]Stored per character, kept for 30 days (configurable per character)
 [*]Only counts what actually arrived in your bags, and only mail that was actually sent
 [/list]
 
@@ -58,7 +58,7 @@ After [i]Open All[/i] / [i]Open Filtered[/i] you get a short summary, e.g.
 Its own page in the game options (Esc > Options > AddOns > GryphonMail, or [b]/gryphonmail options[/b]):
 [list]
 [*]Turn the [b]automatic messages[/b] (login, summary, hints) on or off, per character
-[*]How many [b]days the mail log[/b] keeps (1-365)
+[*]How many [b]days the mail log[/b] keeps (1-365), per character
 [*][b]Remove known characters[/b], e.g. deleted or renamed ones
 [/list]
 
@@ -69,7 +69,7 @@ Its own page in the game options (Esc > Options > AddOns > GryphonMail, or [b]/g
 [*][b]/gryphonmail chars[/b] - List your known characters, with a mailbox icon for those you can send mail to
 [*][b]/gryphonmail chars remove <number or name>[/b] - Forget a character (deleted or renamed)
 [*][b]/gryphonmail log[/b] - Show log settings
-[*][b]/gryphonmail log days <1-365>[/b] - Keep log entries for that many days
+[*][b]/gryphonmail log days <1-365>[/b] - Keep log entries of this character for that many days
 [*][b]/gryphonmail log clear[/b] - Clear the log of the current character
 [*][b]/gryphonmail notify on|off[/b] - Turn the automatic messages (login, summary, hints) of this character on or off
 [/list]
