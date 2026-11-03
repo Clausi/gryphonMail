@@ -37,6 +37,7 @@ Modules\InboxFilter.lua
 Modules\MailLog.lua
 Modules\MailLogFrame.lua
 Modules\SendMailRecipients.lua
+Modules\SendMailAttach.lua
 Modules\Options.lua
 
 # Bootstrap (must be loaded last)

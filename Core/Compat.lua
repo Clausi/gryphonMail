@@ -87,3 +87,9 @@ end
 function Compat.HasOpenAllAdvance()
     return OpenAllMail ~= nil and OpenAllMail.AdvanceToNextItem ~= nil
 end
+
+-- Last bag index to scan, starting at the backpack (0). Forever and Retail have a reagent bag after
+-- the four bag slots (NUM_TOTAL_EQUIPPED_BAG_SLOTS); Classic only has NUM_BAG_SLOTS.
+function Compat.GetLastBagIndex()
+    return NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
+end
