@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- "Send Mail": Alt-click an item in the bags to attach all its stacks, Alt-right-click an
+  attachment slot to remove all attachments.
+
 ## [0.13.0] - 2026-10-31
 
 ### Changed

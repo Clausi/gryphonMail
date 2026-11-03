@@ -38,6 +38,13 @@ A small dropdown next to the [b]To[/b] field of [i]Send Mail[/i] lists:
 [/list]
 Pick one and the name is filled in.
 
+[size="3"][b]Attach faster[/b][/size]
+[list]
+[*][b]Alt-click[/b] an item in your bags while [i]Send Mail[/i] is open to attach [b]all its stacks[/b] at once, as far as there are free slots
+[*][b]Alt-right-click[/b] an attachment slot to [b]remove all attachments[/b]
+[*]Works with bag addons that use the default item buttons
+[/list]
+
 [size="3"][b]Mail log[/b][/size]
 A new [b]Log[/b] tab next to [i]Inbox[/i] and [i]Send Mail[/i] lists everything you collected, sent, returned and deleted:
 [list]
