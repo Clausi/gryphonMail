@@ -41,6 +41,7 @@ Pick one and the name is filled in.
 [size="3"][b]Attach faster[/b][/size]
 [list]
 [*][b]Alt-click[/b] an item in your bags while [i]Send Mail[/i] is open to attach [b]all its stacks[/b] at once, as far as there are free slots
+[*][b]Right-click an empty attachment slot[/b] for a menu of the item categories in your bags (e.g. [i]Trade Goods > Metal & Stone > Iron Ore[/i] with icons, [i]Consumable[/i], [i]Poor items[/i]) and attach a whole category with one click
 [*][b]Alt-right-click[/b] an attachment slot to [b]remove all attachments[/b]
 [*]Works with bag addons that use the default item buttons
 [/list]

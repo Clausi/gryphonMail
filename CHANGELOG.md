@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- "Send Mail": right-click an empty attachment slot for a menu that attaches all items of a
+  category from the bags: item class, subclass or a single item (with icon), or poor quality.
+
 ## [0.14.0] - 2026-11-03
 
 ### Added
