@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-03
+
 ### Added
 
 - "Send Mail": Alt-click an item in the bags to attach all its stacks, Alt-right-click an
@@ -162,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/Clausi/gryphonMail/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/Clausi/gryphonMail/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/Clausi/gryphonMail/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Clausi/gryphonMail/compare/v0.10.0...v0.11.0
