@@ -105,7 +105,7 @@ GryphonMail/
     ├── MailLog.lua        # Records collected, sent, returned and deleted mail per character, "Open All" summary
     ├── MailLogFrame.lua   # Third mail frame tab "Log" with search box and filters (as inbox, but from/to/returned/deleted)
     ├── SendMailRecipients.lua # Recipient dropdown next to the "To" field of "Send Mail"
-    ├── SendMailAttach.lua # "Send Mail": Alt-click attaches all stacks of an item, Alt-right-click removes all attachments
+    ├── SendMailAttach.lua # "Send Mail": Alt-click attaches all stacks of an item, category menu on empty slots, Alt-right-click removes all
     └── Options.lua        # Options page in the game settings ("/gryphonmail options")
 ```
 
