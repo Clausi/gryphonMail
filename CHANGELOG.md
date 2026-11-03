@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-03
+
 ### Added
 
 - "Send Mail": right-click an empty attachment slot for a menu that attaches all items of a
@@ -169,7 +171,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/Clausi/gryphonMail/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/Clausi/gryphonMail/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/Clausi/gryphonMail/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/Clausi/gryphonMail/compare/v0.11.0...v0.12.0
