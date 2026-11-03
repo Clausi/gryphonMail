@@ -12,13 +12,6 @@ local Contacts = ns.modules.Contacts
 -- postage text on the right.
 local DROPDOWN_OFFSET_X = 6
 
--- At most this many entries per submenu; longer lists (e.g. a big guild) are split into nested
--- submenus by name range. Blizzard's scroll mode (SetScrollMode) is not used: every time a scrolling
--- menu opens, Menu.lua registers an OnScroll callback on the pooled menu frame's ScrollBox and never
--- unregisters it, which keeps the whole menu alive (~400 KB per open with ~100 recent allies).
--- Short submenus also keep Blizzard's pool of menu element frames small, which are never freed.
-local MAX_ENTRIES_PER_MENU = 20
-
 -- Blizzard's reply also puts the sender's name into this field: the full name ("First Surname") on
 -- Forever, the name with realm for other realms on other clients (Names.ToDisplay). Programmatic
 -- SetText runs the field's OnTextChanged, which enables the send button.
@@ -61,29 +54,13 @@ local function AddOwnCharacters(rootDescription)
     end
 end
 
-local FirstName = ns.Names.GetFirstName
+local function AddContact(description, contact)
+    AddRecipient(description, contact.name, contact.class)
+end
 
--- Adds contacts[first..last]. More than MAX_ENTRIES_PER_MENU become at most that many submenus
--- named by their first and last first name ("Abby - Fiona"), nested further if needed.
-local function AddContactRange(description, contacts, first, last)
-    local count = last - first + 1
-    if count <= MAX_ENTRIES_PER_MENU then
-        for i = first, last do
-            AddRecipient(description, contacts[i].name, contacts[i].class)
-        end
-        return
-    end
-
-    local groupSize = MAX_ENTRIES_PER_MENU
-    while math.ceil(count / groupSize) > MAX_ENTRIES_PER_MENU do
-        groupSize = groupSize * MAX_ENTRIES_PER_MENU
-    end
-    for groupFirst = first, last, groupSize do
-        local groupLast = math.min(groupFirst + groupSize - 1, last)
-        local label = L["NAME_RANGE"]:format(FirstName(contacts[groupFirst].name),
-            FirstName(contacts[groupLast].name))
-        AddContactRange(description:CreateButton(label), contacts, groupFirst, groupLast)
-    end
+-- Long lists are split into name ranges by first name ("Abby - Fiona").
+local function GetContactFirstName(contact)
+    return ns.Names.GetFirstName(contact.name)
 end
 
 -- Submenu with the contacts of one kind (sorted by name), without the logged-in character.
@@ -96,7 +73,7 @@ local function AddContacts(submenu, kind)
             contacts[#contacts + 1] = contact
         end
     end
-    AddContactRange(submenu, contacts, 1, #contacts)
+    ns.AddMenuEntries(submenu, contacts, AddContact, GetContactFirstName)
     return #contacts
 end
 
