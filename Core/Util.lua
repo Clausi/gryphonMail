@@ -75,6 +75,40 @@ function ns.SetupMenuOnDemand(dropdown, generator)
     end, dropdown)
 end
 
+-- At most this many entries per (sub)menu; longer lists (e.g. a big guild) are split into nested
+-- submenus by name range. Blizzard's scroll mode (SetScrollMode) is not used: every time a scrolling
+-- menu opens, Menu.lua registers an OnScroll callback on the pooled menu frame's ScrollBox and never
+-- unregisters it, which keeps the whole menu alive (~400 KB per open with ~100 recent allies).
+-- Short submenus also keep Blizzard's pool of menu element frames small, which are never freed.
+local MAX_ENTRIES_PER_MENU = 20
+
+local function AddMenuRange(description, entries, first, last, addEntry, getName)
+    local count = last - first + 1
+    if count <= MAX_ENTRIES_PER_MENU then
+        for i = first, last do
+            addEntry(description, entries[i])
+        end
+        return
+    end
+
+    local groupSize = MAX_ENTRIES_PER_MENU
+    while math.ceil(count / groupSize) > MAX_ENTRIES_PER_MENU do
+        groupSize = groupSize * MAX_ENTRIES_PER_MENU
+    end
+    for groupFirst = first, last, groupSize do
+        local groupLast = math.min(groupFirst + groupSize - 1, last)
+        local label = ns.L["NAME_RANGE"]:format(getName(entries[groupFirst]), getName(entries[groupLast]))
+        AddMenuRange(description:CreateButton(label), entries, groupFirst, groupLast, addEntry, getName)
+    end
+end
+
+-- Adds the entries (sorted by name) to a menu description with addEntry(description, entry). More
+-- than MAX_ENTRIES_PER_MENU become at most that many submenus named by the getName(entry) of their
+-- first and last entry ("Abby - Fiona"), nested further if needed.
+function ns.AddMenuEntries(description, entries, addEntry, getName)
+    AddMenuRange(description, entries, 1, #entries, addEntry, getName)
+end
+
 -- Recursively copies missing default values into the target table.
 function ns.ApplyDefaults(target, defaults)
     for key, value in pairs(defaults) do
