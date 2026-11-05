@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-05
+
+First stable release.
+
 ### Fixed
 
 - Searching in the game settings no longer reports a blocked action for GryphonMail
@@ -177,7 +181,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Clausi/gryphonMail/compare/v0.15.0...v1.0.0
 [0.15.0]: https://github.com/Clausi/gryphonMail/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/Clausi/gryphonMail/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/Clausi/gryphonMail/compare/v0.12.0...v0.13.0
