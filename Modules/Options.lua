@@ -42,6 +42,9 @@ local function RegisterCharacterRemoval()
     end
     Settings.CreateDropdown(category, selection, GetOptions, L["OPTIONS_CHARACTER_TOOLTIP"])
 
+    -- No search tags (addSearchTags = false): tags added from addon code taint the initializer, the
+    -- settings search reads them for every initializer and carries the taint on to the search results.
+    -- On Forever, showing a Discord row there then calls the protected C_Discord.IsUserOAuthed.
     layout:AddInitializer(CreateSettingsButtonInitializer(L["OPTIONS_CHARACTER_REMOVE"],
         L["OPTIONS_CHARACTER_REMOVE_BUTTON"], function()
         if selected == "" then
@@ -50,7 +53,7 @@ local function RegisterCharacterRemoval()
         Characters:Remove(selected)
         -- Also clears a selection that was removed by command in the meantime.
         selection:SetValue("")
-    end, nil, true))
+    end, nil, false))
 end
 
 local function RegisterSettings()

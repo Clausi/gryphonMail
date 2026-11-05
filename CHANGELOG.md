@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Searching in the game settings no longer reports a blocked action for GryphonMail
+  (`ADDON_ACTION_FORBIDDEN` for `IsUserOAuthed`). The "Remove" button of the options page no longer
+  appears in the settings search.
+
 ## [0.15.0] - 2026-11-03
 
 ### Added
