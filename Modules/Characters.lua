@@ -7,8 +7,8 @@ local Names = ns.Names
 -- "Tor Donnerstein" on Forever, "Tor-Gehennas" on other clients).
 local Characters = ns:RegisterModule("Characters")
 
--- The logged-in character, read once on login: { name, faction, realm }. Name and ruleset do not
--- change during a session; the faction only when a Pandaren chooses one (refreshed then).
+-- The logged-in character, read once on login: { name, faction, realm, ruleset }. Name and ruleset
+-- do not change during a session; the faction only when a Pandaren chooses one (refreshed then).
 local player
 -- Caches, rebuilt only when the stored characters change (login, faction choice, remove):
 --   nameSet       set of full names for IsOwnCharacter()
@@ -33,6 +33,24 @@ end
 
 local function GetPlayerName()
     return player and player.name
+end
+
+-- Ruleset of a Forever realm name, nil without a realm. Forever has one mega server per ruleset,
+-- made up of many realms, and characters of one ruleset can land on different ones:
+-- "CAMWOW US1 Realm 10 RP" and "CAMWOW US2 Realm 11 RP" are the same mega server. No API returns
+-- the ruleset, so it is read from the name: the text after "Realm <number>" ("PvE", "PVP", "RP",
+-- "RPPVP"), or the last word for names without that part ("Classic Beta PvE").
+local function GetRulesetName(realm)
+    if not realm then
+        return nil
+    end
+    return realm:match("Realm %d+%s+(.-)%s*$") or realm:match("(%S+)%s*$") or realm
+end
+
+-- Comparable form of GetRulesetName(): case and spaces are not consistent between realm names.
+local function GetRulesetKey(realm)
+    local name = GetRulesetName(realm)
+    return name and (name:lower():gsub("%s+", ""))
 end
 
 -- Returns the stored full names, sorted. The order defines the numbers shown by "/gryphonmail chars".
@@ -119,10 +137,10 @@ local function RecordPlayer()
     player = {
         name = fullName,
         faction = UnitFactionGroup("player"),
-        -- Forever runs each ruleset (PvE, PvP, RP) as its own realm, e.g. "Classic Beta PvE";
-        -- characters can only trade and send mail within it.
+        -- On Forever one of the realms of a ruleset, see GetRulesetName().
         realm = GetRealmName(),
     }
+    player.ruleset = GetRulesetKey(player.realm)
     local _, classFile = UnitClass("player")
     ns.db.characters[fullName] = {
         class = classFile,
@@ -152,12 +170,13 @@ end
 
 -- Returns the known characters, sorted by name. The list is cached and must not be modified:
 --   { fullName = "Tor Donnerstein", displayName = "Tor Donnerstein", class = "WARRIOR",
---     faction = "Alliance", realm = "Classic Beta PvE", isCurrent = bool, canMail = bool }
+--     faction = "Alliance", realm = "CAMWOW US1 Realm 10 RP", isCurrent = bool, canMail = bool }
 -- fullName is the stored key (Names.Normalize), displayName the form to show and to enter as
 -- recipient (Names.ToDisplay). realm is nil for characters not logged in since it was added.
 -- canMail: mail can go between this character and the logged-in one. It is only delivered within
--- the same faction, not to oneself, and on Forever within the same ruleset (each ruleset is its own
--- realm). Other clients deliver it within the own realm and, on Retail, its connected realms.
+-- the same faction, not to oneself, and on Forever within the same ruleset, whichever of its realms
+-- the characters are on. Other clients deliver it within the own realm and, on Retail, its
+-- connected realms.
 function Characters:GetCharacters()
     if characterList then
         return characterList
@@ -179,7 +198,7 @@ function Characters:GetCharacters()
         if mailRealms then
             sameRealm = mailRealms[Names.GetRealm(fullName) or ""] == true
         else
-            sameRealm = player ~= nil and info.realm == player.realm
+            sameRealm = player ~= nil and GetRulesetKey(info.realm) == player.ruleset
         end
         characterList[#characterList + 1] = {
             fullName = fullName,

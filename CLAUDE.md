@@ -19,7 +19,9 @@ file only adds what is specific to GryphonMail.
 ## Names and mail
 
 - **Forever:** trading and mail only work within the same ruleset and faction. A full name is unique
-  across rulesets, so characters are keyed by name; the ruleset is stored as `realm` per character.
+  across rulesets, so characters are keyed by name. A ruleset is a mega server made up of many
+  realms (`GetRealmName()` = "CAMWOW US1 Realm 10 RP"), and no API returns it: the realm is stored
+  per character and the ruleset is read from its name (`GetRulesetName` in `Modules/Characters.lua`).
 - **Classic Era, Anniversary, MoP Classic, Retail:** the APIs leave out the realm for the own realm
   (mail sender, friends), the guild roster always includes it. `Names.Normalize` gives the key of
   `ns.db.characters`; `Names.ToDisplay` is also the form to enter as mail recipient. Mail only works
