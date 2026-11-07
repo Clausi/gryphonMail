@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Forever: the character list shows only the ruleset instead of the long realm name, e.g.
+  "(PvE, Horde)".
+
 ### Fixed
 
 - Forever: own characters of the same ruleset are mail targets again when they are on different
