@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The placeholder text of the search box fits on one line in the German and French clients
+  ("Name, Betreff, Item", "Nom, objet, PJ").
+
 ## [1.0.1] - 2026-11-07
 
 ### Changed

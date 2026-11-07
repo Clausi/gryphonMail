@@ -7,7 +7,7 @@ end
 local L = ns.L
 
 L["ADDON_LOADED"] = "Version %s chargée. Tapez /gryphonmail pour l'aide."
-L["SEARCH_PLACEHOLDER"] = "Nom, objet, pièce jointe"
+L["SEARCH_PLACEHOLDER"] = "Nom, objet, PJ"
 L["OPEN_FILTERED"] = "Ouvrir filtrés"
 L["FILTER_ALL"] = "Tout le courrier"
 L["FILTER_FRIENDS"] = "Amis"
