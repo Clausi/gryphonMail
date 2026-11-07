@@ -170,9 +170,11 @@ end
 
 -- Returns the known characters, sorted by name. The list is cached and must not be modified:
 --   { fullName = "Tor Donnerstein", displayName = "Tor Donnerstein", class = "WARRIOR",
---     faction = "Alliance", realm = "CAMWOW US1 Realm 10 RP", isCurrent = bool, canMail = bool }
+--     faction = "Alliance", realm = "CAMWOW US1 Realm 10 RP", ruleset = "RP", isCurrent = bool,
+--     canMail = bool }
 -- fullName is the stored key (Names.Normalize), displayName the form to show and to enter as
 -- recipient (Names.ToDisplay). realm is nil for characters not logged in since it was added.
+-- ruleset is only set on Forever, the other clients have no rulesets.
 -- canMail: mail can go between this character and the logged-in one. It is only delivered within
 -- the same faction, not to oneself, and on Forever within the same ruleset, whichever of its realms
 -- the characters are on. Other clients deliver it within the own realm and, on Retail, its
@@ -190,6 +192,7 @@ function Characters:GetCharacters()
         end
     end
 
+    local hasRulesets = not ns.Compat.HasRealmNames()
     characterList = {}
     for _, fullName in ipairs(GetSortedNames()) do
         local info = ns.db.characters[fullName]
@@ -206,6 +209,7 @@ function Characters:GetCharacters()
             class = info.class,
             faction = info.faction,
             realm = info.realm,
+            ruleset = hasRulesets and GetRulesetName(info.realm) or nil,
             isCurrent = isCurrent,
             canMail = player ~= nil and not isCurrent and info.faction == player.faction and sameRealm,
         }
@@ -213,12 +217,13 @@ function Characters:GetCharacters()
     return characterList
 end
 
--- Class-colored name, "(realm, faction)" in gray and "(current)", for an entry of GetCharacters().
+-- Class-colored name, "(realm, faction)" in gray (Forever: ruleset instead of realm) and
+-- "(current)", for an entry of GetCharacters().
 function Characters:FormatCharacter(character)
     local line = ColorizeName(character.fullName)
-    -- "(realm, faction)", either part may be unknown for old entries.
+    -- Either part may be unknown for old entries.
     local details = {}
-    details[#details + 1] = character.realm
+    details[#details + 1] = character.ruleset or character.realm
     details[#details + 1] = FACTION_LABELS[character.faction] or character.faction
     if #details > 0 then
         line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. table.concat(details, ", ") .. ")")
