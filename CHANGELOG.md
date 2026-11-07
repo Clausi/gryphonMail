@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Forever: own characters of the same ruleset are mail targets again when they are on different
+  realms of the mega server (e.g. "CAMWOW US1 Realm 10 RP" and "CAMWOW US2 Realm 11 RP"). This
+  covers the "Send Mail" recipient dropdown, the search suggestions and `/gryphonmail chars`.
+
 ## [1.0.0] - 2026-11-05
 
 First stable release.
