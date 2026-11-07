@@ -451,6 +451,9 @@ function MailFilters:CreateSearchBox(parent, frameName, onChange)
     searchBox:SetSize(SEARCH_WIDTH, SEARCH_HEIGHT)
     searchBox:SetPoint("TOPRIGHT", MailFrame, "TOPRIGHT", SEARCH_OFFSET_X, SEARCH_OFFSET_Y)
     searchBox:SetAutoFocus(false)
+    -- The placeholder has 124 px at this box width and must stay short in every locale: the box
+    -- cannot grow, it already reaches the dropdown. Too long a text would wrap out of the box.
+    searchBox.Instructions:SetWordWrap(false)
     searchBox.Instructions:SetText(L["SEARCH_PLACEHOLDER"])
     filter.searchBox = searchBox
 
