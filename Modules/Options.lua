@@ -81,6 +81,16 @@ local function RegisterSettings()
     sliderOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right)
     Settings.CreateSlider(category, logDays, sliderOptions, L["OPTIONS_LOG_DAYS_TOOLTIP"])
 
+    local attachItemCounts = RegisterProxySetting("ATTACH_ITEM_COUNTS", Settings.VarType.Boolean,
+        L["OPTIONS_ATTACH_ITEM_COUNTS"], ns.defaults.attachItemCounts,
+        function()
+            return ns.db.attachItemCounts
+        end,
+        function(value)
+            ns.db.attachItemCounts = value
+        end)
+    Settings.CreateCheckbox(category, attachItemCounts, L["OPTIONS_ATTACH_ITEM_COUNTS_TOOLTIP"])
+
     RegisterCharacterRemoval()
 end
 

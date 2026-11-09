@@ -11,6 +11,8 @@ ns.defaults = {
     debug = false,
     -- Own characters, keyed by full name ("Name Surname"). Filled by Modules/Characters.lua.
     characters = {},
+    -- "Send Mail" attach menu: show the number of items besides the number of stacks.
+    attachItemCounts = true,
 }
 
 -- Per character (GryphonMailCharDB, ns.charDb): data and settings only the logged-in character needs.

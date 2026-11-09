@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- "Send Mail": the attach menu shows the number of items besides the number of stacks, e.g.
+  "Iron Ore (3 stacks, 60 items)". Entries whose stacks are single items show only the items.
+  The option "Item counts in the attach menu" turns it off (on by default, for all characters).
+
 ### Fixed
 
 - The placeholder text of the search box fits on one line in the German and French clients
