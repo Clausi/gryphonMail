@@ -114,16 +114,19 @@ local function GetName(entry)
     return entry.name
 end
 
--- Adds a child group (class, subclass or item) to parent.children, counting one stack.
-local function CountChild(parent, id, create)
+-- Adds a child group (class, subclass or item) to parent.children, counting one stack of
+-- stackCount items.
+local function CountChild(parent, id, stackCount, create)
     local child = parent.byID[id]
     if not child then
         child = create()
         child.count = 0
+        child.items = 0
         parent.byID[id] = child
         parent.children[#parent.children + 1] = child
     end
     child.count = child.count + 1
+    child.items = child.items + stackCount
     return child
 end
 
@@ -137,38 +140,55 @@ local function SortChildren(parent)
 end
 
 -- The attachable stacks in the bags as a tree item class > subclass > item, sorted by name, plus
--- the number of gray stacks. Each node has the number of stacks (= attachment slots it needs).
+-- the gray stacks. Each node has the number of stacks (count, = attachment slots it needs) and of
+-- items (items, the sum of the stack sizes).
 local function CollectCategories()
-    local root, poorCount = { children = {}, byID = {} }, 0
+    local root, poor = { children = {}, byID = {} }, { count = 0, items = 0 }
     ForEachAttachable(function(_, _, info)
+        local stackCount = info.stackCount or 1
         local classID, subClassID, className, subClassName = GetItemClass(info.itemID)
         if classID then
-            local class = CountChild(root, classID, function()
+            local class = CountChild(root, classID, stackCount, function()
                 return { id = classID, name = className, children = {}, byID = {} }
             end)
-            local subClass = CountChild(class, subClassID, function()
+            local subClass = CountChild(class, subClassID, stackCount, function()
                 return { id = subClassID, name = subClassName, children = {}, byID = {} }
             end)
-            CountChild(subClass, info.itemID, function()
+            CountChild(subClass, info.itemID, stackCount, function()
                 return { id = info.itemID, name = info.itemName or UNKNOWN, icon = info.iconFileID,
                     quality = info.quality }
             end)
         end
         if info.quality == QUALITY_POOR then
-            poorCount = poorCount + 1
+            poor.count = poor.count + 1
+            poor.items = poor.items + stackCount
         end
     end)
     SortChildren(root)
-    return root.children, poorCount
+    return root.children, poor
 end
 
-local function AddAttachButton(description, name, count, matches)
-    description:CreateButton(L["SEND_ATTACH_ENTRY"]:format(name, count), function()
+-- "Iron Ore (3 stacks, 60 items)"; only the items when every stack is a single item, e.g.
+-- "Plate (4 items)". With the item counts turned off only the stacks: "Iron Ore (3)".
+local function FormatEntry(name, group)
+    if not ns.db.attachItemCounts then
+        return L["SEND_ATTACH_ENTRY"]:format(name, group.count)
+    end
+    local items = group.items == 1 and L["SEND_ATTACH_ITEMS_ONE"] or L["SEND_ATTACH_ITEMS"]:format(group.items)
+    if group.count == group.items then
+        return L["SEND_ATTACH_ENTRY"]:format(name, items)
+    end
+    local stacks = group.count == 1 and L["SEND_ATTACH_STACKS_ONE"] or L["SEND_ATTACH_STACKS"]:format(group.count)
+    return L["SEND_ATTACH_ENTRY_STACKS"]:format(name, stacks, items)
+end
+
+local function AddAttachButton(description, name, group, matches)
+    description:CreateButton(FormatEntry(name, group), function()
         AttachMatching(matches)
     end)
 end
 
--- Icon and name in the item's quality color, e.g. "[icon] Iron Ore (3)".
+-- Icon and name in the item's quality color, e.g. "[icon] Iron Ore (3 stacks, 60 items)".
 local function AddItemButton(description, item)
     local name = item.name
     if item.quality then
@@ -178,15 +198,15 @@ local function AddItemButton(description, item)
     if item.icon then
         name = ("|T%d:16|t %s"):format(item.icon, name)
     end
-    AddAttachButton(description, name, item.count, MatchesItem(item.id))
+    AddAttachButton(description, name, item, MatchesItem(item.id))
 end
 
 -- Submenu of a subclass: "All" (if there is more than one item) and each item. A long list (e.g.
 -- many armor pieces) is split into name ranges.
 local function AddSubClass(description, class, subClass)
-    local submenu = description:CreateButton(L["SEND_ATTACH_ENTRY"]:format(subClass.name, subClass.count))
+    local submenu = description:CreateButton(FormatEntry(subClass.name, subClass))
     if #subClass.children > 1 then
-        AddAttachButton(submenu, L["SEND_ATTACH_ALL"], subClass.count, MatchesClass(class.id, subClass.id))
+        AddAttachButton(submenu, L["SEND_ATTACH_ALL"], subClass, MatchesClass(class.id, subClass.id))
         submenu:CreateDivider()
     end
     ns.AddMenuEntries(submenu, subClass.children, AddItemButton, GetName)
@@ -199,16 +219,16 @@ local function GenerateCategoryMenu(_, rootDescription)
     rootDescription:SetTag("MENU_GRYPHONMAIL_SEND_ATTACH")
     rootDescription:CreateTitle(L["SEND_ATTACH_MENU"]:format(CountFreeSlots()))
 
-    local classes, poorCount = CollectCategories()
+    local classes, poor = CollectCategories()
     if #classes == 0 then
         rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(L["SEND_ATTACH_NONE"]))
         return
     end
 
     for _, class in ipairs(classes) do
-        local submenu = rootDescription:CreateButton(L["SEND_ATTACH_ENTRY"]:format(class.name, class.count))
+        local submenu = rootDescription:CreateButton(FormatEntry(class.name, class))
         if #class.children > 1 then
-            AddAttachButton(submenu, L["SEND_ATTACH_ALL"], class.count, MatchesClass(class.id))
+            AddAttachButton(submenu, L["SEND_ATTACH_ALL"], class, MatchesClass(class.id))
             submenu:CreateDivider()
         end
         for _, subClass in ipairs(class.children) do
@@ -216,9 +236,9 @@ local function GenerateCategoryMenu(_, rootDescription)
         end
     end
 
-    if poorCount > 0 then
+    if poor.count > 0 then
         rootDescription:CreateDivider()
-        AddAttachButton(rootDescription, L["SEND_ATTACH_POOR"], poorCount, function(info)
+        AddAttachButton(rootDescription, L["SEND_ATTACH_POOR"], poor, function(info)
             return info.quality == QUALITY_POOR
         end)
     end
