@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - "Send Mail": the attach menu shows the number of items besides the number of stacks, e.g.
   "Iron Ore (3 stacks, 60 items)". Entries whose stacks are single items show only the items.
   The option "Item counts in the attach menu" turns it off (on by default, for all characters).
+- "Send Mail": the attach menu stays open after an entry is clicked, so several categories can be
+  attached one after another. Its counts show what is left, entries with nothing left turn gray.
+  The option "Keep the attach menu open" turns it off (on by default, for all characters).
 
 ### Fixed
 

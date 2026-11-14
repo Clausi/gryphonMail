@@ -70,6 +70,7 @@ read_globals = {
     -- UI helpers
     "ButtonFrameTemplate_HideButtonBar",
     "DropdownButtonMixin",
+    "MenuResponse",
     "MenuUtil",
     "GameTooltip_AddMoneyLine",
     "GameTooltip_Hide",

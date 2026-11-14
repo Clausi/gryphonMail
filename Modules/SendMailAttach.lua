@@ -4,7 +4,8 @@ local L = ns.L
 -- Faster attaching on the "Send Mail" tab:
 -- - Alt-click an item in the bags: attaches all its stacks, as far as there are free slots.
 -- - Right-click an empty attachment slot: menu that attaches all items of a category (item class >
---   subclass > item, with icons).
+--   subclass > item, with icons). By default it stays open after an attach click, so several
+--   categories can be attached one after another (option "Keep the attach menu open").
 -- - Alt-right-click an attachment slot: removes all attachments.
 -- Blizzard's bag buttons (and bag addons built on them) route every modified click to
 -- HandleModifiedItemClick(link), on all clients; Alt is not bound to any modified click there by
@@ -49,7 +50,8 @@ local function ForEachAttachable(callback)
 end
 
 -- Attaches every attachable stack for which matches(info) is true, as far as there are free slots.
-local function AttachMatching(matches)
+-- Calls onAttached(info) (optional) for every attached stack.
+local function AttachMatching(matches, onAttached)
     local free = CountFreeSlots()
     ForEachAttachable(function(bag, slot, info)
         if free == 0 then
@@ -64,6 +66,9 @@ local function AttachMatching(matches)
                 return true
             end
             free = free - 1
+            if onAttached then
+                onAttached(info)
+            end
         end
     end)
 end
@@ -165,7 +170,7 @@ local function CollectCategories()
         end
     end)
     SortChildren(root)
-    return root.children, poor
+    return root, poor
 end
 
 -- "Iron Ore (3 stacks, 60 items)"; only the items when every stack is a single item, e.g.
@@ -182,29 +187,94 @@ local function FormatEntry(name, group)
     return L["SEND_ATTACH_ENTRY_STACKS"]:format(name, stacks, items)
 end
 
-local function AddAttachButton(description, name, group, matches)
-    description:CreateButton(FormatEntry(name, group), function()
-        AttachMatching(matches)
+-- The open menu: its category tree, gray stacks and free slots. With the option "Keep the attach
+-- menu open" an attach click keeps the menu open, and its entries show what is still left. The
+-- counts are updated here instead of scanning the bags again: the lock state of the attached stacks
+-- may arrive later than the click.
+local menuState = { root = nil, poor = nil, free = 0 }
+
+local function Uncount(group, stackCount)
+    if group then
+        group.count = group.count - 1
+        group.items = group.items - stackCount
+    end
+end
+
+-- Removes an attached stack from the counts of its item, subclass, class and the gray stacks.
+local function OnMenuAttached(info)
+    local stackCount = info.stackCount or 1
+    menuState.free = menuState.free - 1
+    local classID, subClassID = GetItemClass(info.itemID)
+    local class = classID and menuState.root.byID[classID]
+    local subClass = class and class.byID[subClassID]
+    local item = subClass and subClass.byID[info.itemID]
+    Uncount(class, stackCount)
+    Uncount(subClass, stackCount)
+    Uncount(item, stackCount)
+    if info.quality == QUALITY_POOR then
+        Uncount(menuState.poor, stackCount)
+    end
+end
+
+-- The text of an entry is set again each time the menu is refreshed. Entries with nothing left are
+-- gray; a click on them attaches nothing.
+local function SetEntryText(description, getText)
+    description:AddInitializer(function(frame)
+        if frame.fontString then
+            frame.fontString:SetTextToFit(getText())
+        end
     end)
 end
 
--- Icon and name in the item's quality color, e.g. "[icon] Iron Ore (3 stacks, 60 items)".
+-- name: the plain name; display: the name with icon and quality color (optional).
+local function GetEntryText(name, group, display)
+    if group.count <= 0 then
+        return GRAY_FONT_COLOR:WrapTextInColorCode(FormatEntry(name, group))
+    end
+    return FormatEntry(display or name, group)
+end
+
+-- A submenu entry (without callback) or a button.
+local function AddEntry(description, name, group, display, callback)
+    local getText = function()
+        return GetEntryText(name, group, display)
+    end
+    local entry = description:CreateButton(getText(), callback)
+    SetEntryText(entry, getText)
+    return entry
+end
+
+-- The callback's response overrides the default one: Refresh keeps the menu open and sets the texts
+-- of this menu and its parent menus again, CloseAll closes it.
+local function AddAttachButton(description, name, group, matches, display)
+    AddEntry(description, name, group, display, function()
+        AttachMatching(matches, OnMenuAttached)
+        if ns.db.attachKeepMenuOpen then
+            return MenuResponse.Refresh
+        end
+        return MenuResponse.CloseAll
+    end)
+end
+
+-- Icon and name in the item's quality color, e.g. "[icon] Iron Ore (3 stacks, 60 items)". Gray
+-- without the quality color when nothing is left.
 local function AddItemButton(description, item)
-    local name = item.name
+    local display, name = item.name, item.name
     if item.quality then
         local _, _, _, hex = C_Item.GetItemQualityColor(item.quality)
-        name = "|c" .. hex .. name .. "|r"
+        display = "|c" .. hex .. display .. "|r"
     end
     if item.icon then
-        name = ("|T%d:16|t %s"):format(item.icon, name)
+        local icon = ("|T%d:16|t "):format(item.icon)
+        display, name = icon .. display, icon .. name
     end
-    AddAttachButton(description, name, item, MatchesItem(item.id))
+    AddAttachButton(description, name, item, MatchesItem(item.id), display)
 end
 
 -- Submenu of a subclass: "All" (if there is more than one item) and each item. A long list (e.g.
 -- many armor pieces) is split into name ranges.
 local function AddSubClass(description, class, subClass)
-    local submenu = description:CreateButton(FormatEntry(subClass.name, subClass))
+    local submenu = AddEntry(description, subClass.name, subClass)
     if #subClass.children > 1 then
         AddAttachButton(submenu, L["SEND_ATTACH_ALL"], subClass, MatchesClass(class.id, subClass.id))
         submenu:CreateDivider()
@@ -217,16 +287,22 @@ end
 -- of ns.AddMenuEntries.
 local function GenerateCategoryMenu(_, rootDescription)
     rootDescription:SetTag("MENU_GRYPHONMAIL_SEND_ATTACH")
-    rootDescription:CreateTitle(L["SEND_ATTACH_MENU"]:format(CountFreeSlots()))
+    local root, poor = CollectCategories()
+    menuState.root, menuState.poor, menuState.free = root, poor, CountFreeSlots()
 
-    local classes, poor = CollectCategories()
+    local getTitle = function()
+        return L["SEND_ATTACH_MENU"]:format(menuState.free)
+    end
+    SetEntryText(rootDescription:CreateTitle(getTitle()), getTitle)
+
+    local classes = root.children
     if #classes == 0 then
         rootDescription:CreateTitle(GRAY_FONT_COLOR:WrapTextInColorCode(L["SEND_ATTACH_NONE"]))
         return
     end
 
     for _, class in ipairs(classes) do
-        local submenu = rootDescription:CreateButton(FormatEntry(class.name, class))
+        local submenu = AddEntry(rootDescription, class.name, class)
         if #class.children > 1 then
             AddAttachButton(submenu, L["SEND_ATTACH_ALL"], class, MatchesClass(class.id))
             submenu:CreateDivider()
