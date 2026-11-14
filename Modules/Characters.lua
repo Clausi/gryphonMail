@@ -13,8 +13,12 @@ local player
 -- Caches, rebuilt only when the stored characters change (login, faction choice, remove):
 --   nameSet       set of full names for IsOwnCharacter()
 --   characterList result of GetCharacters()
+--   mailRealms    realms mail can go to from the logged-in character (not on Forever)
 local nameSet
 local characterList
+local mailRealms
+-- callback() runs after the stored characters or the logged-in character changed.
+local listeners = {}
 
 -- Localized faction names for UnitFactionGroup() values, shown by "/gryphonmail chars".
 local FACTION_LABELS = {
@@ -29,6 +33,10 @@ local MAIL_TARGET_ICON = "|TInterface\\Minimap\\Tracking\\Mailbox:0|t"
 local function InvalidateCaches()
     nameSet = nil
     characterList = nil
+    mailRealms = nil
+    for _, callback in ipairs(listeners) do
+        callback()
+    end
 end
 
 local function GetPlayerName()
@@ -168,6 +176,44 @@ function Characters:OnEnable()
     RecordPlayer()
 end
 
+-- Own realm and, on Retail, its connected realms; nil on Forever or before login.
+local function GetMailRealms()
+    if not mailRealms and player and Names.GetRealm(player.name) then
+        mailRealms = { [Names.GetRealm(player.name)] = true }
+        for _, realm in ipairs(C_AutoComplete.GetAutoCompleteRealms()) do
+            mailRealms[realm] = true
+        end
+    end
+    return mailRealms
+end
+
+-- True if mail can go between the logged-in character and the one with that full name
+-- (Names.Normalize), faction and realm. Mail is only delivered within the same faction, not to
+-- oneself, and on Forever within the same ruleset, whichever of its realms the characters are on.
+-- Other clients deliver it within the own realm and, on Retail, its connected realms.
+function Characters:CanMail(fullName, faction, realm)
+    if not player or fullName == player.name or faction ~= player.faction then
+        return false
+    end
+    local realms = GetMailRealms()
+    if realms then
+        return realms[Names.GetRealm(fullName) or ""] == true
+    end
+    return GetRulesetKey(realm) == player.ruleset
+end
+
+-- Faction and realm of the logged-in character, nil before login.
+function Characters:GetPlayerFactionAndRealm()
+    if player then
+        return player.faction, player.realm
+    end
+end
+
+-- callback() runs after the stored characters or the logged-in character changed.
+function Characters:OnUpdate(callback)
+    listeners[#listeners + 1] = callback
+end
+
 -- Returns the known characters, sorted by name. The list is cached and must not be modified:
 --   { fullName = "Tor Donnerstein", displayName = "Tor Donnerstein", class = "WARRIOR",
 --     faction = "Alliance", realm = "CAMWOW US1 Realm 10 RP", ruleset = "RP", isCurrent = bool,
@@ -175,34 +221,16 @@ end
 -- fullName is the stored key (Names.Normalize), displayName the form to show and to enter as
 -- recipient (Names.ToDisplay). realm is nil for characters not logged in since it was added.
 -- ruleset is only set on Forever, the other clients have no rulesets.
--- canMail: mail can go between this character and the logged-in one. It is only delivered within
--- the same faction, not to oneself, and on Forever within the same ruleset, whichever of its realms
--- the characters are on. Other clients deliver it within the own realm and, on Retail, its
--- connected realms.
+-- canMail: mail can go between this character and the logged-in one (Characters:CanMail).
 function Characters:GetCharacters()
     if characterList then
         return characterList
-    end
-
-    local mailRealms
-    if player and Names.GetRealm(player.name) then
-        mailRealms = { [Names.GetRealm(player.name)] = true }
-        for _, realm in ipairs(C_AutoComplete.GetAutoCompleteRealms()) do
-            mailRealms[realm] = true
-        end
     end
 
     local hasRulesets = not ns.Compat.HasRealmNames()
     characterList = {}
     for _, fullName in ipairs(GetSortedNames()) do
         local info = ns.db.characters[fullName]
-        local isCurrent = player ~= nil and fullName == player.name
-        local sameRealm
-        if mailRealms then
-            sameRealm = mailRealms[Names.GetRealm(fullName) or ""] == true
-        else
-            sameRealm = player ~= nil and GetRulesetKey(info.realm) == player.ruleset
-        end
         characterList[#characterList + 1] = {
             fullName = fullName,
             displayName = Names.ToDisplay(fullName),
@@ -210,8 +238,8 @@ function Characters:GetCharacters()
             faction = info.faction,
             realm = info.realm,
             ruleset = hasRulesets and GetRulesetName(info.realm) or nil,
-            isCurrent = isCurrent,
-            canMail = player ~= nil and not isCurrent and info.faction == player.faction and sameRealm,
+            isCurrent = player ~= nil and fullName == player.name,
+            canMail = self:CanMail(fullName, info.faction, info.realm),
         }
     end
     return characterList
