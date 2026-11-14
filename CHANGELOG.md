@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-14
+
 ### Added
 
 - Favorites: an account-wide list of characters, e.g. recent allies, friends' alts or any other
@@ -217,7 +219,8 @@ First stable release.
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Clausi/gryphonMail/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/Clausi/gryphonMail/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Clausi/gryphonMail/compare/v0.15.0...v1.0.0
 [0.15.0]: https://github.com/Clausi/gryphonMail/compare/v0.14.0...v0.15.0
