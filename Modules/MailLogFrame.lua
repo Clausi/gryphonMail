@@ -8,6 +8,7 @@ local InboxView = ns.modules.InboxView
 local MailLog = ns.modules.MailLog
 local MailFilters = ns.modules.MailFilters
 local Contacts = ns.modules.Contacts
+local Favorites = ns.modules.Favorites
 
 local ROWS_PER_PAGE = 7
 local ROW_WIDTH = 305
@@ -26,7 +27,7 @@ local DIVIDER = MailFilters.DIVIDER
 -- all mail | people | kind of entry | trade
 local FILTER_LAYOUT = {
     MailFilters.PRESET_ALL, DIVIDER,
-    "alts", Contacts.FRIENDS, Contacts.RECENT_ALLIES, Contacts.GUILD, DIVIDER,
+    "alts", Favorites.KEY, Contacts.FRIENDS, Contacts.RECENT_ALLIES, Contacts.GUILD, DIVIDER,
     "received", "sent", "returned", "deleted", DIVIDER,
     "auction", "money", "cod",
 }

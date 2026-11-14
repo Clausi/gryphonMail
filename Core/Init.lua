@@ -11,6 +11,8 @@ ns.defaults = {
     debug = false,
     -- Own characters, keyed by full name ("Name Surname"). Filled by Modules/Characters.lua.
     characters = {},
+    -- Favorite characters, keyed by Names.Normalize. Filled by Modules/Favorites.lua.
+    favorites = {},
     -- "Send Mail" attach menu: show the number of items besides the number of stacks.
     attachItemCounts = true,
 }

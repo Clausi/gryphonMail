@@ -1,16 +1,23 @@
 local _, ns = ...
 local L = ns.L
 
--- Dropdown next to the "To" field of the "Send Mail" tab to pick a recipient: own characters, plus
--- submenus with friends, guild members and recent allies.
+-- Dropdown next to the "To" field of the "Send Mail" tab to pick a recipient: own characters and
+-- favorites, plus submenus with friends, guild members and recent allies. The last entry adds the
+-- name in the "To" field to the favorites or removes it.
 local SendMailRecipients = ns:RegisterModule("SendMailRecipients")
 local InboxView = ns.modules.InboxView
 local Characters = ns.modules.Characters
 local Contacts = ns.modules.Contacts
+local Favorites = ns.modules.Favorites
 
 -- Gap between the "To" field and the dropdown; there is room for one small button before the
 -- postage text on the right.
 local DROPDOWN_OFFSET_X = 6
+
+-- Icons at line height in front of the favorites title and the add/remove entry. Both textures exist
+-- on every client: the raid target star and the "Pass" button of the loot roll.
+local FAVORITE_ICON = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:0|t "
+local REMOVE_FAVORITE_ICON = "|TInterface\\Buttons\\UI-GroupLoot-Pass-Up:0|t "
 
 -- Blizzard's reply also puts the sender's name into this field: the full name ("First Surname") on
 -- Forever, the name with realm for other realms on other clients (Names.ToDisplay). Programmatic
@@ -51,6 +58,49 @@ local function AddOwnCharacters(rootDescription)
 
     if count == 0 then
         AddNote(rootDescription, L["SEND_TO_CHARACTER_NONE"])
+    end
+end
+
+local function AddFavorite(description, favorite)
+    AddRecipient(description, favorite.name, favorite.class)
+end
+
+local function GetFavoriteFirstName(favorite)
+    return ns.Names.GetFirstName(favorite.name)
+end
+
+-- Favorites that can receive mail from this character (Characters:CanMail); long lists are split
+-- into name ranges like the contacts.
+local function AddFavorites(rootDescription)
+    rootDescription:CreateTitle(FAVORITE_ICON .. L["FILTER_FAVORITES"])
+    local favorites = {}
+    for _, favorite in ipairs(Favorites:GetList()) do
+        if favorite.canMail then
+            favorites[#favorites + 1] = favorite
+        end
+    end
+    if #favorites == 0 then
+        AddNote(rootDescription, L["SEND_TO_FAVORITES_NONE"])
+    else
+        ns.AddMenuEntries(rootDescription, favorites, AddFavorite, GetFavoriteFirstName)
+    end
+end
+
+-- Adds the name in the "To" field to the favorites, or removes it if it is one. Disabled while the
+-- field is empty. The labels leave out the name, so the menu stays narrow.
+local function AddFavoriteToggle(rootDescription)
+    local text = strtrim(SendMailNameEditBox:GetText() or "")
+    if text == "" then
+        local label = FAVORITE_ICON .. GRAY_FONT_COLOR:WrapTextInColorCode(L["SEND_TO_FAV_ADD"])
+        rootDescription:CreateButton(label):SetEnabled(false)
+    elseif Favorites:Contains(text) then
+        rootDescription:CreateButton(REMOVE_FAVORITE_ICON .. L["SEND_TO_FAV_REMOVE"], function()
+            Favorites:Remove(text)
+        end)
+    else
+        rootDescription:CreateButton(FAVORITE_ICON .. L["SEND_TO_FAV_ADD"], function()
+            Favorites:Add(text)
+        end)
     end
 end
 
@@ -111,9 +161,13 @@ local function GenerateMenu(_, rootDescription)
     rootDescription:SetTag("MENU_GRYPHONMAIL_SEND_RECIPIENT")
     AddOwnCharacters(rootDescription)
     rootDescription:CreateDivider()
+    AddFavorites(rootDescription)
+    rootDescription:CreateDivider()
     AddFriends(rootDescription)
     AddGuild(rootDescription)
     AddRecentAllies(rootDescription)
+    rootDescription:CreateDivider()
+    AddFavoriteToggle(rootDescription)
 end
 
 local function CreateDropdown()

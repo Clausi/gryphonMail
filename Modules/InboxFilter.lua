@@ -6,13 +6,14 @@ local InboxFilter = ns:RegisterModule("InboxFilter")
 local InboxView = ns.modules.InboxView
 local MailFilters = ns.modules.MailFilters
 local Contacts = ns.modules.Contacts
+local Favorites = ns.modules.Favorites
 
 local DIVIDER = MailFilters.DIVIDER
 
 -- all mail | people | read state | trade
 local LAYOUT = {
     MailFilters.PRESET_ALL, DIVIDER,
-    "alts", Contacts.FRIENDS, Contacts.RECENT_ALLIES, Contacts.GUILD, DIVIDER,
+    "alts", Favorites.KEY, Contacts.FRIENDS, Contacts.RECENT_ALLIES, Contacts.GUILD, DIVIDER,
     "unread", "read", DIVIDER,
     "auction", "money", "cod",
 }
