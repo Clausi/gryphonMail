@@ -15,6 +15,8 @@ ns.defaults = {
     favorites = {},
     -- "Send Mail" attach menu: show the number of items besides the number of stacks.
     attachItemCounts = true,
+    -- "Send Mail" attach menu: stays open after an attach click.
+    attachKeepMenuOpen = true,
 }
 
 -- Per character (GryphonMailCharDB, ns.charDb): data and settings only the logged-in character needs.

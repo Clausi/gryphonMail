@@ -91,6 +91,16 @@ local function RegisterSettings()
         end)
     Settings.CreateCheckbox(category, attachItemCounts, L["OPTIONS_ATTACH_ITEM_COUNTS_TOOLTIP"])
 
+    local attachKeepMenuOpen = RegisterProxySetting("ATTACH_KEEP_MENU_OPEN", Settings.VarType.Boolean,
+        L["OPTIONS_ATTACH_KEEP_OPEN"], ns.defaults.attachKeepMenuOpen,
+        function()
+            return ns.db.attachKeepMenuOpen
+        end,
+        function(value)
+            ns.db.attachKeepMenuOpen = value
+        end)
+    Settings.CreateCheckbox(category, attachKeepMenuOpen, L["OPTIONS_ATTACH_KEEP_OPEN_TOOLTIP"])
+
     RegisterCharacterRemoval()
 end
 
