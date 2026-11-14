@@ -99,6 +99,21 @@ function Contacts:Contains(kind, name)
     return name ~= nil and GetCache(kind).byName[name] ~= nil
 end
 
+-- Class file of a contact of any kind, nil if unknown (friends have none).
+function Contacts:FindClass(name)
+    name = NormalizeName(name)
+    if not name then
+        return nil
+    end
+    for _, kind in ipairs({ Contacts.GUILD, Contacts.RECENT_ALLIES }) do
+        local contact = GetCache(kind).byName[name]
+        if contact and contact.class then
+            return contact.class
+        end
+    end
+    return nil
+end
+
 -- callback(kind) runs after the contacts of that kind changed.
 local listeners = {}
 

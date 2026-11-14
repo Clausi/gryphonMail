@@ -5,13 +5,16 @@ A World of Warcraft addon that extends the default mailbox.
 ## Features
 
 - **Inbox search:** filters mail by sender, subject or attached item as you type, and suggests own
-  characters.
-- **Filter presets:** own characters, friends, recent allies, guild, unread, read, auction house,
+  characters and favorites.
+- **Favorites:** any character (e.g. a recent ally) can be added to an account-wide favorites list,
+  from the recipient dropdown or by command. Favorites have their own filter preset, appear in the
+  search suggestions and at the top of the recipient dropdown.
+- **Filter presets:** own characters, favorites, friends, recent allies, guild, unread, read, auction house,
   gold and C.O.D. They work together with the search box.
 - **Open Filtered:** while a search or filter is active, "Open All" only opens the matching mail
   (still skipping C.O.D. and GM mail).
 - **Recipient dropdown:** next to the "To" field of "Send Mail", lists own characters that can
-  receive mail from the current one, friends, guild members and recent allies.
+  receive mail from the current one, favorites, friends, guild members and recent allies.
 - **Mail log:** a "Log" tab with collected, sent, returned and deleted mail, including gold and
   items, with the same search and filters as the inbox. Stored per character.
 - **Chat summary:** after "Open All" / "Open Filtered", what was collected.
@@ -98,10 +101,11 @@ GryphonMail/
 └── Modules/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
     ├── Contacts.lua       # Cached friends, guild members and recent allies
-    ├── MailFilters.lua    # Search box with own-character suggestions and filter presets, for inbox and log
+    ├── Favorites.lua      # Account-wide favorite characters ("/gryphonmail fav")
+    ├── MailFilters.lua    # Search box with own-character and favorite suggestions and filter presets, for inbox and log
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     ├── InboxSearch.lua    # Inbox search box (sender/subject/item)
-    ├── InboxFilter.lua    # Inbox filter dropdown (own characters, friends, recent allies, guild, unread, read, AH, gold, C.O.D.)
+    ├── InboxFilter.lua    # Inbox filter dropdown (own characters, favorites, friends, recent allies, guild, unread, read, AH, gold, C.O.D.)
     ├── MailLog.lua        # Records collected, sent, returned and deleted mail per character, "Open All" summary
     ├── MailLogFrame.lua   # Third mail frame tab "Log" with search box and filters (as inbox, but from/to/returned/deleted)
     ├── SendMailRecipients.lua # Recipient dropdown next to the "To" field of "Send Mail"
@@ -145,6 +149,10 @@ Lint with [luacheck](https://github.com/lunarmodules/luacheck). Place `luacheck.
 - `/gryphonmail chars` – list known own characters, mail targets of the current one marked with a
   mailbox icon
 - `/gryphonmail chars remove <number|name>` – forget a character (e.g. deleted or renamed)
+- `/gryphonmail fav` – list favorites, mail targets of the current character marked with a mailbox
+  icon
+- `/gryphonmail fav add <name>` – add a character to the favorites
+- `/gryphonmail fav remove <number|name>` – remove a favorite
 - `/gryphonmail log` – show log settings
 - `/gryphonmail log days <1-365>` – keep log entries of this character for that many days (default 30)
 - `/gryphonmail log clear` – clear the log of the current character

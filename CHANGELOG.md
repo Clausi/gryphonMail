@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Favorites: an account-wide list of characters, e.g. recent allies, friends' alts or any other
+  name. Add the name in the "To" field of "Send Mail" with the last entry of the recipient dropdown
+  (the same entry removes it again), or use `/gryphonmail fav add <name>`. Favorites that can
+  receive mail from the current character are listed in the recipient dropdown below your own
+  characters and are suggested by the search box. The inbox and the mail log have a new filter
+  "Favorites". `/gryphonmail fav` lists them, `/gryphonmail fav remove <number|name>` removes one.
+
 ### Changed
 
 - "Send Mail": the attach menu shows the number of items besides the number of stacks, e.g.

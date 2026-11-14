@@ -16,6 +16,7 @@ local L = ns.L
 local MailFilters = ns:RegisterModule("MailFilters")
 local Characters = ns.modules.Characters
 local Contacts = ns.modules.Contacts
+local Favorites = ns.modules.Favorites
 
 -- Both widgets sit in the top row of MailFrame, as children of InboxFrame or the log.
 local SEARCH_WIDTH = 160
@@ -123,6 +124,17 @@ local PRESETS = {
         label = "FILTER_ALTS",
         matches = function(mail)
             return Characters:IsOwnCharacter(mail.name)
+        end,
+    },
+    [Favorites.KEY] = {
+        label = "FILTER_FAVORITES",
+        onSelect = function()
+            if #Favorites:GetList() == 0 then
+                ns:Notify(L["FAV_EMPTY"])
+            end
+        end,
+        matches = function(mail)
+            return Favorites:Contains(mail.name)
         end,
     },
     [Contacts.FRIENDS] = {
@@ -240,6 +252,11 @@ function MailFilters:CreatePresetDropdown(parent, frameName, layout, onChange, o
             onDataChange()
         end
     end)
+    Favorites:OnUpdate(function()
+        if filter.activeKey == Favorites.KEY then
+            onDataChange()
+        end
+    end)
 
     -- Start unfiltered every time the mailbox is opened.
     MailFrame:HookScript("OnHide", function()
@@ -264,25 +281,34 @@ local function NameStartsWith(fullName, wanted)
     return false
 end
 
--- Own characters matching the text (case-insensitive), without exact matches. Only characters that
--- can exchange mail with this one (see Characters:GetCharacters) are suggested, by the name the
--- mail API shows for them (short for the own realm).
+-- Adds the entries of list ({ displayName, class, canMail }) matching the text to results, up to
+-- MAX_SUGGESTIONS. Returns false once results is full.
+local function AddSuggestions(results, list, wanted)
+    for _, entry in ipairs(list) do
+        if #results == MAX_SUGGESTIONS then
+            return false
+        end
+        local name = entry.displayName
+        if entry.canMail and name:lower() ~= wanted and NameStartsWith(name, wanted) then
+            results[#results + 1] = entry
+        end
+    end
+    return #results < MAX_SUGGESTIONS
+end
+
+-- Own characters, then favorites, matching the text (case-insensitive), without exact matches.
+-- Only characters that can exchange mail with this one (Characters:CanMail) are suggested, by the
+-- name the mail API shows for them (short for the own realm).
 local function FindSuggestions(text)
     local wanted = text:lower()
     local results = {}
-    for _, character in ipairs(Characters:GetCharacters()) do
-        local name = character.displayName
-        if character.canMail and name:lower() ~= wanted and NameStartsWith(name, wanted) then
-            results[#results + 1] = character
-            if #results == MAX_SUGGESTIONS then
-                break
-            end
-        end
+    if AddSuggestions(results, Characters:GetCharacters(), wanted) then
+        AddSuggestions(results, Favorites:GetList(), wanted)
     end
     return results
 end
 
--- Suggestion list for own characters below a search box.
+-- Suggestion list for own characters and favorites below a search box.
 -- Own frame instead of Blizzard's shared AutoCompleteBox: that one is also used by the chat
 -- edit box, and touching it from addon code can taint chat commands.
 local Suggestions = {}
