@@ -57,7 +57,7 @@ local function RegisterCharacterRemoval()
 end
 
 -- Favorites, like "/gryphonmail fav": a dropdown picks one, the buttons remove it or add a character
--- by name (popup with an edit box). The selection is not saved; "" is no selection.
+-- by name (own dialog with suggestions). The selection is not saved; "" is no selection.
 local function RegisterFavorites()
     local Favorites = ns.modules.Favorites
     local layout = SettingsPanel:GetLayout(category)
@@ -95,30 +95,9 @@ local function RegisterFavorites()
         selection:SetValue("")
     end, nil, false))
 
-    StaticPopupDialogs["GRYPHONMAIL_ADD_FAVORITE"] = {
-        text = L["OPTIONS_FAVORITE_ADD_PROMPT"],
-        button1 = L["OPTIONS_FAVORITE_ADD_BUTTON"],
-        button2 = CANCEL,
-        hasEditBox = 1,
-        maxLetters = 64,
-        timeout = 0,
-        whileDead = 1,
-        hideOnEscape = 1,
-        OnAccept = function(dialog)
-            Favorites:Add(ns.Compat.GetPopupEditBox(dialog):GetText())
-        end,
-        EditBoxOnEnterPressed = function(editBox)
-            local dialog = editBox:GetParent()
-            Favorites:Add(editBox:GetText())
-            dialog:Hide()
-        end,
-        EditBoxOnEscapePressed = function(editBox)
-            editBox:GetParent():Hide()
-        end,
-    }
     layout:AddInitializer(CreateSettingsButtonInitializer(L["OPTIONS_FAVORITE_ADD"],
         L["OPTIONS_FAVORITE_ADD_BUTTON"], function()
-        StaticPopup_Show("GRYPHONMAIL_ADD_FAVORITE")
+        ns.modules.FavoriteDialog:Show()
     end, nil, false))
 end
 

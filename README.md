@@ -97,12 +97,13 @@ GryphonMail/
 │   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, MoP Classic, Retail) detected from the APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, long menus split into name ranges, defaults
 │   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
-│   ├── Suggestions.lua    # Suggestion list below an edit box (search boxes)
+│   ├── Suggestions.lua    # Suggestion list below an edit box (search boxes, add favorite dialog)
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
     ├── Contacts.lua       # Cached friends, guild members and recent allies
     ├── Favorites.lua      # Account-wide favorite characters ("/gryphonmail fav")
+    ├── FavoriteDialog.lua # Dialog to add a favorite by name, with recent ally suggestions (from the options)
     ├── MailFilters.lua    # Search box with own-character and favorite suggestions and filter presets, for inbox and log
     ├── InboxView.lua      # Shared inbox filtering: redraws rows, paging, "Open All"
     ├── InboxSearch.lua    # Inbox search box (sender/subject/item)
