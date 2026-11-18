@@ -74,7 +74,7 @@ local function AttachMatching(matches, onAttached, subject)
             end
         end
     end)
-    if attached and subject and SendMailSubjectEditBox:GetText() == "" then
+    if attached and subject and ns.db.attachSetSubject and SendMailSubjectEditBox:GetText() == "" then
         SendMailSubjectEditBox:SetText(subject)
     end
 end

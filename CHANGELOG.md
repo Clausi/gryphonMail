@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The attach menu shows the item tooltip when hovering an item.
 - Attaching items with the attach menu or Alt-click writes the item or category name into the
-  subject line when it is still empty.
+  subject line when it is still empty. Can be turned off in the options ("Fill the subject when
+  attaching").
 
 ## [1.1.0] - 2026-11-14
 
