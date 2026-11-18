@@ -247,7 +247,7 @@ end
 -- The callback's response overrides the default one: Refresh keeps the menu open and sets the texts
 -- of this menu and its parent menus again, CloseAll closes it.
 local function AddAttachButton(description, name, group, matches, display)
-    AddEntry(description, name, group, display, function()
+    return AddEntry(description, name, group, display, function()
         AttachMatching(matches, OnMenuAttached)
         if ns.db.attachKeepMenuOpen then
             return MenuResponse.Refresh
@@ -268,7 +268,10 @@ local function AddItemButton(description, item)
         local icon = ("|T%d:16|t "):format(item.icon)
         display, name = icon .. display, icon .. name
     end
-    AddAttachButton(description, name, item, MatchesItem(item.id), display)
+    local button = AddAttachButton(description, name, item, MatchesItem(item.id), display)
+    button:SetTooltip(function(tooltip)
+        tooltip:SetItemByID(item.id)
+    end)
 end
 
 -- Submenu of a subclass: "All" (if there is more than one item) and each item. A long list (e.g.
