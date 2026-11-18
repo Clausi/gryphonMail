@@ -17,6 +17,8 @@ ns.defaults = {
     attachItemCounts = true,
     -- "Send Mail" attach menu: stays open after an attach click.
     attachKeepMenuOpen = true,
+    -- "Send Mail" attach menu and Alt-click: write the item or category name into an empty subject.
+    attachSetSubject = true,
 }
 
 -- Per character (GryphonMailCharDB, ns.charDb): data and settings only the logged-in character needs.

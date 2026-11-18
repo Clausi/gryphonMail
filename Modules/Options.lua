@@ -101,6 +101,16 @@ local function RegisterSettings()
         end)
     Settings.CreateCheckbox(category, attachKeepMenuOpen, L["OPTIONS_ATTACH_KEEP_OPEN_TOOLTIP"])
 
+    local attachSetSubject = RegisterProxySetting("ATTACH_SET_SUBJECT", Settings.VarType.Boolean,
+        L["OPTIONS_ATTACH_SET_SUBJECT"], ns.defaults.attachSetSubject,
+        function()
+            return ns.db.attachSetSubject
+        end,
+        function(value)
+            ns.db.attachSetSubject = value
+        end)
+    Settings.CreateCheckbox(category, attachSetSubject, L["OPTIONS_ATTACH_SET_SUBJECT_TOOLTIP"])
+
     RegisterCharacterRemoval()
 end
 
