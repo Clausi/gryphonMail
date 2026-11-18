@@ -50,9 +50,11 @@ local function ForEachAttachable(callback)
 end
 
 -- Attaches every attachable stack for which matches(info) is true, as far as there are free slots.
--- Calls onAttached(info) (optional) for every attached stack.
-local function AttachMatching(matches, onAttached)
+-- Calls onAttached(info) (optional) for every attached stack. Writes subject into the subject line
+-- if at least one stack was attached and the line is still empty.
+local function AttachMatching(matches, onAttached, subject)
     local free = CountFreeSlots()
+    local attached = false
     ForEachAttachable(function(bag, slot, info)
         if free == 0 then
             return true
@@ -66,11 +68,15 @@ local function AttachMatching(matches, onAttached)
                 return true
             end
             free = free - 1
+            attached = true
             if onAttached then
                 onAttached(info)
             end
         end
     end)
+    if attached and subject and SendMailSubjectEditBox:GetText() == "" then
+        SendMailSubjectEditBox:SetText(subject)
+    end
 end
 
 local function MatchesItem(itemID)
@@ -85,7 +91,7 @@ local function OnModifiedItemClick(link)
     end
     local itemID = GetItemID(link)
     if itemID then
-        AttachMatching(MatchesItem(itemID))
+        AttachMatching(MatchesItem(itemID), nil, link:match("|h%[(.-)%]|h"))
     end
 end
 
@@ -246,9 +252,10 @@ end
 
 -- The callback's response overrides the default one: Refresh keeps the menu open and sets the texts
 -- of this menu and its parent menus again, CloseAll closes it.
-local function AddAttachButton(description, name, group, matches, display)
+-- subject: written into an empty subject line (the plain name of the item or category).
+local function AddAttachButton(description, name, group, matches, display, subject)
     return AddEntry(description, name, group, display, function()
-        AttachMatching(matches, OnMenuAttached)
+        AttachMatching(matches, OnMenuAttached, subject)
         if ns.db.attachKeepMenuOpen then
             return MenuResponse.Refresh
         end
@@ -268,7 +275,7 @@ local function AddItemButton(description, item)
         local icon = ("|T%d:16|t "):format(item.icon)
         display, name = icon .. display, icon .. name
     end
-    local button = AddAttachButton(description, name, item, MatchesItem(item.id), display)
+    local button = AddAttachButton(description, name, item, MatchesItem(item.id), display, item.name)
     button:SetTooltip(function(tooltip)
         tooltip:SetItemByID(item.id)
     end)
@@ -279,7 +286,8 @@ end
 local function AddSubClass(description, class, subClass)
     local submenu = AddEntry(description, subClass.name, subClass)
     if #subClass.children > 1 then
-        AddAttachButton(submenu, L["SEND_ATTACH_ALL"], subClass, MatchesClass(class.id, subClass.id))
+        AddAttachButton(submenu, L["SEND_ATTACH_ALL"], subClass, MatchesClass(class.id, subClass.id), nil,
+            subClass.name)
         submenu:CreateDivider()
     end
     ns.AddMenuEntries(submenu, subClass.children, AddItemButton, GetName)
@@ -307,7 +315,7 @@ local function GenerateCategoryMenu(_, rootDescription)
     for _, class in ipairs(classes) do
         local submenu = AddEntry(rootDescription, class.name, class)
         if #class.children > 1 then
-            AddAttachButton(submenu, L["SEND_ATTACH_ALL"], class, MatchesClass(class.id))
+            AddAttachButton(submenu, L["SEND_ATTACH_ALL"], class, MatchesClass(class.id), nil, class.name)
             submenu:CreateDivider()
         end
         for _, subClass in ipairs(class.children) do
@@ -319,7 +327,7 @@ local function GenerateCategoryMenu(_, rootDescription)
         rootDescription:CreateDivider()
         AddAttachButton(rootDescription, L["SEND_ATTACH_POOR"], poor, function(info)
             return info.quality == QUALITY_POOR
-        end)
+        end, nil, L["SEND_ATTACH_POOR"])
     end
 end
 
