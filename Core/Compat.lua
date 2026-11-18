@@ -93,3 +93,9 @@ end
 function Compat.GetLastBagIndex()
     return NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 end
+
+-- The edit box of a StaticPopup dialog: GetEditBox() on Forever and Retail, the editBox field on
+-- Classic. Call with the dialog frame passed to its callbacks.
+function Compat.GetPopupEditBox(dialog)
+    return dialog.GetEditBox and dialog:GetEditBox() or dialog.editBox
+end

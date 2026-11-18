@@ -13,6 +13,8 @@ globals = {
     "GryphonMailCharDB",
     "SLASH_GRYPHONMAIL1",
     "SlashCmdList",
+    -- Blizzard table, only the GRYPHONMAIL_ADD_FAVORITE dialog is added to it.
+    "StaticPopupDialogs",
 }
 
 -- WoW API and Blizzard UI globals the addon reads. Add new ones here when used.
@@ -23,6 +25,8 @@ read_globals = {
     "strtrim",
     "issecretvalue",
     "hooksecurefunc",
+    "StaticPopup_Show",
+    "CANCEL",
     "wipe",
     "date",
     "time",

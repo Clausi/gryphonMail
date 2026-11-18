@@ -56,6 +56,72 @@ local function RegisterCharacterRemoval()
     end, nil, false))
 end
 
+-- Favorites, like "/gryphonmail fav": a dropdown picks one, the buttons remove it or add a character
+-- by name (popup with an edit box). The selection is not saved; "" is no selection.
+local function RegisterFavorites()
+    local Favorites = ns.modules.Favorites
+    local layout = SettingsPanel:GetLayout(category)
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L["OPTIONS_FAVORITES_HEADER"]))
+
+    local selected = ""
+    local selection = RegisterProxySetting("REMOVE_FAVORITE", Settings.VarType.String, L["OPTIONS_FAVORITE"], "",
+        function()
+            return selected
+        end,
+        function(value)
+            selected = value
+        end)
+
+    -- Called each time the dropdown opens, so it lists the favorites stored at that moment.
+    local function GetOptions()
+        local container = Settings.CreateControlTextContainer()
+        container:Add("", L["OPTIONS_FAVORITE_NONE"])
+        for _, favorite in ipairs(Favorites:GetList()) do
+            local color = favorite.class and C_ClassColor.GetClassColor(favorite.class)
+            container:Add(favorite.name, color and color:WrapTextInColorCode(favorite.displayName)
+                or favorite.displayName)
+        end
+        return container:GetData()
+    end
+    Settings.CreateDropdown(category, selection, GetOptions, L["OPTIONS_FAVORITE_TOOLTIP"])
+
+    -- No search tags, see RegisterCharacterRemoval.
+    layout:AddInitializer(CreateSettingsButtonInitializer(L["OPTIONS_FAVORITE_REMOVE"],
+        L["OPTIONS_FAVORITE_REMOVE_BUTTON"], function()
+        if selected == "" then
+            return
+        end
+        Favorites:Remove(selected)
+        selection:SetValue("")
+    end, nil, false))
+
+    StaticPopupDialogs["GRYPHONMAIL_ADD_FAVORITE"] = {
+        text = L["OPTIONS_FAVORITE_ADD_PROMPT"],
+        button1 = L["OPTIONS_FAVORITE_ADD_BUTTON"],
+        button2 = CANCEL,
+        hasEditBox = 1,
+        maxLetters = 64,
+        timeout = 0,
+        whileDead = 1,
+        hideOnEscape = 1,
+        OnAccept = function(dialog)
+            Favorites:Add(ns.Compat.GetPopupEditBox(dialog):GetText())
+        end,
+        EditBoxOnEnterPressed = function(editBox)
+            local dialog = editBox:GetParent()
+            Favorites:Add(editBox:GetText())
+            dialog:Hide()
+        end,
+        EditBoxOnEscapePressed = function(editBox)
+            editBox:GetParent():Hide()
+        end,
+    }
+    layout:AddInitializer(CreateSettingsButtonInitializer(L["OPTIONS_FAVORITE_ADD"],
+        L["OPTIONS_FAVORITE_ADD_BUTTON"], function()
+        StaticPopup_Show("GRYPHONMAIL_ADD_FAVORITE")
+    end, nil, false))
+end
+
 local function RegisterSettings()
     local notifications = RegisterProxySetting("NOTIFICATIONS", Settings.VarType.Boolean,
         L["OPTIONS_NOTIFICATIONS"], ns.charDefaults.notifications,
@@ -111,6 +177,7 @@ local function RegisterSettings()
         end)
     Settings.CreateCheckbox(category, attachSetSubject, L["OPTIONS_ATTACH_SET_SUBJECT_TOOLTIP"])
 
+    RegisterFavorites()
     RegisterCharacterRemoval()
 end
 
