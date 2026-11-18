@@ -17,6 +17,7 @@ local MailFilters = ns:RegisterModule("MailFilters")
 local Characters = ns.modules.Characters
 local Contacts = ns.modules.Contacts
 local Favorites = ns.modules.Favorites
+local Suggestions = ns.Suggestions
 
 -- Both widgets sit in the top row of MailFrame, as children of InboxFrame or the log.
 local SEARCH_WIDTH = 160
@@ -29,19 +30,6 @@ local DROPDOWN_OFFSET_X = 64
 -- The dropdown is anchored at its vertical center, on the center line of the search box: the
 -- filter dropdown template is 18 high on Forever and Retail and 22 on Classic.
 local DROPDOWN_CENTER_Y = SEARCH_OFFSET_Y - SEARCH_HEIGHT / 2
-
-local MAX_SUGGESTIONS = 5
-local SUGGESTION_HEIGHT = 16
-local SUGGESTION_PADDING = 5
-
-local SUGGESTION_BACKDROP = {
-    bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true,
-    tileSize = 16,
-    edgeSize = 16,
-    insets = { left = 4, right = 4, top = 4, bottom = 4 },
-}
 
 MailFilters.PRESET_ALL = "all"
 
@@ -266,162 +254,16 @@ function MailFilters:CreatePresetDropdown(parent, frameName, layout, onChange, o
     return filter
 end
 
--- True if the first name or the surname starts with the text ("tor" and "donn" both find
--- "Tor Donnerstein"), or the full name does.
-local function NameStartsWith(fullName, wanted)
-    local lowerName = fullName:lower()
-    if lowerName:sub(1, #wanted) == wanted then
-        return true
-    end
-    for word in lowerName:gmatch("%S+") do
-        if word:sub(1, #wanted) == wanted then
-            return true
-        end
-    end
-    return false
-end
-
--- Adds the entries of list ({ displayName, class, canMail }) matching the text to results, up to
--- MAX_SUGGESTIONS. Returns false once results is full.
-local function AddSuggestions(results, list, wanted)
-    for _, entry in ipairs(list) do
-        if #results == MAX_SUGGESTIONS then
-            return false
-        end
-        local name = entry.displayName
-        if entry.canMail and name:lower() ~= wanted and NameStartsWith(name, wanted) then
-            results[#results + 1] = entry
-        end
-    end
-    return #results < MAX_SUGGESTIONS
-end
-
 -- Own characters, then favorites, matching the text (case-insensitive), without exact matches.
 -- Only characters that can exchange mail with this one (Characters:CanMail) are suggested, by the
 -- name the mail API shows for them (short for the own realm).
 local function FindSuggestions(text)
     local wanted = text:lower()
     local results = {}
-    if AddSuggestions(results, Characters:GetCharacters(), wanted) then
-        AddSuggestions(results, Favorites:GetList(), wanted)
+    if Suggestions.AddMatches(results, Characters:GetCharacters(), wanted) then
+        Suggestions.AddMatches(results, Favorites:GetList(), wanted)
     end
     return results
-end
-
--- Suggestion list for own characters and favorites below a search box.
--- Own frame instead of Blizzard's shared AutoCompleteBox: that one is also used by the chat
--- edit box, and touching it from addon code can taint chat commands.
-local Suggestions = {}
-Suggestions.__index = Suggestions
-
-local function CreateSuggestions(searchBox)
-    local self = setmetatable({ searchBox = searchBox, results = {}, selectedIndex = 0 }, Suggestions)
-
-    local frame = CreateFrame("Frame", nil, searchBox, "BackdropTemplate")
-    frame:SetBackdrop(SUGGESTION_BACKDROP)
-    frame:SetBackdropColor(0, 0, 0, 0.9)
-    frame:SetBackdropBorderColor(0.6, 0.6, 0.6)
-    frame:SetFrameStrata("DIALOG")
-    frame:SetWidth(SEARCH_WIDTH)
-    -- The template's search icon sits left of the edit area.
-    frame:SetPoint("TOPLEFT", searchBox, "BOTTOMLEFT", -6, -2)
-    frame:Hide()
-    self.frame = frame
-
-    self.buttons = {}
-    for i = 1, MAX_SUGGESTIONS do
-        local button = CreateFrame("Button", nil, frame)
-        button:SetHeight(SUGGESTION_HEIGHT)
-        button:SetPoint("TOPLEFT", SUGGESTION_PADDING, -SUGGESTION_PADDING - (i - 1) * SUGGESTION_HEIGHT)
-        button:SetPoint("TOPRIGHT", -SUGGESTION_PADDING, -SUGGESTION_PADDING - (i - 1) * SUGGESTION_HEIGHT)
-        button:SetNormalFontObject("GameFontHighlightSmall")
-        button:SetHighlightTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight", "ADD")
-        button:SetText(" ")
-        local fontString = button:GetFontString()
-        fontString:ClearAllPoints()
-        fontString:SetPoint("LEFT", 6, 0)
-        fontString:SetPoint("RIGHT", -6, 0)
-        fontString:SetJustifyH("LEFT")
-        fontString:SetWordWrap(false)
-        button:SetScript("OnClick", function()
-            self:Accept(i)
-        end)
-        self.buttons[i] = button
-    end
-    return self
-end
-
-function Suggestions:IsShown()
-    return self.frame:IsShown()
-end
-
-function Suggestions:Hide()
-    self.frame:Hide()
-    self.results = {}
-    self.selectedIndex = 0
-end
-
-function Suggestions:Select(index)
-    self.selectedIndex = index
-    for i, button in ipairs(self.buttons) do
-        if i == index then
-            button:LockHighlight()
-        else
-            button:UnlockHighlight()
-        end
-    end
-end
-
--- Moves the selection down (or up), wrapping around.
-function Suggestions:Step(up)
-    local count = #self.results
-    if count == 0 then
-        return
-    end
-    local index = self.selectedIndex + (up and -1 or 1)
-    if index < 1 then
-        index = count
-    elseif index > count then
-        index = 1
-    end
-    self:Select(index)
-end
-
-function Suggestions:Update(text)
-    if text == "" then
-        self:Hide()
-        return
-    end
-
-    self.results = FindSuggestions(text)
-    if #self.results == 0 then
-        self:Hide()
-        return
-    end
-
-    for i, button in ipairs(self.buttons) do
-        local character = self.results[i]
-        if character then
-            local color = character.class and C_ClassColor.GetClassColor(character.class)
-            button:SetText(color and color:WrapTextInColorCode(character.displayName) or character.displayName)
-            button:Show()
-        else
-            button:Hide()
-        end
-    end
-    self.frame:SetHeight(#self.results * SUGGESTION_HEIGHT + 2 * SUGGESTION_PADDING)
-    self.frame:Show()
-    self:Select(1)
-end
-
-function Suggestions:Accept(index)
-    local character = self.results[index]
-    self:Hide()
-    if character then
-        -- Programmatic SetText: OnTextChanged runs without userInput and applies the query.
-        self.searchBox:SetText(character.displayName)
-        self.searchBox:SetCursorPosition(#character.displayName)
-    end
 end
 
 local SearchFilter = {}
@@ -483,53 +325,10 @@ function MailFilters:CreateSearchBox(parent, frameName, onChange)
     searchBox.Instructions:SetText(L["SEARCH_PLACEHOLDER"])
     filter.searchBox = searchBox
 
-    local suggestions = CreateSuggestions(searchBox)
-
-    -- HookScript keeps the template's own handler (placeholder text, clear button).
-    searchBox:HookScript("OnTextChanged", function(box, userInput)
+    -- The template's search icon sits left of the edit area.
+    Suggestions.Attach(searchBox, { width = SEARCH_WIDTH, offsetX = -6, find = FindSuggestions })
+    searchBox:HookScript("OnTextChanged", function(box)
         filter:SetQuery(box:GetText())
-        if userInput then
-            suggestions:Update(box:GetText())
-        else
-            suggestions:Hide()
-        end
-    end)
-
-    searchBox:HookScript("OnTabPressed", function()
-        if suggestions:IsShown() then
-            suggestions:Step(IsShiftKeyDown())
-        end
-    end)
-
-    searchBox:HookScript("OnArrowPressed", function(_, key)
-        if suggestions:IsShown() and (key == "UP" or key == "DOWN") then
-            suggestions:Step(key == "UP")
-        end
-    end)
-
-    -- Replaced instead of hooked: the template clears the focus on Enter/Escape, which would close
-    -- the suggestions before a hook could accept the selected one. This is our own frame, so no taint.
-    searchBox:SetScript("OnEnterPressed", function(box)
-        if suggestions:IsShown() and suggestions.selectedIndex > 0 then
-            suggestions:Accept(suggestions.selectedIndex)
-        else
-            box:ClearFocus()
-        end
-    end)
-
-    searchBox:SetScript("OnEscapePressed", function(box)
-        if suggestions:IsShown() then
-            suggestions:Hide()
-        else
-            box:ClearFocus()
-        end
-    end)
-
-    -- Keep the list open while it is being clicked.
-    searchBox:HookScript("OnEditFocusLost", function()
-        if not suggestions.frame:IsMouseOver() then
-            suggestions:Hide()
-        end
     end)
 
     -- Start unfiltered every time the mailbox is opened.

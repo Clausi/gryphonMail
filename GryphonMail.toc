@@ -26,6 +26,7 @@ Core\Init.lua
 Core\Compat.lua
 Core\Util.lua
 Core\Names.lua
+Core\Suggestions.lua
 
 # Modules
 Modules\Characters.lua
