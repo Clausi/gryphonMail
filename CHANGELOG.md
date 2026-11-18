@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Attaching items with the attach menu or Alt-click writes the item or category name into the
   subject line when it is still empty. Can be turned off in the options ("Fill the subject when
   attaching").
-- Favorites can be added by name and removed in the options.
+- Favorites can be added by name (with recent ally suggestions while typing) and removed in the
+  options.
 
 ## [1.1.0] - 2026-11-14
 

@@ -32,6 +32,7 @@ Core\Suggestions.lua
 Modules\Characters.lua
 Modules\Contacts.lua
 Modules\Favorites.lua
+Modules\FavoriteDialog.lua
 Modules\MailFilters.lua
 Modules\InboxView.lua
 Modules\InboxSearch.lua
