@@ -97,6 +97,7 @@ GryphonMail/
 │   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, MoP Classic, Retail) detected from the APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, long menus split into name ranges, defaults
 │   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
+│   ├── Suggestions.lua    # Suggestion list below an edit box (search boxes)
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)
