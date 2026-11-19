@@ -32,6 +32,8 @@ read_globals = {
     -- API
     "C_AddOns",
     "C_AutoComplete",
+    "C_BattleNet",
+    "BNGetNumFriends",
     "Constants",
     "C_ClassColor",
     "C_Container",
@@ -139,6 +141,8 @@ read_globals = {
     "NUM_TOTAL_EQUIPPED_BAG_SLOTS",
     "SOUNDKIT",
     "UNKNOWN",
+    "BNET_CLIENT_WOW",
+    "WOW_PROJECT_ID",
     "OPEN_ALL_MAIL_BUTTON",
     "DAYS_ABBR",
     "TIME_UNTIL_DELETED",
