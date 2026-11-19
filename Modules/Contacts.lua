@@ -2,7 +2,8 @@ local _, ns = ...
 
 -- Friends, guild members and recent allies of the logged-in character, shared by the inbox filter and
 -- the "Send Mail" recipient dropdown.
--- Lists are cached and rebuilt after FRIENDLIST_UPDATE / GUILD_ROSTER_UPDATE / RECENT_ALLIES_CACHE_UPDATE.
+-- Lists are cached and rebuilt after FRIENDLIST_UPDATE (BN_FRIEND_* on Forever) / GUILD_ROSTER_UPDATE /
+-- RECENT_ALLIES_CACHE_UPDATE.
 local Contacts = ns:RegisterModule("Contacts")
 
 Contacts.FRIENDS = "friends"
@@ -29,10 +30,51 @@ local function GetClassFile(classID)
     return info and info.classFile
 end
 
+-- Does not change during a session.
+local hasCharacterFriendList
+
+local function HasCharacterFriendList()
+    if hasCharacterFriendList == nil then
+        hasCharacterFriendList = ns.Compat.HasCharacterFriendList()
+    end
+    return hasCharacterFriendList
+end
+
+-- A WoW character of a Battle.net friend that can exchange mail with the logged-in character:
+-- online in this game version and region, same faction and (Characters:CanMail) ruleset.
+local function GetMailableCharacter(gameAccount)
+    if not gameAccount or not gameAccount.isOnline or gameAccount.clientProgram ~= BNET_CLIENT_WOW
+        or gameAccount.wowProjectID ~= WOW_PROJECT_ID or not gameAccount.isInCurrentRegion then
+        return nil
+    end
+    local name = NormalizeName(gameAccount.characterName)
+    if name and ns.modules.Characters:CanMail(name, gameAccount.factionName, gameAccount.realmName) then
+        return name
+    end
+    return nil
+end
+
+-- Battle.net friends only have a character while they are online, so offline ones are missing.
+local function AddBattleNetFriends(add)
+    for i = 1, BNGetNumFriends() do
+        for j = 1, C_BattleNet.GetFriendNumGameAccounts(i) do
+            local gameAccount = C_BattleNet.GetFriendGameAccountInfo(i, j)
+            local name = GetMailableCharacter(gameAccount)
+            if name then
+                add(name, gameAccount.classFilename or GetClassFile(gameAccount.classID))
+            end
+        end
+    end
+end
+
 -- Each builder fills the list with { name = full name, class = class file or nil } entries.
 -- Returning false means the data is not available yet and must not be cached.
 local builders = {
     [Contacts.FRIENDS] = function(add)
+        if not HasCharacterFriendList() then
+            AddBattleNetFriends(add)
+            return
+        end
         for i = 1, C_FriendList.GetNumFriends() do
             local info = C_FriendList.GetFriendInfoByIndex(i)
             if info then
@@ -146,4 +188,18 @@ function Contacts:OnInitialize()
     ns:RegisterEvent("RECENT_ALLIES_CACHE_UPDATE", function()
         Invalidate(Contacts.RECENT_ALLIES)
     end)
+end
+
+function Contacts:OnEnable()
+    -- Without the character list the friends are Battle.net friends. Their characters change when
+    -- they log in, out or switch characters (BN_FRIEND_INFO_CHANGED).
+    if not HasCharacterFriendList() then
+        local function InvalidateFriends()
+            Invalidate(Contacts.FRIENDS)
+        end
+        ns:RegisterEvent("BN_FRIEND_INFO_CHANGED", InvalidateFriends)
+        ns:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", InvalidateFriends)
+        ns:RegisterEvent("BN_CONNECTED", InvalidateFriends)
+        ns:RegisterEvent("BN_DISCONNECTED", InvalidateFriends)
+    end
 end

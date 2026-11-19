@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Forever: the "Friends" recipient list and the "Friends" filter of the inbox and the mail log were
+  always empty. Forever only has Battle.net friends; their characters are listed while they are
+  online in Forever on your ruleset and faction.
+
 ## [1.2.0] - 2026-11-18
 
 ### Added

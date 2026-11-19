@@ -14,6 +14,14 @@ function Compat.HasRealmNames()
     return not (RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled())
 end
 
+-- The character-based friends list (C_FriendList). Forever turns it off: its friends frame only
+-- lists Battle.net friends then (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua). Clients without
+-- the check always have it.
+function Compat.HasCharacterFriendList()
+    local check = C_FriendList.IsLegacyFriendSystemEnabled
+    return check == nil or check() == true
+end
+
 -- Forever redraws the inbox with the method InboxFrame:Update() (InboxMixin). Retail and Classic
 -- use the global function InboxFrame_Update() instead. Call once InboxFrame exists.
 function Compat.HasInboxUpdateMethod()
