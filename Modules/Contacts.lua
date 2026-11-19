@@ -56,8 +56,8 @@ end
 
 -- Battle.net friends only have a character while they are online, so offline ones are missing.
 local function AddBattleNetFriends(add)
-    for i = 1, BNGetNumFriends() do
-        for j = 1, C_BattleNet.GetFriendNumGameAccounts(i) do
+    for i = 1, BNGetNumFriends() or 0 do
+        for j = 1, C_BattleNet.GetFriendNumGameAccounts(i) or 0 do
             local gameAccount = C_BattleNet.GetFriendGameAccountInfo(i, j)
             local name = GetMailableCharacter(gameAccount)
             if name then
@@ -192,11 +192,13 @@ end
 
 function Contacts:OnEnable()
     -- Without the character list the friends are Battle.net friends. Their characters change when
-    -- they log in, out or switch characters (BN_FRIEND_INFO_CHANGED).
+    -- they log in, out or switch characters (the same events as Blizzard's friends frame).
     if not HasCharacterFriendList() then
         local function InvalidateFriends()
             Invalidate(Contacts.FRIENDS)
         end
+        ns:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", InvalidateFriends)
+        ns:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", InvalidateFriends)
         ns:RegisterEvent("BN_FRIEND_INFO_CHANGED", InvalidateFriends)
         ns:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", InvalidateFriends)
         ns:RegisterEvent("BN_CONNECTED", InvalidateFriends)
