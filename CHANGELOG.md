@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Forever: friends online in Forever were still missing from the "Friends" recipient list and
+  filters, because their realm name has no spaces and their ruleset was not recognized.
+
 ## [1.2.1] - 2026-11-19
 
 ### Fixed

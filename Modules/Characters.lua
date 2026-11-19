@@ -47,12 +47,13 @@ end
 -- made up of many realms, and characters of one ruleset can land on different ones:
 -- "CAMWOW US1 Realm 10 RP" and "CAMWOW US2 Realm 11 RP" are the same mega server. No API returns
 -- the ruleset, so it is read from the name: the text after "Realm <number>" ("PvE", "PVP", "RP",
--- "RPPVP"), or the last word for names without that part ("Classic Beta PvE").
+-- "RPPVP"), or the last word for names without that part ("Classic Beta PvE"). Battle.net game
+-- accounts give the realm without spaces ("CAMWOWEU4Realm7PvE").
 local function GetRulesetName(realm)
     if not realm then
         return nil
     end
-    return realm:match("Realm %d+%s+(.-)%s*$") or realm:match("(%S+)%s*$") or realm
+    return realm:match("Realm%s*%d+%s*(.-)%s*$") or realm:match("(%S+)%s*$") or realm
 end
 
 -- Comparable form of GetRulesetName(): case and spaces are not consistent between realm names.
