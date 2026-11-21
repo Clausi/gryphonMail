@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   game rules of the character; a realm stored before is kept. Battle.net friends without a realm
   name are matched by their server. Characters whose realm was erased get their ruleset back at
   their next login.
+- Forever: characters added as friends by name were missing from the "Friends" recipient list and
+  filters. They are listed now, also while they are offline.
 
 ## [1.2.2] - 2026-11-19
 

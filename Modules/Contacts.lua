@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- Friends, guild members and recent allies of the logged-in character, shared by the inbox filter and
 -- the "Send Mail" recipient dropdown.
--- Lists are cached and rebuilt after FRIENDLIST_UPDATE (BN_FRIEND_* on Forever) / GUILD_ROSTER_UPDATE /
+-- Lists are cached and rebuilt after FRIENDLIST_UPDATE (also BN_FRIEND_* on Forever) / GUILD_ROSTER_UPDATE /
 -- RECENT_ALLIES_CACHE_UPDATE.
 local Contacts = ns:RegisterModule("Contacts")
 
@@ -30,8 +30,9 @@ local function GetClassFile(classID)
     return info and info.classFile
 end
 
--- Does not change during a session.
+-- Do not change during a session.
 local hasCharacterFriendList
+local hasBattleNetFriends
 
 local function HasCharacterFriendList()
     if hasCharacterFriendList == nil then
@@ -40,11 +41,26 @@ local function HasCharacterFriendList()
     return hasCharacterFriendList
 end
 
+-- Characters of Battle.net friends are only listed on Forever: their names are unique without a
+-- realm there. Forever's friends frame shows them next to the character friends, if that list is
+-- enabled (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua).
+local function HasBattleNetFriends()
+    if hasBattleNetFriends == nil then
+        hasBattleNetFriends = not ns.Compat.HasRealmNames()
+    end
+    return hasBattleNetFriends
+end
+
+-- True if the game account is a character online in this game version and region.
+local function IsInThisGame(gameAccount)
+    return gameAccount ~= nil and gameAccount.isOnline and gameAccount.clientProgram == BNET_CLIENT_WOW
+        and gameAccount.wowProjectID == WOW_PROJECT_ID and gameAccount.isInCurrentRegion
+end
+
 -- A WoW character of a Battle.net friend that can exchange mail with the logged-in character:
 -- online in this game version and region, same faction and (Characters:CanMail) ruleset.
 local function GetMailableCharacter(gameAccount)
-    if not gameAccount or not gameAccount.isOnline or gameAccount.clientProgram ~= BNET_CLIENT_WOW
-        or gameAccount.wowProjectID ~= WOW_PROJECT_ID or not gameAccount.isInCurrentRegion then
+    if not IsInThisGame(gameAccount) then
         return nil
     end
     local name = NormalizeName(gameAccount.characterName)
@@ -55,15 +71,35 @@ local function GetMailableCharacter(gameAccount)
     return nil
 end
 
--- Battle.net friends only have a character while they are online, so offline ones are missing.
+-- Character name of a title friend (Forever: a character added by name in the friends frame, a
+-- Battle.net friend of friend level Title), nil for other friends. It is the target Blizzard's chat
+-- whispers (ChatFrameUtil.lua) and is known while the friend is offline.
+local function GetTitleFriendName(accountInfo)
+    local titleLevel = Enum.BattleNetFriendLevel and Enum.BattleNetFriendLevel.Title
+    if not titleLevel or accountInfo.friendLevel ~= titleLevel
+        or not C_BattleNet.GetDefaultTitleWhisperTarget then
+        return nil
+    end
+    return NormalizeName(C_BattleNet.GetDefaultTitleWhisperTarget(accountInfo.bnetAccountID))
+end
+
+-- Battle.net friends only have a character while they are online. A title friend is one character,
+-- so it is also listed while offline; faction and ruleset are unknown then, it is listed unchecked.
 local function AddBattleNetFriends(add)
     for i = 1, BNGetNumFriends() or 0 do
+        local isInThisGame = false
         for j = 1, C_BattleNet.GetFriendNumGameAccounts(i) or 0 do
             local gameAccount = C_BattleNet.GetFriendGameAccountInfo(i, j)
+            isInThisGame = isInThisGame or IsInThisGame(gameAccount)
             local name = GetMailableCharacter(gameAccount)
             if name then
                 add(name, gameAccount.classFilename or GetClassFile(gameAccount.classID))
             end
+        end
+        local accountInfo = not isInThisGame and C_BattleNet.GetFriendAccountInfo(i)
+        local titleFriendName = accountInfo and GetTitleFriendName(accountInfo)
+        if titleFriendName then
+            add(titleFriendName)
         end
     end
 end
@@ -72,8 +108,10 @@ end
 -- Returning false means the data is not available yet and must not be cached.
 local builders = {
     [Contacts.FRIENDS] = function(add)
-        if not HasCharacterFriendList() then
+        if HasBattleNetFriends() then
             AddBattleNetFriends(add)
+        end
+        if not HasCharacterFriendList() then
             return
         end
         for i = 1, C_FriendList.GetNumFriends() do
@@ -192,9 +230,9 @@ function Contacts:OnInitialize()
 end
 
 function Contacts:OnEnable()
-    -- Without the character list the friends are Battle.net friends. Their characters change when
-    -- they log in, out or switch characters (the same events as Blizzard's friends frame).
-    if not HasCharacterFriendList() then
+    -- The characters of Battle.net friends change when they log in, out or switch characters (the
+    -- same events as Blizzard's friends frame).
+    if HasBattleNetFriends() then
         local function InvalidateFriends()
             Invalidate(Contacts.FRIENDS)
         end
