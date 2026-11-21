@@ -38,9 +38,9 @@ function Compat.GetRuleset()
     return "PvE"
 end
 
--- The character-based friends list (C_FriendList). Forever turns it off: its friends frame only
--- lists Battle.net friends then (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua). Clients without
--- the check always have it.
+-- The character-based friends list (C_FriendList). Forever can turn it off: its friends frame only
+-- lists Battle.net friends then, otherwise both (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua).
+-- Clients without the check always have it.
 function Compat.HasCharacterFriendList()
     local check = C_FriendList.IsLegacyFriendSystemEnabled
     return check == nil or check() == true
