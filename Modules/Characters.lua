@@ -70,13 +70,6 @@ local function GetRulesetKey(ruleset, realm)
     return name and (name:lower():gsub("%s+", ""))
 end
 
--- Server ID of a player GUID ("Player-6937-00D3614F" -> "6937"), nil without one. On Forever it was
--- the same for all characters of a ruleset in the in-game tests, across factions.
-local function GetServerID(guid)
-    return type(guid) == "string" and not (issecretvalue and issecretvalue(guid))
-        and guid:match("^Player%-(%d+)%-") or nil
-end
-
 -- Returns the stored full names, sorted. The order defines the numbers shown by "/gryphonmail chars".
 local function GetSortedNames()
     local names = {}
@@ -171,7 +164,6 @@ local function RecordPlayer()
         realm = realm,
         -- Forever only, from the game rules ("PvE", "PvP", "RP", "RPPvP"), see Compat.GetRuleset().
         ruleset = not ns.Compat.HasRealmNames() and ns.Compat.GetRuleset() or nil,
-        serverID = GetServerID(UnitGUID("player")),
     }
     local _, classFile = UnitClass("player")
     ns.db.characters[fullName] = {
@@ -213,12 +205,14 @@ local function GetMailRealms()
 end
 
 -- True if mail can go between the logged-in character and the one with that full name
--- (Names.Normalize), faction, realm, ruleset and player GUID (Forever, each may be nil; the ruleset
--- wins over the realm, the GUID is only used when neither is known). Mail is only delivered
--- within the same faction, not to oneself, and on Forever within the same ruleset, whichever of its
--- realms the characters are on. Other clients deliver it within the own realm and, on Retail, its
--- connected realms.
-function Characters:CanMail(fullName, faction, realm, ruleset, guid)
+-- (Names.Normalize), faction, realm and ruleset (Forever, each may be nil; the ruleset wins over the
+-- realm). Mail is only delivered within the same faction, not to oneself, and on Forever within the
+-- same ruleset, whichever of its realms the characters are on. Other clients deliver it within the
+-- own realm and, on Retail, its connected realms. allowUnknownRuleset: on Forever, a character
+-- with neither ruleset nor realm is not ruled out (a Battle.net friend: Forever gives no realm since
+-- build 71037, and no other field tells the ruleset; the GUID's server ID is one of the many servers
+-- of a ruleset).
+function Characters:CanMail(fullName, faction, realm, ruleset, allowUnknownRuleset)
     if not player or fullName == player.name or faction ~= player.faction then
         return false
     end
@@ -230,10 +224,7 @@ function Characters:CanMail(fullName, faction, realm, ruleset, guid)
     if key then
         return key == GetRulesetKey(player.ruleset, player.realm)
     end
-    -- Neither ruleset nor realm known (e.g. a Battle.net friend without realm name): compare the
-    -- server IDs of the GUIDs.
-    local serverID = GetServerID(guid)
-    return serverID ~= nil and serverID == player.serverID
+    return allowUnknownRuleset == true
 end
 
 -- Faction, realm and ruleset (Forever, see CanMail) of the logged-in character, nil before login.
