@@ -5,10 +5,11 @@ local Names = ns.Names
 -- Favorite characters of the account: any character (e.g. a recent ally or a friend's alt) the user
 -- adds, shown first in the "Send Mail" recipient dropdown, as an inbox and log filter and in the
 -- search suggestions. Stored account-wide in ns.db.favorites, keyed by Names.Normalize:
---   { class = class file or nil, faction = faction, realm = realm }
--- faction and realm are those of the character that added the favorite: mail goes only within one
--- faction and realm (Forever: ruleset), so the favorite is a mail target of the characters that
--- share them (Characters:CanMail).
+--   { class = class file or nil, faction = faction, realm = realm, ruleset = ruleset }
+-- faction, realm and ruleset are those of the character that added the favorite: mail goes only
+-- within one faction and realm (Forever: ruleset), so the favorite is a mail target of the
+-- characters that share them (Characters:CanMail). realm may be nil and ruleset is only set on
+-- Forever.
 local Favorites = ns:RegisterModule("Favorites")
 local Characters = ns.modules.Characters
 local Contacts = ns.modules.Contacts
@@ -57,7 +58,7 @@ function Favorites:GetList()
             name = name,
             displayName = Names.ToDisplay(name),
             class = info.class,
-            canMail = Characters:CanMail(name, info.faction, info.realm),
+            canMail = Characters:CanMail(name, info.faction, info.realm, info.ruleset),
         }
     end
     table.sort(favoriteList, SortByName)
@@ -93,9 +94,9 @@ function Favorites:Add(input)
         return false
     end
 
-    local faction, realm = Characters:GetPlayerFactionAndRealm()
+    local faction, realm, ruleset = Characters:GetPlayerFactionAndRealm()
     local class = Contacts:FindClass(name)
-    ns.db.favorites[name] = { class = class, faction = faction, realm = realm }
+    ns.db.favorites[name] = { class = class, faction = faction, realm = realm, ruleset = ruleset }
     Changed()
     ns:Print(L["FAV_ADDED"], ColorizeName(name, class))
     return true

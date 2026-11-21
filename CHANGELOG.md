@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Forever: the game no longer returns the realm name, so characters logged in since then had no
+  ruleset and no mail targets, and their stored realm was erased. The ruleset is now read from the
+  game rules of the character; a realm stored before is kept. Battle.net friends without a realm
+  name are matched by their server. Characters whose realm was erased get their ruleset back at
+  their next login.
+
 ## [1.2.2] - 2026-11-19
 
 ### Fixed

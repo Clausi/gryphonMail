@@ -45,21 +45,36 @@ end
 
 -- Ruleset of a Forever realm name, nil without a realm. Forever has one mega server per ruleset,
 -- made up of many realms, and characters of one ruleset can land on different ones:
--- "CAMWOW US1 Realm 10 RP" and "CAMWOW US2 Realm 11 RP" are the same mega server. No API returns
--- the ruleset, so it is read from the name: the text after "Realm <number>" ("PvE", "PVP", "RP",
--- "RPPVP"), or the last word for names without that part ("Classic Beta PvE"). Battle.net game
--- accounts give the realm without spaces ("CAMWOWEU4Realm7PvE").
+-- "CAMWOW US1 Realm 10 RP" and "CAMWOW US2 Realm 11 RP" are the same mega server. The ruleset is
+-- the text after "Realm <number>" ("PvE", "PVP", "RP", "RPPVP"), or the last word for names
+-- without that part ("Classic Beta PvE"). Battle.net game accounts give the realm without spaces
+-- ("CAMWOWEU4Realm7PvE"). Since Forever build 71037 the realm name is empty in-game; the ruleset of
+-- the logged-in character comes from its game rules then (Compat.GetRuleset).
 local function GetRulesetName(realm)
-    if not realm then
+    if type(realm) ~= "string" or realm == "" then
         return nil
     end
-    return realm:match("Realm%s*%d+%s*(.-)%s*$") or realm:match("(%S+)%s*$") or realm
+    local name = realm:match("Realm%s*%d+%s*(.-)%s*$") or realm:match("(%S+)%s*$")
+    return name ~= "" and name or nil
 end
 
--- Comparable form of GetRulesetName(): case and spaces are not consistent between realm names.
-local function GetRulesetKey(realm)
-    local name = GetRulesetName(realm)
+-- Ruleset of a character, from its stored ruleset (game rules) or else its realm name.
+local function GetRuleset(ruleset, realm)
+    return ruleset or GetRulesetName(realm)
+end
+
+-- Comparable form of GetRuleset(): case and spaces are not consistent between realm names
+-- ("RP PvP", "RPPVP" and the game rules' "RPPvP" are the same).
+local function GetRulesetKey(ruleset, realm)
+    local name = GetRuleset(ruleset, realm)
     return name and (name:lower():gsub("%s+", ""))
+end
+
+-- Server ID of a player GUID ("Player-6937-00D3614F" -> "6937"), nil without one. On Forever it was
+-- the same for all characters of a ruleset in the in-game tests, across factions.
+local function GetServerID(guid)
+    return type(guid) == "string" and not (issecretvalue and issecretvalue(guid))
+        and guid:match("^Player%-(%d+)%-") or nil
 end
 
 -- Returns the stored full names, sorted. The order defines the numbers shown by "/gryphonmail chars".
@@ -143,18 +158,27 @@ local function RecordPlayer()
         return
     end
 
+    local stored = ns.db.characters[fullName]
+    -- On Forever one of the realms of a ruleset, see GetRulesetName(). Forever returns "" since
+    -- build 71037; the realm recorded before is kept then, it still names the ruleset.
+    local realm = GetRealmName()
+    if realm == "" then
+        realm = stored and stored.realm ~= "" and stored.realm or nil
+    end
     player = {
         name = fullName,
         faction = UnitFactionGroup("player"),
-        -- On Forever one of the realms of a ruleset, see GetRulesetName().
-        realm = GetRealmName(),
+        realm = realm,
+        -- Forever only, from the game rules ("PvE", "PvP", "RP", "RPPvP"), see Compat.GetRuleset().
+        ruleset = not ns.Compat.HasRealmNames() and ns.Compat.GetRuleset() or nil,
+        serverID = GetServerID(UnitGUID("player")),
     }
-    player.ruleset = GetRulesetKey(player.realm)
     local _, classFile = UnitClass("player")
     ns.db.characters[fullName] = {
         class = classFile,
         faction = player.faction,
         realm = player.realm,
+        ruleset = player.ruleset,
     }
     InvalidateCaches()
 end
@@ -189,10 +213,12 @@ local function GetMailRealms()
 end
 
 -- True if mail can go between the logged-in character and the one with that full name
--- (Names.Normalize), faction and realm. Mail is only delivered within the same faction, not to
--- oneself, and on Forever within the same ruleset, whichever of its realms the characters are on.
--- Other clients deliver it within the own realm and, on Retail, its connected realms.
-function Characters:CanMail(fullName, faction, realm)
+-- (Names.Normalize), faction, realm, ruleset and player GUID (Forever, each may be nil; the ruleset
+-- wins over the realm, the GUID is only used when neither is known). Mail is only delivered
+-- within the same faction, not to oneself, and on Forever within the same ruleset, whichever of its
+-- realms the characters are on. Other clients deliver it within the own realm and, on Retail, its
+-- connected realms.
+function Characters:CanMail(fullName, faction, realm, ruleset, guid)
     if not player or fullName == player.name or faction ~= player.faction then
         return false
     end
@@ -200,13 +226,21 @@ function Characters:CanMail(fullName, faction, realm)
     if realms then
         return realms[Names.GetRealm(fullName) or ""] == true
     end
-    return GetRulesetKey(realm) == player.ruleset
+    local key = GetRulesetKey(ruleset, realm)
+    if key then
+        return key == GetRulesetKey(player.ruleset, player.realm)
+    end
+    -- Neither ruleset nor realm known (e.g. a Battle.net friend without realm name): compare the
+    -- server IDs of the GUIDs.
+    local serverID = GetServerID(guid)
+    return serverID ~= nil and serverID == player.serverID
 end
 
--- Faction and realm of the logged-in character, nil before login.
+-- Faction, realm and ruleset (Forever, see CanMail) of the logged-in character, nil before login.
+-- The realm is nil when the client does not return it.
 function Characters:GetPlayerFactionAndRealm()
     if player then
-        return player.faction, player.realm
+        return player.faction, player.realm, player.ruleset
     end
 end
 
@@ -220,8 +254,10 @@ end
 --     faction = "Alliance", realm = "CAMWOW US1 Realm 10 RP", ruleset = "RP", isCurrent = bool,
 --     canMail = bool }
 -- fullName is the stored key (Names.Normalize), displayName the form to show and to enter as
--- recipient (Names.ToDisplay). realm is nil for characters not logged in since it was added.
--- ruleset is only set on Forever, the other clients have no rulesets.
+-- recipient (Names.ToDisplay). realm is nil for characters not logged in since it was added, and
+-- on Forever for characters first recorded with an empty realm name.
+-- ruleset is only set on Forever, the other clients have no rulesets. It is nil for characters
+-- recorded without ruleset and realm.
 -- canMail: mail can go between this character and the logged-in one (Characters:CanMail).
 function Characters:GetCharacters()
     if characterList then
@@ -238,9 +274,9 @@ function Characters:GetCharacters()
             class = info.class,
             faction = info.faction,
             realm = info.realm,
-            ruleset = hasRulesets and GetRulesetName(info.realm) or nil,
+            ruleset = hasRulesets and GetRuleset(info.ruleset, info.realm) or nil,
             isCurrent = player ~= nil and fullName == player.name,
-            canMail = self:CanMail(fullName, info.faction, info.realm),
+            canMail = self:CanMail(fullName, info.faction, info.realm, info.ruleset),
         }
     end
     return characterList
@@ -252,7 +288,7 @@ function Characters:FormatCharacter(character)
     local line = ColorizeName(character.fullName)
     -- Either part may be unknown for old entries.
     local details = {}
-    details[#details + 1] = character.ruleset or character.realm
+    details[#details + 1] = character.ruleset or (character.realm ~= "" and character.realm or nil)
     details[#details + 1] = FACTION_LABELS[character.faction] or character.faction
     if #details > 0 then
         line = line .. " " .. GRAY_FONT_COLOR:WrapTextInColorCode("(" .. table.concat(details, ", ") .. ")")
