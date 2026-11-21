@@ -96,7 +96,6 @@ read_globals = {
     "MinimalSliderWithSteppersMixin",
     "UnitClass",
     "UnitFactionGroup",
-    "UnitGUID",
     "UnitName",
     "InboxItemCanDelete",
     "SecondsToTime",

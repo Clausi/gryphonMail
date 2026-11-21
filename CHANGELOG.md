@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Forever: friends online on another server of your ruleset were missing from the "Friends"
+  recipient list and filters. The game gives no realm for friends any more, and their server was
+  compared, which differs between the servers of a ruleset. Only the faction is checked now.
+
 ## [1.2.3] - 2026-11-21
 
 ### Fixed

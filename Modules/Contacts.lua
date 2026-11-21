@@ -58,14 +58,15 @@ local function IsInThisGame(gameAccount)
 end
 
 -- A WoW character of a Battle.net friend that can exchange mail with the logged-in character:
--- online in this game version and region, same faction and (Characters:CanMail) ruleset.
+-- online in this game version and region, same faction and (Characters:CanMail) ruleset; without
+-- realm the ruleset is unknown and only the faction is checked.
 local function GetMailableCharacter(gameAccount)
     if not IsInThisGame(gameAccount) then
         return nil
     end
     local name = NormalizeName(gameAccount.characterName)
     if name and ns.modules.Characters:CanMail(name, gameAccount.factionName, gameAccount.realmName, nil,
-        gameAccount.playerGuid) then
+        true) then
         return name
     end
     return nil
