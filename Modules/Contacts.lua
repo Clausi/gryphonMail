@@ -48,7 +48,8 @@ local function GetMailableCharacter(gameAccount)
         return nil
     end
     local name = NormalizeName(gameAccount.characterName)
-    if name and ns.modules.Characters:CanMail(name, gameAccount.factionName, gameAccount.realmName) then
+    if name and ns.modules.Characters:CanMail(name, gameAccount.factionName, gameAccount.realmName, nil,
+        gameAccount.playerGuid) then
         return name
     end
     return nil

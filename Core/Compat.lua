@@ -14,6 +14,30 @@ function Compat.HasRealmNames()
     return not (RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled())
 end
 
+-- Ruleset of the logged-in character on Forever from its game rules: "PvE", "PvP", "RP", "RPPvP"
+-- or "HC" (hardcore); nil without the ruleset game rules (Classic has no C_GameRules). Since
+-- Forever build 71037 it is the only way to tell the ruleset: GetRealmName() returns "" and
+-- GetRealmID() 0.
+function Compat.GetRuleset()
+    local rules = Enum.GameRule
+    if not (C_GameRules and C_GameRules.IsGameRuleActive and rules and rules.PvPRuleset
+            and rules.RPRuleset) then
+        return nil
+    end
+    local isPvP = C_GameRules.IsGameRuleActive(rules.PvPRuleset)
+    local isRP = C_GameRules.IsGameRuleActive(rules.RPRuleset)
+    if isPvP and isRP then
+        return "RPPvP"
+    elseif isPvP then
+        return "PvP"
+    elseif isRP then
+        return "RP"
+    elseif rules.HardcoreRuleset and C_GameRules.IsGameRuleActive(rules.HardcoreRuleset) then
+        return "HC"
+    end
+    return "PvE"
+end
+
 -- The character-based friends list (C_FriendList). Forever turns it off: its friends frame only
 -- lists Battle.net friends then (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua). Clients without
 -- the check always have it.
