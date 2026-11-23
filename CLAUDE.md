@@ -9,22 +9,27 @@ file only adds what is specific to GryphonMail.
 
 ## Target clients
 
-- **WoW Forever** only (16001, `_forever_`, `forever` branch of wow-ui-source, Mainline UI and API).
-  Mail frame code: the load-on-demand `Blizzard_MailFrame/`.
-- Classic Era, Anniversary, MoP Classic and Retail are no longer supported: 1.2.4 was the last
-  version for them. Do not add code for them.
-- `Core/Compat.lua` has no client checks. It keeps Blizzard's mail frame internals (inbox update,
-  page buttons, "Open All") and APIs that need a check (game rules, friends list) in one place.
-- `Core/Names.lua` is the reference implementation of `ns.Names` for the other Forever addons: names
-  without realm, shown and entered as they are.
+- One package for WoW Forever (16001, `_forever_`, `forever` branch of wow-ui-source) and Retail
+  (120105, `_retail_`, `live` branch), both listed in `## Interface:`. Both use the Mainline UI and
+  API; the mail frame is the load-on-demand `Blizzard_MailFrame/`. Check both branches when hooking
+  Blizzard code.
+- Classic Era, Anniversary and MoP Classic are no longer supported: 1.2.4 was the last version for
+  them. Do not add code for them.
+- Client differences go through `Core/Compat.lua` (inbox update and page buttons, names with or
+  without realm).
+- `Core/Names.lua` is the reference implementation of `ns.Names` for the other addons.
 
 ## Names and mail
 
-- Trading and mail only work within the same ruleset and faction. A full name is unique across
-  rulesets, so characters are keyed by name. A ruleset is a mega server made up of many realms.
-  Since build 71037 the realm name is empty: the ruleset of the logged-in character comes from its
-  game rules (`Compat.GetRuleset()`), and a realm name stored before ("CAMWOW US1 Realm 10 RP")
-  still names the ruleset (`GetRulesetName` in `Modules/Characters.lua`).
+- **Forever:** trading and mail only work within the same ruleset and faction. A full name is unique
+  across rulesets, so characters are keyed by name. A ruleset is a mega server made up of many
+  realms. Since build 71037 the realm name is empty: the ruleset of the logged-in character comes
+  from its game rules (`Compat.GetRuleset()`), and a realm name stored before
+  ("CAMWOW US1 Realm 10 RP") still names the ruleset (`GetRulesetName` in `Modules/Characters.lua`).
+- **Retail:** the APIs leave out the realm for the own realm (mail sender, friends), the guild
+  roster always includes it. `Names.Normalize` gives the key of `ns.db.characters`;
+  `Names.ToDisplay` is also the form to enter as mail recipient. Mail only works within the same
+  faction and realm or connected realms (`C_AutoComplete.GetAutoCompleteRealms()`).
 
 ## Locales
 
