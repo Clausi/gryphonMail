@@ -29,11 +29,18 @@ for WoWInterface (BBCode) in [docs/addon-description-wowinterface.txt](docs/addo
 | Client  | Interface | Status    |
 | ------- | --------- | --------- |
 | Forever | 16001     | Supported |
+| Retail  | 120105    | Supported |
 
-Other clients are not supported. Version 1.2.4 is the last version for Classic Era, Anniversary,
-MoP Classic and Retail.
+One package works on both clients, they use the same Mainline UI and API. Client differences are
+handled in `Core/Compat.lua`. Version 1.2.4 is the last version for Classic Era, Anniversary and MoP
+Classic.
 
-The recent allies filter and submenu only appear while the game has that system enabled.
+Known differences:
+
+- On Retail, characters are told apart by realm: characters on other realms are shown as
+  "Name-Realm", and own characters are only offered as recipients on the same or a connected realm
+  and faction.
+- The recent allies filter and submenu only appear where the client has that system enabled.
 
 ## Installation
 
