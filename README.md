@@ -26,25 +26,14 @@ for WoWInterface (BBCode) in [docs/addon-description-wowinterface.txt](docs/addo
 
 ## Supported clients
 
-| Client      | Interface | Status                                 |
-| ----------- | --------- | -------------------------------------- |
-| Forever     | 16001     | Supported                              |
-| Anniversary | 20506     | Supported                              |
-| Classic Era | 11509     | Supported, less tested (see [#24][])   |
-| MoP Classic | 50504     | Supported, less tested                 |
-| Retail      | 120105    | Supported, less tested (see [#24][])   |
+| Client  | Interface | Status    |
+| ------- | --------- | --------- |
+| Forever | 16001     | Supported |
 
-One package works on all clients. Forever and Retail use the Mainline UI and API, Classic Era,
-Anniversary and MoP Classic the Classic UI. Client differences are handled in `Core/Compat.lua`.
+Other clients are not supported. Version 1.2.4 is the last version for Classic Era, Anniversary,
+MoP Classic and Retail.
 
-Known differences:
-
-- Outside Forever, characters are told apart by realm: characters on other realms are shown as
-  "Name-Realm", and own characters are only offered as recipients on the same realm (Retail: also
-  on connected realms) and faction.
-- The recent allies filter and submenu only appear where the client has that system enabled.
-
-[#24]: https://github.com/Clausi/gryphonMail/issues/24
+The recent allies filter and submenu only appear while the game has that system enabled.
 
 ## Installation
 
@@ -94,7 +83,7 @@ GryphonMail/
 │   └── frFR.lua           # French translation
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
-│   ├── Compat.lua         # Client differences (Forever, Classic Era, Anniversary, MoP Classic, Retail) detected from the APIs
+│   ├── Compat.lua         # Access to Blizzard APIs and mail frame internals, detected from the APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, long menus split into name ranges, defaults
 │   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
 │   ├── Suggestions.lua    # Suggestion list below an edit box (search boxes, add favorite dialog)
