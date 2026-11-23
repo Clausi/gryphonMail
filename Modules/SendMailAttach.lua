@@ -39,7 +39,8 @@ end
 -- Calls callback(bag, slot, info) for every stack in the bags that can be attached. Stops when the
 -- callback returns true.
 local function ForEachAttachable(callback)
-    for bag = 0, ns.Compat.GetLastBagIndex() do
+    -- The backpack (0), the four bags and the reagent bag.
+    for bag = 0, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
         for slot = 1, C_Container.GetContainerNumSlots(bag) do
             local info = C_Container.GetContainerItemInfo(bag, slot)
             if IsAttachable(info) and callback(bag, slot, info) then

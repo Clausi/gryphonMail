@@ -83,7 +83,7 @@ GryphonMail/
 │   └── frFR.lua           # French translation
 ├── Core/
 │   ├── Init.lua           # Namespace, module registry, event dispatcher
-│   ├── Compat.lua         # Access to Blizzard APIs and mail frame internals, detected from the APIs
+│   ├── Compat.lua         # Access to Blizzard mail frame internals and APIs
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, long menus split into name ranges, defaults
 │   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
 │   ├── Suggestions.lua    # Suggestion list below an edit box (search boxes, add favorite dialog)

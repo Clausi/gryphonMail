@@ -1,23 +1,13 @@
 local _, ns = ...
 
--- Differences between the supported clients (Forever, Classic Era, Anniversary, MoP Classic,
--- Retail), in one place. Detects the APIs and methods a client has instead of comparing version
--- numbers. Blizzard UI reference: the forever, classic_era, classic_anniversary, classic (MoP
--- Classic) and live branches of Gethe/wow-ui-source.
+-- Access to Blizzard's mail frame internals and to APIs that need a check, in one place. Blizzard UI
+-- reference: the forever branch of Gethe/wow-ui-source.
 local Compat = {}
 ns.Compat = Compat
 
--- Forever names are "First Surname", unique per region, without a realm part. Other clients use
--- "Name-Realm". RegionalUniqueNamesEnabled() is the check Blizzard's own NameUtil uses; Classic
--- does not have the function.
-function Compat.HasRealmNames()
-    return not (RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled())
-end
-
--- Ruleset of the logged-in character on Forever from its game rules: "PvE", "PvP", "RP", "RPPvP"
--- or "HC" (hardcore); nil without the ruleset game rules (Classic has no C_GameRules). Since
--- Forever build 71037 it is the only way to tell the ruleset: GetRealmName() returns "" and
--- GetRealmID() 0.
+-- Ruleset of the logged-in character from its game rules: "PvE", "PvP", "RP", "RPPvP" or "HC"
+-- (hardcore); nil without the ruleset game rules. Since Forever build 71037 it is the only way to
+-- tell the ruleset: GetRealmName() returns "" and GetRealmID() 0.
 function Compat.GetRuleset()
     local rules = Enum.GameRule
     if not (C_GameRules and C_GameRules.IsGameRuleActive and rules and rules.PvPRuleset
@@ -40,88 +30,35 @@ end
 
 -- The character-based friends list (C_FriendList). Forever can turn it off: its friends frame only
 -- lists Battle.net friends then, otherwise both (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua).
--- Clients without the check always have it.
 function Compat.HasCharacterFriendList()
     local check = C_FriendList.IsLegacyFriendSystemEnabled
     return check == nil or check() == true
 end
 
--- Forever redraws the inbox with the method InboxFrame:Update() (InboxMixin). Retail and Classic
--- use the global function InboxFrame_Update() instead. Call once InboxFrame exists.
-function Compat.HasInboxUpdateMethod()
-    return InboxFrame ~= nil and InboxFrame.Update ~= nil
-end
-
--- Runs callback(InboxFrame) after every inbox redraw by Blizzard.
+-- Runs callback(InboxFrame) after every inbox redraw by Blizzard (InboxMixin:Update()).
 function Compat.HookInboxUpdate(callback)
-    if Compat.HasInboxUpdateMethod() then
-        hooksecurefunc(InboxFrame, "Update", callback)
-    else
-        hooksecurefunc("InboxFrame_Update", function()
-            callback(InboxFrame)
-        end)
-    end
+    hooksecurefunc(InboxFrame, "Update", callback)
 end
 
--- Redraws the inbox with Blizzard's update function.
+-- Redraws the inbox with Blizzard's update method.
 function Compat.UpdateInbox()
-    if Compat.HasInboxUpdateMethod() then
-        InboxFrame:Update()
-    else
-        InboxFrame_Update()
-    end
+    InboxFrame:Update()
 end
 
--- Enables the inbox page buttons. Forever has them as InboxFrame.PrevPageButton / NextPageButton,
--- plus gamepad page turn indicators. Retail and Classic have the globals InboxPrevPageButton /
--- InboxNextPageButton.
+-- Enables the inbox page buttons (InboxFrame.PrevPageButton / NextPageButton) and the gamepad page
+-- turn indicators.
 function Compat.SetInboxPageButtonsEnabled(hasPrev, hasNext)
-    if InboxFrame.PrevPageButton then
-        InboxFrame.PrevPageButton:SetEnabled(hasPrev)
-        InboxFrame.NextPageButton:SetEnabled(hasNext)
-        if InboxFrame.PageTurnIndicatorLeft then
-            InboxFrame.PageTurnIndicatorLeft:SetEnabled(hasPrev)
-            InboxFrame.PageTurnIndicatorRight:SetEnabled(hasNext)
-        end
-    else
-        InboxPrevPageButton:SetEnabled(hasPrev)
-        InboxNextPageButton:SetEnabled(hasNext)
+    InboxFrame.PrevPageButton:SetEnabled(hasPrev)
+    InboxFrame.NextPageButton:SetEnabled(hasNext)
+    if InboxFrame.PageTurnIndicatorLeft then
+        InboxFrame.PageTurnIndicatorLeft:SetEnabled(hasPrev)
+        InboxFrame.PageTurnIndicatorRight:SetEnabled(hasNext)
     end
 end
 
--- Template for an extra mail frame tab that looks like Blizzard's. The mail tabs inherit
--- PanelTabButtonTemplate on Forever and Retail, and CharacterFrameTabButtonTemplate (named
--- textures, no LeftActive) on Classic.
-function Compat.GetMailTabTemplate()
-    if MailFrameTab2.LeftActive then
-        return "PanelTabButtonTemplate"
-    end
-    return "CharacterFrameTabButtonTemplate"
-end
-
--- Forever and Retail set the title with MailFrame:SetTitle() on every tab switch. Classic shows
--- own title strings in InboxFrame (InboxTitleText) and SendMailFrame and leaves MailFrame's title
--- empty.
-function Compat.HasMailFrameTitle()
-    return InboxTitleText == nil
-end
-
--- "Open All" asks ShouldSkipCurrentMail() and ShouldSkipCurrentAttachment() on Forever and Retail,
--- which lets the addon restrict it to filtered mails. Classic inlines that logic in
--- AdvanceToNextItem(). Call once OpenAllMail exists.
+-- "Open All" asks ShouldSkipCurrentMail() and ShouldSkipCurrentAttachment(), which lets the addon
+-- restrict it to filtered mails. Call once OpenAllMail exists.
 function Compat.HasOpenAllSkipHooks()
     return OpenAllMail ~= nil and OpenAllMail.ShouldSkipCurrentMail ~= nil
         and OpenAllMail.ShouldSkipCurrentAttachment ~= nil
-end
-
--- "Open All" finds the next mail and attachment with AdvanceToNextItem() on all clients. On Classic
--- it is the only method that can restrict the run to filtered mails. Call once OpenAllMail exists.
-function Compat.HasOpenAllAdvance()
-    return OpenAllMail ~= nil and OpenAllMail.AdvanceToNextItem ~= nil
-end
-
--- Last bag index to scan, starting at the backpack (0). Forever and Retail have a reagent bag after
--- the four bag slots (NUM_TOTAL_EQUIPPED_BAG_SLOTS); Classic only has NUM_BAG_SLOTS.
-function Compat.GetLastBagIndex()
-    return NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 end

@@ -91,10 +91,9 @@ local function GetFilteredIndices()
 end
 
 -- Renders one inbox row for the given mail index.
--- Mirrors Blizzard's inbox update (InboxMixin:Update() on Forever, InboxFrame_Update() on Retail
--- and Classic), only with a remapped index. The rows are the same on all clients.
+-- Mirrors Blizzard's inbox update (InboxMixin:Update()), only with a remapped index.
 local function RenderSlot(inbox, slot, index)
-    -- firstItem is an item link on Forever and Retail and an item ID on Classic; both work below.
+    -- firstItem is an item link.
     local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead,
         _, _, _, isGM, firstItemQuantity, firstItem = GetInboxHeaderInfo(index)
 
@@ -113,7 +112,7 @@ local function RenderSlot(inbox, slot, index)
     else
         button.IconBorder:Hide()
         button.IconOverlay:Hide()
-        -- Only Forever and Retail have the overlay.
+        -- Not every button has it; Blizzard's InboxMixin:Update() checks it the same way.
         if button.ProfessionQualityOverlay then
             button.ProfessionQualityOverlay:Hide()
         end
@@ -344,39 +343,12 @@ local function SetupSkipHooks()
     end)
 end
 
--- Classic has neither skip method, its skip logic is inlined in AdvanceToNextItem(). That method is
--- wrapped instead: Blizzard's version finds the next mail with something to take, the wrapper moves
--- on past mails that did not match at the start of the run. Blizzard calls the method recursively
--- through self for the next mail, so every step passes the wrapper. Attachments already requested
--- are not skipped here: Blizzard's ProcessNextItem() takes the money of a mail regardless of the
--- attachment index, so skipping single attachments would not prevent repeated requests.
-local function SetupAdvanceWrapper()
-    local advanceToNextItem = OpenAllMail.AdvanceToNextItem
-    OpenAllMail.AdvanceToNextItem = function(self)
-        StartRun()
-        while advanceToNextItem(self) do
-            if not run.mails or IsRunMail(self.mailIndex) then
-                return true
-            end
-            self.mailIndex = self.mailIndex + 1
-            self.attachmentIndex = ATTACHMENTS_MAX
-            if self.mailIndex > GetInboxNumItems() then
-                return false
-            end
-        end
-        return false
-    end
-end
-
--- "Open Filtered" needs the skip methods (Forever, Retail) or AdvanceToNextItem() (Classic).
+-- "Open Filtered" needs Blizzard's skip methods; without them "Open All" stays as it is.
 local function SetupOpenAll()
-    if ns.Compat.HasOpenAllSkipHooks() then
-        SetupSkipHooks()
-    elseif ns.Compat.HasOpenAllAdvance() then
-        SetupAdvanceWrapper()
-    else
+    if not ns.Compat.HasOpenAllSkipHooks() then
         return
     end
+    SetupSkipHooks()
     canOpenFiltered = true
 
     -- StopOpening() resets the text to Blizzard's default.
@@ -433,10 +405,9 @@ function InboxView:OnInitialize()
         return
     end
 
-    -- The mail frame is the load-on-demand addon Blizzard_MailFrame on Forever and Retail, and part
-    -- of Blizzard_UIPanels_Game on Classic, which is usually loaded before this addon.
+    -- The mail frame is the load-on-demand addon Blizzard_MailFrame.
     ns:RegisterEvent("ADDON_LOADED", function(_, loadedName)
-        if (loadedName == "Blizzard_MailFrame" or loadedName == "Blizzard_UIPanels_Game") and not isReady then
+        if loadedName == "Blizzard_MailFrame" and not isReady then
             Setup()
         end
     end)

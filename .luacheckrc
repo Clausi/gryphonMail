@@ -30,7 +30,6 @@ read_globals = {
 
     -- API
     "C_AddOns",
-    "C_AutoComplete",
     "C_BattleNet",
     "C_GameRules",
     "Enum",
@@ -53,7 +52,6 @@ read_globals = {
     "GetGuildRosterInfo",
     "GetLocale",
     "GetRealmName",
-    "GetNormalizedRealmName",
     "GetInboxHeaderInfo",
     "GetInboxInvoiceInfo",
     "GetInboxItem",
@@ -70,7 +68,6 @@ read_globals = {
     "GetMoneyString",
     "HasInboxItem",
     "PlaySound",
-    "RegionalUniqueNamesEnabled",
     "SetSendMailShowing",
     -- UI helpers
     "ButtonFrameTemplate_HideButtonBar",
@@ -105,10 +102,6 @@ read_globals = {
     "DEFAULT_CHAT_FRAME",
     -- pageNum is written on purpose to reset or clamp paging when a filter changes (see InboxView.lua).
     InboxFrame = { other_fields = true, fields = { pageNum = { read_only = false } } },
-    "InboxFrame_Update",
-    "InboxNextPageButton",
-    "InboxPrevPageButton",
-    "InboxTitleText",
     "GameTooltip",
     "MailFrame",
     "MailFrameInset",
@@ -119,26 +112,19 @@ read_globals = {
     "SendMailNameEditBox",
     "SendMailSubjectEditBox",
     -- ShouldSkipCurrentMail / ShouldSkipCurrentAttachment are replaced on purpose to restrict
-    -- "Open All" to filtered mails and to avoid duplicate take requests. On Classic,
-    -- AdvanceToNextItem is wrapped and mailIndex / attachmentIndex are advanced past mails that
-    -- do not match the filters (see InboxView.lua).
+    -- "Open All" to filtered mails and to avoid duplicate take requests. See InboxView.lua.
     OpenAllMail = {
         other_fields = true,
         fields = {
             ShouldSkipCurrentMail = { read_only = false },
             ShouldSkipCurrentAttachment = { read_only = false },
-            AdvanceToNextItem = { read_only = false },
-            mailIndex = { read_only = false },
-            attachmentIndex = { read_only = false },
         },
     },
 
     -- Constants and global strings
     "INBOXITEMS_TO_DISPLAY",
-    "ATTACHMENTS_MAX",
     "ATTACHMENTS_MAX_RECEIVE",
     "ATTACHMENTS_MAX_SEND",
-    "NUM_BAG_SLOTS",
     "NUM_TOTAL_EQUIPPED_BAG_SLOTS",
     "SOUNDKIT",
     "UNKNOWN",
