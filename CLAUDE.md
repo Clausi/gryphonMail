@@ -13,11 +13,10 @@ file only adds what is specific to GryphonMail.
   Mail frame code: the load-on-demand `Blizzard_MailFrame/`.
 - Classic Era, Anniversary, MoP Classic and Retail are no longer supported: 1.2.4 was the last
   version for them. Do not add code for them.
-- `Core/Compat.lua`, `Core/Names.lua` and `Modules/Characters.lua` still have branches for the
-  other clients ("Name-Realm" names, mail realms, connected realms on Retail, the Classic mail
-  frame). They are left in for now; new code does not need a client check.
-- `Core/Names.lua` is the reference implementation of `ns.Names` for the other addons; they take it
-  over without `Compat.HasRealmNames()`.
+- `Core/Compat.lua` has no client checks. It keeps Blizzard's mail frame internals (inbox update,
+  page buttons, "Open All") and APIs that need a check (game rules, friends list) in one place.
+- `Core/Names.lua` is the reference implementation of `ns.Names` for the other Forever addons: names
+  without realm, shown and entered as they are.
 
 ## Names and mail
 
