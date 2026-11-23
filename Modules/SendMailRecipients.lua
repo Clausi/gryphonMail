@@ -19,8 +19,7 @@ local DROPDOWN_OFFSET_X = 6
 local FAVORITE_ICON = "|TInterface\\TargetingFrame\\UI-RaidTargetingIcon_1:0|t "
 local REMOVE_FAVORITE_ICON = "|TInterface\\Buttons\\UI-GroupLoot-Pass-Up:0|t "
 
--- Blizzard's reply also puts the sender's name into this field: the full name ("First Surname") on
--- Forever, the name with realm for other realms on other clients (Names.ToDisplay). Programmatic
+-- Blizzard's reply also puts the sender's name into this field: the full name ("First Surname"). Programmatic
 -- SetText runs the field's OnTextChanged, which enables the send button.
 local function SelectRecipient(name)
     SendMailNameEditBox:SetText(name)
@@ -32,11 +31,10 @@ local function ClassColored(name, class)
     return color and color:WrapTextInColorCode(name) or name
 end
 
--- name: a normalized name (Names.Normalize); shown and entered in its display form.
+-- name: a normalized name (Names.Normalize), shown and entered as it is.
 local function AddRecipient(description, name, class)
-    local displayName = ns.Names.ToDisplay(name)
-    description:CreateButton(ClassColored(displayName, class), function()
-        SelectRecipient(displayName)
+    description:CreateButton(ClassColored(name, class), function()
+        SelectRecipient(name)
     end)
 end
 
@@ -49,7 +47,7 @@ local function AddOwnCharacters(rootDescription)
 
     local count = 0
     for _, character in ipairs(Characters:GetCharacters()) do
-        -- Only characters of the same faction and realm (Forever: ruleset) can receive mail from this one.
+        -- Only characters of the same faction and ruleset can receive mail from this one.
         if character.canMail then
             AddRecipient(rootDescription, character.fullName, character.class)
             count = count + 1
