@@ -1,6 +1,6 @@
 # GryphonMail
 
-**A smarter mailbox for WoW Forever.**
+**A smarter mailbox for WoW Forever and Retail.**
 
 GryphonMail extends the default mailbox instead of replacing it. Everything stays where you know it, with a few tools that save you time on every visit.
 
@@ -29,7 +29,7 @@ While a search or filter is active, **Open All** becomes **Open Filtered** and o
 
 ### Pick a recipient
 A small dropdown next to the **To** field of *Send Mail* lists:
-- Your **own characters** of the same faction and ruleset (PvE, PvP, RP)
+- Your **own characters** of the same faction and realm (Forever: ruleset PvE, PvP, RP; Retail: also connected realms)
 - Your **friends**, **guild members** and **recent allies** (where the game has them) in submenus; guild members and recent allies are class colored. Long lists are split into name ranges, e.g. *Abby - Fiona*.
 
 Pick one and the name is filled in.
@@ -74,7 +74,9 @@ Its own page in the game options (Esc > Options > AddOns > GryphonMail, or `/gry
 | `/gryphonmail notify on\|off` | Turn the automatic messages (login, summary, hints) of this character on or off |
 
 ## Good to know
-- Made for **WoW Forever**. Version 1.2.4 is the last version for Classic Era, Anniversary, MoP Classic and Retail.
+- Made for **WoW Forever** and **Retail**. Version 1.2.4 is the last version for Classic Era,
+  Classic Anniversary and MoP Classic.
+- On Retail, characters on other realms are shown as *Name-Realm*.
 - Your characters are remembered when you log in with them once while the addon is active.
 - Languages: English, German, French.
 

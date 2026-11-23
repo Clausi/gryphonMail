@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Support for Classic Era, Anniversary, MoP Classic and Retail: GryphonMail is made for WoW Forever
-  only. Version 1.2.4 is the last version for the other clients and stays available for them.
+- Support for Classic Era, Anniversary and MoP Classic: GryphonMail is made for WoW Forever and
+  Retail. Version 1.2.4 is the last version for the Classic clients and stays available for them.
 
 ## [1.2.4] - 2026-11-21
 
