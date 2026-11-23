@@ -91,7 +91,8 @@ local function GetFilteredIndices()
 end
 
 -- Renders one inbox row for the given mail index.
--- Mirrors Blizzard's inbox update (InboxMixin:Update()), only with a remapped index.
+-- Mirrors Blizzard's inbox update (InboxMixin:Update() on Forever, InboxFrame_Update() on Retail),
+-- only with a remapped index. The rows are the same on both clients.
 local function RenderSlot(inbox, slot, index)
     -- firstItem is an item link.
     local packageIcon, stationeryIcon, sender, subject, money, CODAmount, daysLeft, itemCount, wasRead,
@@ -112,7 +113,7 @@ local function RenderSlot(inbox, slot, index)
     else
         button.IconBorder:Hide()
         button.IconOverlay:Hide()
-        -- Not every button has it; Blizzard's InboxMixin:Update() checks it the same way.
+        -- Not every button has it; Blizzard's inbox update checks it the same way.
         if button.ProfessionQualityOverlay then
             button.ProfessionQualityOverlay:Hide()
         end

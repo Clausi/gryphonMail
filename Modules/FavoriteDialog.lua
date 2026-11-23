@@ -1,5 +1,6 @@
 local _, ns = ...
 local L = ns.L
+local Names = ns.Names
 
 -- Dialog to add a favorite by name, opened from the options. The name is suggested from the recent
 -- allies while typing. Own frame instead of a StaticPopup: Blizzard's popup edit boxes are shared by
@@ -30,7 +31,7 @@ local function FindSuggestions(text)
     local list = {}
     for _, contact in ipairs(Contacts:GetList(Contacts.RECENT_ALLIES)) do
         if not Favorites:Contains(contact.name) and not Characters:IsOwnCharacter(contact.name) then
-            list[#list + 1] = { displayName = contact.name, class = contact.class }
+            list[#list + 1] = { displayName = Names.ToDisplay(contact.name), class = contact.class }
         end
     end
     local results = {}

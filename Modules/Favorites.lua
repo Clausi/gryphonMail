@@ -7,8 +7,9 @@ local Names = ns.Names
 -- search suggestions. Stored account-wide in ns.db.favorites, keyed by Names.Normalize:
 --   { class = class file or nil, faction = faction, realm = realm, ruleset = ruleset }
 -- faction, realm and ruleset are those of the character that added the favorite: mail goes only
--- within one faction and ruleset, so the favorite is a mail target of the characters that share
--- them (Characters:CanMail). realm and ruleset may be nil.
+-- within one faction and realm (Forever: ruleset), so the favorite is a mail target of the
+-- characters that share them (Characters:CanMail). realm may be nil and ruleset is only set on
+-- Forever.
 local Favorites = ns:RegisterModule("Favorites")
 local Characters = ns.modules.Characters
 local Contacts = ns.modules.Contacts
@@ -42,7 +43,7 @@ end
 -- Returns the favorites, sorted by name. The list is cached and must not be modified:
 --   { name = "Tor Donnerstein", displayName = "Tor Donnerstein", class = "WARRIOR", canMail = bool }
 -- name is the stored key (Names.Normalize), displayName the form to show and to enter as recipient
--- (the same name). canMail: the favorite is a mail target of the logged-in character.
+-- (Names.ToDisplay). canMail: the favorite is a mail target of the logged-in character.
 function Favorites:GetList()
     if favoriteList then
         return favoriteList
@@ -55,7 +56,7 @@ function Favorites:GetList()
         end
         favoriteList[#favoriteList + 1] = {
             name = name,
-            displayName = name,
+            displayName = Names.ToDisplay(name),
             class = info.class,
             canMail = Characters:CanMail(name, info.faction, info.realm, info.ruleset),
         }
@@ -72,7 +73,8 @@ end
 
 local function ColorizeName(name, class)
     local color = class and C_ClassColor.GetClassColor(class)
-    return color and color:WrapTextInColorCode(name) or name
+    local displayName = Names.ToDisplay(name)
+    return color and color:WrapTextInColorCode(displayName) or displayName
 end
 
 -- Adds a character (any name form, e.g. the text of the "To" field) and prints the result.

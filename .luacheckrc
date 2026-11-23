@@ -1,5 +1,4 @@
--- luacheck configuration for GryphonMail (WoW Forever, Lua 5.1)
-std = "lua51"
+-- luacheck configuration for GryphonMail (WoW Forever and Retail, Lua 5.1)
 max_line_length = 120
 exclude_files = { ".tools/" }
 
@@ -30,6 +29,7 @@ read_globals = {
 
     -- API
     "C_AddOns",
+    "C_AutoComplete",
     "C_BattleNet",
     "C_GameRules",
     "Enum",
@@ -52,6 +52,7 @@ read_globals = {
     "GetGuildRosterInfo",
     "GetLocale",
     "GetRealmName",
+    "GetNormalizedRealmName",
     "GetInboxHeaderInfo",
     "GetInboxInvoiceInfo",
     "GetInboxItem",
@@ -68,6 +69,7 @@ read_globals = {
     "GetMoneyString",
     "HasInboxItem",
     "PlaySound",
+    "RegionalUniqueNamesEnabled",
     "SetSendMailShowing",
     -- UI helpers
     "ButtonFrameTemplate_HideButtonBar",
@@ -102,6 +104,9 @@ read_globals = {
     "DEFAULT_CHAT_FRAME",
     -- pageNum is written on purpose to reset or clamp paging when a filter changes (see InboxView.lua).
     InboxFrame = { other_fields = true, fields = { pageNum = { read_only = false } } },
+    "InboxFrame_Update",
+    "InboxNextPageButton",
+    "InboxPrevPageButton",
     "GameTooltip",
     "MailFrame",
     "MailFrameInset",
