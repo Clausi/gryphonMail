@@ -9,24 +9,23 @@ file only adds what is specific to GryphonMail.
 
 ## Target clients
 
-- One package for five clients, all listed in `## Interface:` (`11509, 16001, 20506, 50504, 120105`).
-  MoP Classic is called "Classic" by Blizzard (game folder `_classic_`).
-- Mail frame code: `Blizzard_MailFrame/` on Forever and Retail; on Classic Era, Anniversary and
-  MoP Classic the mail frame is part of `Blizzard_UIPanels_Game/Classic/MailFrame.lua`, not the
-  load-on-demand `Blizzard_MailFrame`.
-- `Core/Names.lua` is the reference implementation of `ns.Names` for the other addons.
+- **WoW Forever** only (16001, `_forever_`, `forever` branch of wow-ui-source, Mainline UI and API).
+  Mail frame code: the load-on-demand `Blizzard_MailFrame/`.
+- Classic Era, Anniversary, MoP Classic and Retail are no longer supported: 1.2.4 was the last
+  version for them. Do not add code for them.
+- `Core/Compat.lua`, `Core/Names.lua` and `Modules/Characters.lua` still have branches for the
+  other clients ("Name-Realm" names, mail realms, connected realms on Retail, the Classic mail
+  frame). They are left in for now; new code does not need a client check.
+- `Core/Names.lua` is the reference implementation of `ns.Names` for the other addons; they take it
+  over without `Compat.HasRealmNames()`.
 
 ## Names and mail
 
-- **Forever:** trading and mail only work within the same ruleset and faction. A full name is unique
-  across rulesets, so characters are keyed by name. A ruleset is a mega server made up of many
-  realms (`GetRealmName()` = "CAMWOW US1 Realm 10 RP"), and no API returns it: the realm is stored
-  per character and the ruleset is read from its name (`GetRulesetName` in `Modules/Characters.lua`).
-- **Classic Era, Anniversary, MoP Classic, Retail:** the APIs leave out the realm for the own realm
-  (mail sender, friends), the guild roster always includes it. `Names.Normalize` gives the key of
-  `ns.db.characters`; `Names.ToDisplay` is also the form to enter as mail recipient. Mail only works
-  within the same faction and realm, on Retail also between connected realms
-  (`C_AutoComplete.GetAutoCompleteRealms()`).
+- Trading and mail only work within the same ruleset and faction. A full name is unique across
+  rulesets, so characters are keyed by name. A ruleset is a mega server made up of many realms.
+  Since build 71037 the realm name is empty: the ruleset of the logged-in character comes from its
+  game rules (`Compat.GetRuleset()`), and a realm name stored before ("CAMWOW US1 Realm 10 RP")
+  still names the ruleset (`GetRulesetName` in `Modules/Characters.lua`).
 
 ## Locales
 
