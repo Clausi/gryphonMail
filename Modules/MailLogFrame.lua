@@ -225,6 +225,8 @@ end
 
 local function CreateLogFrame()
     frame = CreateFrame("Frame", "GryphonMailLogFrame", MailFrame)
+    -- Not InboxFrame: it fills MailFrame on Forever, but is 384 x 512 on Retail, larger
+    -- than the visible frame, which would push the page buttons out of it.
     frame:SetAllPoints(MailFrame)
     frame:SetFrameLevel(InboxFrame:GetFrameLevel())
     frame:Hide()

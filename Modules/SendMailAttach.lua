@@ -8,7 +8,7 @@ local L = ns.L
 --   categories can be attached one after another (option "Keep the attach menu open").
 -- - Alt-right-click an attachment slot: removes all attachments.
 -- Blizzard's bag buttons (and bag addons built on them) route every modified click to
--- HandleModifiedItemClick(link), on all clients; Alt is not bound to any modified click there by
+-- HandleModifiedItemClick(link), on both clients; Alt is not bound to any modified click there by
 -- default. Hooking that function instead of the bag buttons also covers bag addons.
 local SendMailAttach = ns:RegisterModule("SendMailAttach")
 local InboxView = ns.modules.InboxView

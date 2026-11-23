@@ -33,7 +33,7 @@ local DROPDOWN_CENTER_Y = SEARCH_OFFSET_Y - SEARCH_HEIGHT / 2
 
 MailFilters.PRESET_ALL = "all"
 
--- Mail names, subjects and item names could be secret values; those are never matched.
+-- Mail names, subjects and item names could be secret values on Forever; those are never matched.
 local function IsUsableString(text)
     return type(text) == "string" and not (issecretvalue and issecretvalue(text))
 end
@@ -309,7 +309,8 @@ function SearchFilter:SetQuery(text)
 end
 
 -- Creates the search box (name, subject or attached item) in the top right of MailFrame, as a child of parent.
--- Anchored to MailFrame, which InboxFrame fills. onChange runs after the search
+-- InboxFrame fills MailFrame on Forever, but has a fixed size of 384 x 512 on Retail,
+-- wider than the visible frame, so the box is anchored to MailFrame. onChange runs after the search
 -- text changed.
 function MailFilters:CreateSearchBox(parent, frameName, onChange)
     local filter = setmetatable({ query = "", onChange = onChange }, SearchFilter)

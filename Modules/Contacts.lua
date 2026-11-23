@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- Friends, guild members and recent allies of the logged-in character, shared by the inbox filter and
 -- the "Send Mail" recipient dropdown.
--- Lists are cached and rebuilt after FRIENDLIST_UPDATE (also BN_FRIEND_*) / GUILD_ROSTER_UPDATE /
+-- Lists are cached and rebuilt after FRIENDLIST_UPDATE (also BN_FRIEND_* on Forever) / GUILD_ROSTER_UPDATE /
 -- RECENT_ALLIES_CACHE_UPDATE.
 local Contacts = ns:RegisterModule("Contacts")
 
@@ -10,7 +10,8 @@ Contacts.FRIENDS = "friends"
 Contacts.GUILD = "guild"
 Contacts.RECENT_ALLIES = "recentAllies"
 
--- Names in the form of Names.Normalize ("Tor Donnerstein"); secret values are never matched.
+-- Names in the form of Names.Normalize ("Tor Donnerstein" on Forever, "Tor-Gehennas" on other
+-- clients); secret values are never matched.
 local NormalizeName = ns.Names.Normalize
 
 -- Recent allies: the realmless "Recent Allies" tab of the friends frame (C_RecentAllies).
@@ -31,6 +32,7 @@ end
 
 -- Do not change during a session.
 local hasCharacterFriendList
+local hasBattleNetFriends
 
 local function HasCharacterFriendList()
     if hasCharacterFriendList == nil then
@@ -39,9 +41,15 @@ local function HasCharacterFriendList()
     return hasCharacterFriendList
 end
 
--- Characters of Battle.net friends are always listed: their names are unique without a realm.
--- Forever's friends frame shows them next to the character friends, if that list is enabled
--- (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua).
+-- Characters of Battle.net friends are only listed on Forever: their names are unique without a
+-- realm there. Forever's friends frame shows them next to the character friends, if that list is
+-- enabled (Blizzard_FriendsFrame/Camelot/FriendsFrame.lua).
+local function HasBattleNetFriends()
+    if hasBattleNetFriends == nil then
+        hasBattleNetFriends = not ns.Compat.HasRealmNames()
+    end
+    return hasBattleNetFriends
+end
 
 -- True if the game account is a character online in this game version and region.
 local function IsInThisGame(gameAccount)
@@ -101,7 +109,9 @@ end
 -- Returning false means the data is not available yet and must not be cached.
 local builders = {
     [Contacts.FRIENDS] = function(add)
-        AddBattleNetFriends(add)
+        if HasBattleNetFriends() then
+            AddBattleNetFriends(add)
+        end
         if not HasCharacterFriendList() then
             return
         end
@@ -223,13 +233,15 @@ end
 function Contacts:OnEnable()
     -- The characters of Battle.net friends change when they log in, out or switch characters (the
     -- same events as Blizzard's friends frame).
-    local function InvalidateFriends()
-        Invalidate(Contacts.FRIENDS)
+    if HasBattleNetFriends() then
+        local function InvalidateFriends()
+            Invalidate(Contacts.FRIENDS)
+        end
+        ns:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", InvalidateFriends)
+        ns:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", InvalidateFriends)
+        ns:RegisterEvent("BN_FRIEND_INFO_CHANGED", InvalidateFriends)
+        ns:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", InvalidateFriends)
+        ns:RegisterEvent("BN_CONNECTED", InvalidateFriends)
+        ns:RegisterEvent("BN_DISCONNECTED", InvalidateFriends)
     end
-    ns:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE", InvalidateFriends)
-    ns:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE", InvalidateFriends)
-    ns:RegisterEvent("BN_FRIEND_INFO_CHANGED", InvalidateFriends)
-    ns:RegisterEvent("BN_FRIEND_LIST_SIZE_CHANGED", InvalidateFriends)
-    ns:RegisterEvent("BN_CONNECTED", InvalidateFriends)
-    ns:RegisterEvent("BN_DISCONNECTED", InvalidateFriends)
 end
