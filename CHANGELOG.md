@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-28
+
 ### Fixed
 
 - After the GryphonMail options page was shown, changing a Blizzard setting such as an action bar
@@ -280,7 +282,8 @@ First stable release.
 - `/gryphonmail debug` toggles debug output in the chat.
 - `/gryphonmail chars` lists known characters, `/gryphonmail chars remove <number|name>` forgets one.
 
-[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/Clausi/gryphonMail/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/Clausi/gryphonMail/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Clausi/gryphonMail/compare/v1.2.4...v2.0.0
 [1.2.4]: https://github.com/Clausi/gryphonMail/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/Clausi/gryphonMail/compare/v1.2.2...v1.2.3
