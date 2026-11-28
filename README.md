@@ -18,8 +18,9 @@ A World of Warcraft addon that extends the default mailbox.
 - **Mail log:** a "Log" tab with collected, sent, returned and deleted mail, including gold and
   items, with the same search and filters as the inbox. Stored per character.
 - **Chat summary:** after "Open All" / "Open Filtered", what was collected.
-- **Options:** automatic messages, the days the log keeps and removing known characters, on an
-  own page in the game options (Esc > Options > AddOns > GryphonMail).
+- **Options:** automatic messages, the days the log keeps, the attach menu, favorites and removing
+  known characters, on an own page in the game options (Esc > Options > AddOns > GryphonMail). The
+  page uses own controls, so the settings search does not find it.
 
 The full description for CurseForge and Wago is in [docs/addon-description.md](docs/addon-description.md),
 for WoWInterface (BBCode) in [docs/addon-description-wowinterface.txt](docs/addon-description-wowinterface.txt).
@@ -94,6 +95,7 @@ GryphonMail/
 │   ├── Util.lua           # Print/Debug helpers, debug memory output, on-demand dropdown menus, long menus split into name ranges, defaults
 │   ├── Names.lua          # Character names per client ("First Surname" / "Name-Realm"): build, compare, show
 │   ├── Suggestions.lua    # Suggestion list below an edit box (search boxes, add favorite dialog)
+│   ├── OptionsPanel.lua   # Options page from own controls on a canvas (no Blizzard settings list, avoids taint)
 │   └── Main.lua           # Bootstrap: saved variables, module lifecycle, slash commands
 └── Modules/
     ├── Characters.lua     # Remembers the account's own characters (saved on login)

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- After the GryphonMail options page was shown, changing a Blizzard setting such as an action bar
+  could taint Edit Mode, which then failed with errors. The page now uses own controls instead of
+  Blizzard's settings list; the settings search no longer finds it.
+
 ## [2.0.0] - 2026-11-23
 
 GryphonMail is now made for WoW Forever and Retail only. The Classic clients stay on version 1.2.4.
